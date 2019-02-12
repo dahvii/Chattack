@@ -17,8 +17,10 @@ public class Controller {
 
     public void sendBtnClick(){
         sendBtn.setText("Hello");
+        ChatApp chatApp = new ChatApp();
+        chatApp.send("HELLOOOOO");
     }
 
 
 
-    }
+}

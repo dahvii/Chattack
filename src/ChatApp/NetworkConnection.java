@@ -30,8 +30,9 @@ public abstract class NetworkConnection implements Serializable {
         connThread.start();
     }
 
-    public void send(Message data) throws Exception {
+    public void send(DataMessage data) throws Exception {
         System.out.println("i NCs send()");
+        System.out.println(data);
 
         connThread.out.writeObject(data);
     }

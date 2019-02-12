@@ -52,7 +52,7 @@ public class ChatApp extends Application {
         try {
             System.out.println("försöker skicka1");
 
-            connection.send(message);
+            connection.send(currMessage);
             System.out.println("försöker skicka2");
         } catch (Exception e) {
             messages.appendText("Failed to send.\n");
