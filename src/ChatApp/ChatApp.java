@@ -61,6 +61,32 @@ public class ChatApp extends Application {
         connection.closeConnection();
     }
 
+    public void send(String input){
+
+        System.out.println("i send metod, input är : "+ input);
+        String text = isServer ? "Server: " : "Client: ";
+        text += input;//.getText();
+        Message message = new Message(text);
+        DataMessage currMessage= new DataMessage(0, message);
+
+        //Clear text from box after enter
+//        input.clear();
+
+        messages.appendText(message.messageData + "\n");
+
+        try {
+            System.out.println("försöker skicka1");
+
+            connection.send(message);
+            System.out.println("försöker skicka2");
+        } catch (Exception e) {
+            messages.appendText("Failed to send.\n");
+            e.printStackTrace();
+
+        }
+
+    }
+
     private Server createServer() {
         return new Server(8080, data -> {
             //runLater is used to execute updates on a JavaFX app thread
