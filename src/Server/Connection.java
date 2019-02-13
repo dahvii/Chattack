@@ -6,7 +6,7 @@ import java.io.ObjectOutputStream;
 import java.net.Socket;
 import java.util.concurrent.atomic.AtomicBoolean;
 
-public class Connection implements Runnable{
+public class Connection {
     private String name;
     private NetworkServer networkServer;
     private Socket socket;
@@ -29,7 +29,7 @@ public class Connection implements Runnable{
             e.printStackTrace();
         }
         setActive(true);
-        Thread listenerThread = new Thread(this);
+        Thread listenerThread = new Thread(this::run);
         listenerThread.setDaemon(true);
         listenerThread.start();
     }
@@ -42,9 +42,7 @@ public class Connection implements Runnable{
         }
     }
 
-
-    @Override
-    public void run() {
+    private void run() {
         ObjectInputStream objectInputStream  = null;
         try {
             objectInputStream = new ObjectInputStream(socket.getInputStream());

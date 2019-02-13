@@ -31,7 +31,7 @@ public class NetworkServer implements Runnable {
     }
 
     private synchronized void sendToAll(Object o) {
-        Iterator<Connection> connections = getConnectionList().iterator();
+        Iterator<Connection> connections = connectionList.iterator();
         while(connections.hasNext()){
             Connection c = connections.next();
             if (c.isActive()) {
@@ -41,12 +41,12 @@ public class NetworkServer implements Runnable {
             }
         }
     }
-    private synchronized List<Connection> getConnectionList(){
-        return connectionList;
-    }
+//    private synchronized List<Connection> getConnectionList(){
+//        return connectionList;
+//    }
 
-    private synchronized void addConnection(Socket socket){
-        getConnectionList().add(new Connection(this, socket));
+    private void addConnection(Socket socket){
+        connectionList.add(new Connection(this, socket));
     }
 
     public void addMessage(Object o){
