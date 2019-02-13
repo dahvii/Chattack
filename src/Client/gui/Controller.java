@@ -17,6 +17,9 @@ public class Controller {
     public Button sendBtn;
     public TextField input;
     public TextArea messages;
+    public String userName = "Jebidiah";
+    public String receiverName = "Jebidiah";
+    public Timestamp time;
 
     public Controller(){
         new Thread(this::messageListener).start();
@@ -31,6 +34,7 @@ public class Controller {
         Message message = new Message(input.getText(), time, userName, receiverName);
 
         input.clear();
+
         NetworkClient.getInstance().sendToServer(message);
         messages.appendText(message.getMessageData() + "\n");
     }
