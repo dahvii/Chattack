@@ -6,6 +6,7 @@ import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.*;
 import java.util.concurrent.ConcurrentLinkedDeque;
+import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 public class NetworkServer implements Runnable {
@@ -18,7 +19,7 @@ public class NetworkServer implements Runnable {
 
     public NetworkServer() {
         connectionList = Collections.synchronizedList(new ArrayList<Connection>());
-        onReceiveCallBack = new ConcurrentLinkedDeque<>();
+        onReceiveCallBack = new ConcurrentLinkedQueue<>();
         try {
             serverSocket = new ServerSocket(3000);
         } catch (IOException e) {

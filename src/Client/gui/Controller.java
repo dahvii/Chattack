@@ -17,16 +17,13 @@ public class Controller {
     public Button sendBtn;
     public TextField input;
     public TextArea messages;
-    public String userName = "Jebidiah";
-    public String receiverName = "Jebidiah";
-    public Timestamp time;
+    public String userName = "SENDERNAME";
+    public String receiverName = "RECEIVERNAME";
 
     public Controller(){
         new Thread(this::messageListener).start();
     }
 
-    public String userName = "Johnny";
-    public String receiverName = "Annabelle";
 
     public void sendBtnClick(){
         Date date = new Date();
@@ -34,18 +31,25 @@ public class Controller {
         Message message = new Message(input.getText(), time, userName, receiverName);
 
         input.clear();
+        System.out.println(message.getMessageData() + " "  + message.getTime() + " " + message.getSender() + " " + message.getReceiver());
 
         NetworkClient.getInstance().sendToServer(message);
-        messages.appendText(message.getMessageData() + "\n");
+//        messages.appendText(message.getMessageData() + "\n");
     }
 
     public void messageListener(){
         while (NetworkClient.getInstance().isActive()){
             Object o = NetworkClient.getInstance().getMessageQueue().poll();
             if (o != null) {
-                messages.appendText("\n" + (String) o);
+                printMessage((Message) o);
+
             }
         }
+    }
+
+
+    private void printMessage(Message msg){
+        messages.appendText("\n" + msg.getMessageData() + " "  + msg.getTime() + " " + msg.getSender() + " " + msg.getReceiver());
     }
 
 

@@ -6,6 +6,7 @@ import java.io.ObjectOutputStream;
 import java.net.Socket;
 import java.util.Queue;
 import java.util.concurrent.ConcurrentLinkedDeque;
+import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 public class NetworkClient {
@@ -29,7 +30,7 @@ public class NetworkClient {
 
     public void init(){
         try {
-            messageQueue = new ConcurrentLinkedDeque<>();
+            messageQueue = new ConcurrentLinkedQueue<>();
             socket = new Socket("localhost", 3000);
             objectOutputStream = new ObjectOutputStream(socket.getOutputStream());
             socket.setTcpNoDelay(true);
