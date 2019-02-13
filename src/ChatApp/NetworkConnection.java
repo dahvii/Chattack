@@ -8,7 +8,7 @@ import java.net.Socket;
 import java.util.function.Consumer;
 
 //use abstract class to communicate with the rest of the program - for safety: since it can't be instantiated, we know where communication will be coming from
-public abstract class NetworkConnection {
+public abstract class NetworkConnection implements Serializable {
 
     //Consumer because it consumes the object
     //Takes in the object and produces a result, does not return a value. Once we serialize the object, we no longer need both the object and the array.
@@ -30,7 +30,10 @@ public abstract class NetworkConnection {
         connThread.start();
     }
 
-    public void send(Serializable data) throws Exception {
+    public void send(DataMessage data) throws Exception {
+        System.out.println("i NCs send()");
+        System.out.println(data);
+
         connThread.out.writeObject(data);
     }
 
@@ -69,6 +72,7 @@ public abstract class NetworkConnection {
 
             } catch (Exception e) {
                 onReceiveCallBack.accept("Connection closed.");
+                e.printStackTrace();
             }
         }
     }
