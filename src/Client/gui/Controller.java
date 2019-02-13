@@ -1,13 +1,8 @@
-package gui;
+package Client.gui;
 
 
-import ChatApp.ChatApp;
-import ChatApp.NetworkConnection;
-import javafx.application.Application;
-import javafx.application.Platform;
-import javafx.fxml.FXMLLoader;
-import javafx.scene.Parent;
-import javafx.scene.Scene;
+import Client.ChatApp;
+import Client.NetworkClient;
 import javafx.scene.control.Button;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
@@ -23,8 +18,9 @@ public class Controller {
         String message = input.getText();
         sendBtn.setText("Send");
         input.clear();
-        ChatApp chatApp = new ChatApp();
-        chatApp.send(message);
+        NetworkClient.getInstance().sendToServer(message);
+//        ChatApp chatApp = new ChatApp();
+//        chatApp.send(message);
         messages.appendText(message + "\n");
     }
 
