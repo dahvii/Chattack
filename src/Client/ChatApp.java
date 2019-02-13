@@ -25,6 +25,7 @@ public class ChatApp extends Application {
         primaryStage.setScene(new Scene(root, 800, 500));
         primaryStage.show();
         primaryStage.setTitle("Chattack");
+
     }
 
     @Override

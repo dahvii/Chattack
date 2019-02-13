@@ -13,13 +13,27 @@ public class Controller {
     public TextField input;
     public TextArea messages;
 
+    public Controller(){
+        new Thread(this::messageListener).start();
+    }
+
     public void sendBtnClick(){
         String message = input.getText();
         sendBtn.setText("Send");
         input.clear();
         NetworkClient.getInstance().sendToServer(message);
-        messages.appendText(message + "\n");
     }
+
+    public void messageListener(){
+        while (NetworkClient.getInstance().isActive()){
+            Object o = NetworkClient.getInstance().getMessageQueue().poll();
+            if (o != null) {
+                messages.appendText("\n" + (String) o);
+            }
+        }
+    }
+
+
 
 
 
