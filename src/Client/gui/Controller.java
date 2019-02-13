@@ -18,6 +18,10 @@ public class Controller {
     public TextField input;
     public TextArea messages;
 
+    public Controller(){
+        new Thread(this::messageListener).start();
+    }
+
     public String userName = "Johnny";
     public String receiverName = "Annabelle";
 
@@ -30,4 +34,18 @@ public class Controller {
         NetworkClient.getInstance().sendToServer(message);
         messages.appendText(message.getMessageData() + "\n");
     }
+
+    public void messageListener(){
+        while (NetworkClient.getInstance().isActive()){
+            Object o = NetworkClient.getInstance().getMessageQueue().poll();
+            if (o != null) {
+                messages.appendText("\n" + (String) o);
+            }
+        }
+    }
+
+
+
+
+
 }

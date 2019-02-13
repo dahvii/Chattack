@@ -41,9 +41,6 @@ public class NetworkServer implements Runnable {
             }
         }
     }
-//    private synchronized List<Connection> getConnectionList(){
-//        return connectionList;
-//    }
 
     private void addConnection(Socket socket){
         connectionList.add(new Connection(this, socket));

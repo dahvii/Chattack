@@ -11,9 +11,8 @@ import javafx.stage.Stage;
 
 public class ChatApp extends Application {
 
-    private TextArea messages = new TextArea();
-
     public ChatApp(){
+
     }
 
     @Override
@@ -26,13 +25,14 @@ public class ChatApp extends Application {
         primaryStage.setScene(new Scene(root, 800, 500));
         primaryStage.show();
         primaryStage.setTitle("Chattack");
+
     }
 
     @Override
     public void stop() {
-//        client.disconnectServer();
         NetworkClient.getInstance().setActive(false);
     }
+
 
 //    public void send(String input){
 //
@@ -55,24 +55,6 @@ public class ChatApp extends Application {
 //            e.printStackTrace();
 //        }
 //
-//    }
-
-//    private Server createServer() {
-//        return new Server(8080, data -> {
-//            //runLater is used to execute updates on a JavaFX app thread
-//            //Since this will be a long-running operation we can't clog up the whole thread or the UI would freeze.
-//            Platform.runLater(() -> {
-//                messages.appendText(data.toString() + "\n");
-//            });
-//        });
-//    }
-
-//    private Client createClient() {
-//        return new Client("127.0.0.1", 8080, data -> {
-//            Platform.runLater(() -> {
-//                messages.appendText(data.toString() + "\n");
-//            });
-//        });
 //    }
 
     public static void main(String[] args) {
