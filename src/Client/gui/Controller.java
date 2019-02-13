@@ -2,6 +2,7 @@ package Client.gui;
 
 
 import Client.ChatApp;
+import Client.DataMessage;
 import Client.Message;
 import Client.NetworkClient;
 import javafx.scene.control.Button;
