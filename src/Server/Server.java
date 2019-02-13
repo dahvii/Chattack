@@ -1,10 +1,5 @@
 package Server;
 
-import Client.NetworkConnection;
-
-import java.io.Serializable;
-import java.util.function.Consumer;
-
 public class Server {
     public NetworkServer ns;
 
