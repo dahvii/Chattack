@@ -1,0 +1,84 @@
+package Server;
+
+import java.io.IOException;
+import java.io.Serializable;
+import java.net.ServerSocket;
+import java.net.Socket;
+import java.util.*;
+import java.util.concurrent.ConcurrentLinkedDeque;
+import java.util.concurrent.atomic.AtomicBoolean;
+
+public class NetworkServer implements Runnable {
+
+//    FIX CONSUMER, TEMPQUEUE
+    private Queue<Serializable> onReceiveCallBack;
+    private ServerSocket serverSocket;
+    private AtomicBoolean isActive = new AtomicBoolean();
+    private List<Connection> connectionList;
+
+    public NetworkServer() {
+        connectionList = Collections.synchronizedList(new ArrayList<Connection>());
+        onReceiveCallBack = new ConcurrentLinkedDeque<>();
+        try {
+            serverSocket = new ServerSocket(3000);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        setActive(true);
+        Thread consumerThread = new Thread(this::consume);
+        consumerThread.setDaemon(true);
+        consumerThread.start();
+    }
+
+    private synchronized void sendToAll(Object o) {
+        Iterator<Connection> connections = getConnectionList().iterator();
+        while(connections.hasNext()){
+            Connection c = connections.next();
+            if (c.isActive()) {
+                c.sendToClient(o);
+            } else {
+                connections.remove();
+            }
+        }
+    }
+    private synchronized List<Connection> getConnectionList(){
+        return connectionList;
+    }
+
+    private synchronized void addConnection(Socket socket){
+        getConnectionList().add(new Connection(this, socket));
+    }
+
+    public void addMessage(Object o){
+        onReceiveCallBack.add((Serializable) o);
+    }
+
+    public boolean isActive() {
+        return isActive.get();
+    }
+
+    public void setActive(boolean active){
+        isActive.set(active);
+    }
+
+    private void consume(){
+        while (isActive()){
+                Object o = onReceiveCallBack.poll();
+                if(o != null) sendToAll(o);
+        }
+    }
+
+    @Override
+    public void run() {
+            while (isActive()) {
+                try {
+                    Socket s = serverSocket.accept();
+                    addConnection(s);
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+
+    }
+
+}
