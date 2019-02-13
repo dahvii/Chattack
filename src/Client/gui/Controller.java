@@ -2,10 +2,14 @@ package Client.gui;
 
 
 import Client.ChatApp;
+import Client.Message;
 import Client.NetworkClient;
 import javafx.scene.control.Button;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
+
+import java.sql.Timestamp;
+import java.util.Date;
 
 
 public class Controller {
@@ -14,16 +18,16 @@ public class Controller {
     public TextField input;
     public TextArea messages;
 
+    public String userName = "Johnny";
+    public String receiverName = "Annabelle";
+
     public void sendBtnClick(){
-        String message = input.getText();
-        sendBtn.setText("Send");
+        Date date = new Date();
+        Timestamp time = new Timestamp(date.getTime());
+        Message message = new Message(input.getText(), time, userName, receiverName);
+
         input.clear();
         NetworkClient.getInstance().sendToServer(message);
-//        ChatApp chatApp = new ChatApp();
-//        chatApp.send(message);
-        messages.appendText(message + "\n");
+        messages.appendText(message.getMessageData() + "\n");
     }
-
-
-
 }
