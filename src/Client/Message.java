@@ -1,11 +1,20 @@
 package Client;
 
 import java.io.Serializable;
+import java.sql.Timestamp;
 
 public class Message implements Serializable {
-    String messageData;
+    private String messageData;
 
-    Message(String data){
-        this.messageData=data;
+    public Message(String messageData, Timestamp timeStamp, String sender, String receiver){
+        this.messageData=messageData;
+    }
+
+    public String getMessageData() {
+        return messageData;
+    }
+
+    public void setMessageData(String messageData) {
+        this.messageData = messageData;
     }
 }
