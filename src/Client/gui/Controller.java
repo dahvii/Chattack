@@ -30,11 +30,12 @@ public class Controller {
         Date date = new Date();
         Timestamp time = new Timestamp(date.getTime());
         Message message = new Message(input.getText(), time, userName, receiverName);
+        DataMessage dataMessage = new DataMessage(0, message);
 
         input.clear();
         System.out.println(message.getMessageData() + " "  + message.getTime() + " " + message.getSender() + " " + message.getReceiver());
 
-        NetworkClient.getInstance().sendToServer(message);
+        NetworkClient.getInstance().sendToServer(dataMessage);
 //        messages.appendText(message.getMessageData() + "\n");
     }
 
