@@ -54,6 +54,7 @@ public class Connection {
             try {
                 Object o =  objectInputStream.readObject();
                 networkServer.addMessage(o);
+                Thread.sleep(1);
             } catch (Exception e) {
                 closeConnection();
                 e.printStackTrace();

@@ -1,4 +1,4 @@
-package Client;
+package Data;
 
 import java.io.Serializable;
 import java.sql.Timestamp;
