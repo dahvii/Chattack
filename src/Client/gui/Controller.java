@@ -69,9 +69,7 @@ public class Controller {
         window.setTitle("Välj användarnamn");
         window.setMinWidth(250);
         window.setMinHeight(300);
-    private void printMessage(Message msg){
-        messages.appendText("\n" + msg.getMessageData() + " "  + msg.getTime() + " " + msg.getSender() + " " + msg.getReceiver());
-    }
+
 
         Label label = new Label();
         label.setText("Välj ett användarnamn");
@@ -92,6 +90,8 @@ public class Controller {
 
     }
 
-
+    private void printMessage(Message msg){
+        messages.appendText("\n" + msg.getMessageData() + " "  + msg.getTime() + " " + msg.getSender() + " " + msg.getReceiver());
+    }
 
 }
