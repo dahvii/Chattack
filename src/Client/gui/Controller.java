@@ -1,5 +1,7 @@
 package Client.gui;
 
+import Client.User;
+import Data.DataMessage;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import Data.DataHandler;
@@ -15,7 +17,6 @@ import javafx.stage.Modality;
 import javafx.stage.Stage;
 
 import java.sql.Timestamp;
-import java.util.ArrayList;
 import java.util.Date;
 
 public class Controller {
@@ -23,10 +24,8 @@ public class Controller {
     public Button sendBtn;
     public TextField input;
     public TextArea messages;
-    User user = new User();
-    public String receiverName = "Jebidiah";
-
-    public Timestamp time;
+    private User user = new User();
+    private String receiverName = "Jebidiah";
 
     public Controller(){
 
@@ -44,10 +43,10 @@ public class Controller {
         Date date = new Date();
         Timestamp time = new Timestamp(date.getTime());
         Message message = new Message(input.getText(), time, user.getName(), receiverName);
-        DataMessage dataMessage = new DataMessage(0, message);
+//        DataMessage dataMessage = new DataMessage(0, message);
 
         input.clear();
-        System.out.println(message.getMessageData() + " "  + message.getTime() + " " + message.getSender() + " " + message.getReceiver());
+//        System.out.println(message.getMessageData() + " "  + message.getTime() + " " + message.getSender() + " " + message.getReceiver());
         NetworkClient.getInstance().sendToServer(message);
     }
 
