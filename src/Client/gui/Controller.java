@@ -1,12 +1,16 @@
 package Client.gui;
 
 
-import Client.ChatApp;
-import Client.Message;
-import Client.NetworkClient;
+import Client.*;
+import javafx.geometry.Pos;
+import javafx.scene.Scene;
 import javafx.scene.control.Button;
+import javafx.scene.control.Label;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
+import javafx.scene.layout.VBox;
+import javafx.stage.Modality;
+import javafx.stage.Stage;
 
 import java.sql.Timestamp;
 import java.util.Date;
@@ -17,26 +21,29 @@ public class Controller {
     public Button sendBtn;
     public TextField input;
     public TextArea messages;
-    public String userName = "Jebidiah";
+    User user = new User();
     public String receiverName = "Jebidiah";
+
     public Timestamp time;
 
     public Controller(){
+        promt();
         new Thread(this::messageListener).start();
+        System.out.println(user.getName());
     }
 
-    public String userName = "Johnny";
-    public String receiverName = "Annabelle";
 
     public void sendBtnClick(){
         Date date = new Date();
         Timestamp time = new Timestamp(date.getTime());
-        Message message = new Message(input.getText(), time, userName, receiverName);
+        Message message = new Message(input.getText(), time, user.getName(), receiverName);
+        DataMessage dataMessage = new DataMessage(0, message);
 
+        String output = user.getName()+"\n"+time+"\n"+message.getMessageData();
         input.clear();
 
-        NetworkClient.getInstance().sendToServer(message);
-        messages.appendText(message.getMessageData() + "\n");
+        NetworkClient.getInstance().sendToServer(dataMessage);
+        messages.appendText(output + "\n");
     }
 
     public void messageListener(){
@@ -48,7 +55,33 @@ public class Controller {
         }
     }
 
+    public void promt(){
+        Stage window = new Stage();
 
+        //blockar byte av fönster
+        window.initModality(Modality.APPLICATION_MODAL);
+        window.setTitle("Välj användarnamn");
+        window.setMinWidth(250);
+        window.setMinHeight(300);
+
+        Label label = new Label();
+        label.setText("Välj ett användarnamn");
+        TextField input = new TextField();
+        Button closeButton = new Button("Ok");
+        closeButton.setOnAction(e -> {
+            user.setName(input.getText());
+            window.close();
+        });
+
+        VBox layout = new VBox(10);
+        layout.getChildren().addAll(label,input,  closeButton);
+        layout.setAlignment(Pos.CENTER);
+
+        Scene scene = new Scene(layout);
+        window.setScene(scene);
+        window.showAndWait();
+
+    }
 
 
 
