@@ -4,6 +4,10 @@ package Client.gui;
 import Client.*;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
+import Client.ChatApp;
+import Client.DataMessage;
+import Client.Message;
+import Client.NetworkClient;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextArea;
@@ -41,16 +45,18 @@ public class Controller {
 
         String output = user.getName()+"\n"+time+"\n"+message.getMessageData();
         input.clear();
+        System.out.println(message.getMessageData() + " "  + message.getTime() + " " + message.getSender() + " " + message.getReceiver());
 
         NetworkClient.getInstance().sendToServer(dataMessage);
-        messages.appendText(output + "\n");
+//        messages.appendText(message.getMessageData() + "\n");
     }
 
     public void messageListener(){
         while (NetworkClient.getInstance().isActive()){
             Object o = NetworkClient.getInstance().getMessageQueue().poll();
             if (o != null) {
-                messages.appendText("\n" + (String) o);
+                printMessage((Message) o);
+
             }
         }
     }
@@ -63,6 +69,9 @@ public class Controller {
         window.setTitle("Välj användarnamn");
         window.setMinWidth(250);
         window.setMinHeight(300);
+    private void printMessage(Message msg){
+        messages.appendText("\n" + msg.getMessageData() + " "  + msg.getTime() + " " + msg.getSender() + " " + msg.getReceiver());
+    }
 
         Label label = new Label();
         label.setText("Välj ett användarnamn");
