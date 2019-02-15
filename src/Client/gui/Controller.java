@@ -13,17 +13,17 @@ import javafx.scene.control.Label;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.VBox;
-import javafx.stage.Modality;
-import javafx.stage.Stage;
+import javafx.scene.paint.Color;
 
 import java.sql.Timestamp;
 import java.util.Date;
 
 public class Controller {
 
+
     public Button sendBtn;
     public TextField input;
-    public TextArea messages;
+    public VBox messages;
     private User user = new User();
     private String receiverName = "Jebidiah";
 
@@ -55,7 +55,7 @@ public class Controller {
             Object o = NetworkClient.getInstance().getMessageQueue().poll();
             if (o instanceof Message) {
                 DataHandler.getInstance().addMessage((Message) o);
-                printMessage((Message) o);
+                Platform.runLater(() -> printMessage((Message) o));
             }
             try {
                 Thread.sleep(100);
@@ -65,35 +65,29 @@ public class Controller {
         }
     }
 
-    private void printMessage(Message msg){
-        messages.appendText("\n" + msg.getMessageData() + " "  + msg.getTime() + " " + msg.getSender() + " " + msg.getReceiver());
-    }
     public void promt(){
         Stage window = new Stage();
+    }
+    
+    private void printMessage(Message msg){
 
-        //blockar byte av fönster
-        window.initModality(Modality.APPLICATION_MODAL);
-        window.setTitle("Välj användarnamn");
-        window.setMinWidth(250);
-        window.setMinHeight(300);
+        HBox chatMessageContainer = new HBox();
+        Label message = new Label(msg.getSender() + "\n" + msg.getMessageData() + "\n" + msg.getTime());
+        DropShadow dropShadow = new DropShadow();
+        dropShadow.setRadius(5.0);
+        dropShadow.setOffsetX(3.0);
+        dropShadow.setOffsetY(3.0);
+        dropShadow.setColor(Color.color(0.4, 0.5, 0.5));
 
+        message.setWrapText(true);
+        message.setPadding(new Insets(5, 5, 5, 5));
+        message.setStyle("-fx-background-color: #46A59F; -fx-background-radius: 5");
+        chatMessageContainer.getChildren().add(message);
+        chatMessageContainer.setMargin(message, new Insets(5,5,5,5));
+        chatMessageContainer.setEffect(dropShadow);
 
-        Label label = new Label();
-        label.setText("Välj ett användarnamn");
-        TextField input = new TextField();
-        Button closeButton = new Button("Ok");
-        closeButton.setOnAction(e -> {
-            user.setName(input.getText());
-            window.close();
-        });
+        messages.getChildren().add(chatMessageContainer);
 
-        VBox layout = new VBox(10);
-        layout.getChildren().addAll(label,input,  closeButton);
-        layout.setAlignment(Pos.CENTER);
-
-        Scene scene = new Scene(layout);
-        window.setScene(scene);
-        window.showAndWait();
 
     }
 }
