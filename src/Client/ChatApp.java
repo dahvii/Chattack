@@ -7,6 +7,7 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.TextArea;
 import javafx.stage.Stage;
+import javafx.stage.StageStyle;
 
 
 public class ChatApp extends Application {
@@ -22,7 +23,8 @@ public class ChatApp extends Application {
     @Override
     public void start(Stage primaryStage) throws Exception {
         Parent root = FXMLLoader.load(getClass().getResource("gui/sample.fxml"));
-        primaryStage.setScene(new Scene(root, 800, 500));
+
+        primaryStage.setScene(new Scene(root));
         primaryStage.show();
         primaryStage.setTitle("Chattack");
 
