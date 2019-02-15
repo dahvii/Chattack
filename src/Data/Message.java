@@ -1,16 +1,15 @@
 package Data;
 
 import java.io.Serializable;
-import java.sql.Timestamp;
 
 public class Message implements Serializable {
 
     private String messageData;
-    private Timestamp time;
+    private Long time;
     private String sender;
     private String receiver;
 
-    public Message(String messageData, Timestamp time, String sender, String receiver){
+    public Message(String messageData, Long time, String sender, String receiver){
         this.messageData = messageData;
         this.time = time;
         this.sender = sender;
@@ -26,11 +25,11 @@ public class Message implements Serializable {
         this.messageData = messageData;
     }
 
-    public Timestamp getTime() {
+    public Long getTime() {
         return time;
     }
 
-    public void setTime(Timestamp time) {
+    public void setTime(Long time) {
         this.time = time;
     }
 
