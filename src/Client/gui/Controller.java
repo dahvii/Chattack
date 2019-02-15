@@ -1,13 +1,13 @@
 package Client.gui;
 
-
-import Client.*;
+import Client.User;
+import Data.DataMessage;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
-import Client.ChatApp;
-import Client.DataMessage;
-import Client.Message;
+import Data.DataHandler;
+import Data.Message;
 import Client.NetworkClient;
+import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextArea;
@@ -19,21 +19,23 @@ import javafx.stage.Stage;
 import java.sql.Timestamp;
 import java.util.Date;
 
-
 public class Controller {
 
     public Button sendBtn;
     public TextField input;
     public TextArea messages;
-    User user = new User();
-    public String receiverName = "Jebidiah";
-
-    public Timestamp time;
+    private User user = new User();
+    private String receiverName = "Jebidiah";
 
     public Controller(){
+
+    }
+
+    @FXML
+    public void initialize(){
         promt();
+        DataHandler.getInstance().getAllMessages().forEach(this::printMessage);
         new Thread(this::messageListener).start();
-        System.out.println(user.getName());
     }
 
 
@@ -41,25 +43,31 @@ public class Controller {
         Date date = new Date();
         Timestamp time = new Timestamp(date.getTime());
         Message message = new Message(input.getText(), time, user.getName(), receiverName);
-        DataMessage dataMessage = new DataMessage(0, message);
+//        DataMessage dataMessage = new DataMessage(0, message);
 
         input.clear();
-        System.out.println(message.getMessageData() + " "  + message.getTime() + " " + message.getSender() + " " + message.getReceiver());
-
-        NetworkClient.getInstance().sendToServer(dataMessage);
-//        messages.appendText(message.getMessageData() + "\n");
+//        System.out.println(message.getMessageData() + " "  + message.getTime() + " " + message.getSender() + " " + message.getReceiver());
+        NetworkClient.getInstance().sendToServer(message);
     }
 
     public void messageListener(){
         while (NetworkClient.getInstance().isActive()){
             Object o = NetworkClient.getInstance().getMessageQueue().poll();
-            if (o != null) {
-                printMessage((DataMessage) o);
-
+            if (o instanceof Message) {
+                DataHandler.getInstance().addMessage((Message) o);
+                printMessage((Message) o);
+            }
+            try {
+                Thread.sleep(100);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
             }
         }
     }
 
+    private void printMessage(Message msg){
+        messages.appendText("\n" + msg.getMessageData() + " "  + msg.getTime() + " " + msg.getSender() + " " + msg.getReceiver());
+    }
     public void promt(){
         Stage window = new Stage();
 
@@ -88,9 +96,4 @@ public class Controller {
         window.showAndWait();
 
     }
-
-    private void printMessage(DataMessage dataMessage){
-        messages.appendText("\n" + dataMessage.getMessage().getMessageData() + " "  + dataMessage.getMessage().getTime() + " " + dataMessage.getMessage().getSender() + " " + dataMessage.getMessage().getReceiver());
-    }
-
 }
