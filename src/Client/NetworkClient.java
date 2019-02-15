@@ -75,6 +75,7 @@ public class NetworkClient {
                     addMessage(o);
                     System.out.println("From server: " + o);
                 }
+                Thread.sleep(1);
             } catch (Exception e) {
                 e.printStackTrace();
                 setActive(false);
