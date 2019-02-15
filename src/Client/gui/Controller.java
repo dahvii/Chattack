@@ -43,7 +43,6 @@ public class Controller {
         Message message = new Message(input.getText(), time, user.getName(), receiverName);
         DataMessage dataMessage = new DataMessage(0, message);
 
-        String output = user.getName()+"\n"+time+"\n"+message.getMessageData();
         input.clear();
         System.out.println(message.getMessageData() + " "  + message.getTime() + " " + message.getSender() + " " + message.getReceiver());
 
@@ -55,7 +54,7 @@ public class Controller {
         while (NetworkClient.getInstance().isActive()){
             Object o = NetworkClient.getInstance().getMessageQueue().poll();
             if (o != null) {
-                printMessage((Message) o);
+                printMessage((DataMessage) o);
 
             }
         }
@@ -90,8 +89,8 @@ public class Controller {
 
     }
 
-    private void printMessage(Message msg){
-        messages.appendText("\n" + msg.getMessageData() + " "  + msg.getTime() + " " + msg.getSender() + " " + msg.getReceiver());
+    private void printMessage(DataMessage dataMessage){
+        messages.appendText("\n" + dataMessage.getMessage().getMessageData() + " "  + dataMessage.getMessage().getTime() + " " + dataMessage.getMessage().getSender() + " " + dataMessage.getMessage().getReceiver());
     }
 
 }
