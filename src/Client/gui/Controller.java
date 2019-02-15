@@ -28,6 +28,7 @@ public class Controller {
     public String userName = "Pelle";
     public String receiverName = "RECEIVERNAME";
 
+
     public Controller(){
         new Thread(this::messageListener).start();
     }
