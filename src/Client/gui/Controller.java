@@ -47,9 +47,11 @@ public class Controller {
 
 
     public void sendBtnClick(){
-        DataMessage dataMessage = new DataMessage(0, new Message(input.getText(), new Date().getTime(), user.getName(), receiverName));
-        input.clear();
-        NetworkClient.getInstance().sendToServer(dataMessage);
+            if( !input.getText().equals("")){
+                DataMessage dataMessage = new DataMessage(0, new Message(input.getText(), new Date().getTime(), user.getName(), receiverName));
+                NetworkClient.getInstance().sendToServer(dataMessage);
+                input.clear();
+            }
     }
 
 
