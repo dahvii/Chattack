@@ -54,30 +54,53 @@ public class Controller {
 
 
     private void promt(){
+        //skapa ny stage och sätt lite egenskaper
         Stage window = new Stage();
         window.initModality(Modality.APPLICATION_MODAL);
         window.setTitle("Välj användarnamn");
         window.setMinWidth(250);
         window.setMinHeight(300);
 
+        //skapa element och egenskaperna för innehållet
+        Label errorMessage= new Label();
+        errorMessage.setText("Du måste fylla i ett användarnamn");
+        errorMessage.setStyle("visibility: hidden");
+
+        Button button = new Button("Ok");
 
         Label label = new Label();
         label.setText("Välj ett användarnamn");
-        TextField input = new TextField();
-        Button closeButton = new Button("Ok");
-        closeButton.setDefaultButton(true);
-        closeButton.setOnAction(e -> {
-            user.setName(input.getText());
-            window.close();
-        });
 
+        //lägg till elementen till layouten
         VBox layout = new VBox(10);
-        layout.getChildren().addAll(label,input,  closeButton);
+        layout.getChildren().addAll(label,input,  button, errorMessage);
         layout.setAlignment(Pos.CENTER);
 
+
+        //skapa funktionalitet och eventhantering
+        window.setOnCloseRequest(e -> {
+            //TODO: nedan kommando gör vad vi vill användarmässigt men skapar massa exceptions - dvs inte vackert
+            Platform.exit();
+        });
+        
+        button.setDefaultButton(true);
+        button.setOnAction(e -> {
+            //om användaren inte har fyllt i ett namn
+            if(input.getText().equals("")){
+                errorMessage.setStyle("visibility: visible;");
+
+            } else{ // om användaren  fyllt i ett namn
+                user.setName(input.getText());
+                window.close();
+            }
+
+        });
+
+        //skapa en ny scen med innehållet och lägg upp och visa den
         Scene scene = new Scene(layout);
         window.setScene(scene);
         window.showAndWait();
+
     }
     
     public void printMessage(Message msg) {
@@ -102,7 +125,7 @@ public class Controller {
         scroll();
 
     }
-    
+
     public User getUser() {
         return user;
     }
@@ -111,3 +134,7 @@ public class Controller {
         messages.heightProperty().addListener(observable -> allMessagesWindow.setVvalue(1.0));
     }
 }
+
+
+
+
