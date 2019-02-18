@@ -66,6 +66,8 @@ public class Controller {
         errorMessage.setText("Du måste fylla i ett användarnamn");
         errorMessage.setStyle("visibility: hidden");
 
+        TextField nameInput= new TextField();
+
         Button button = new Button("Ok");
 
         Label label = new Label();
@@ -73,7 +75,7 @@ public class Controller {
 
         //lägg till elementen till layouten
         VBox layout = new VBox(10);
-        layout.getChildren().addAll(label,input,  button, errorMessage);
+        layout.getChildren().addAll(label,nameInput,  button, errorMessage);
         layout.setAlignment(Pos.CENTER);
 
 
@@ -82,15 +84,15 @@ public class Controller {
             //TODO: nedan kommando gör vad vi vill användarmässigt men skapar massa exceptions - dvs inte vackert
             Platform.exit();
         });
-        
+
         button.setDefaultButton(true);
         button.setOnAction(e -> {
             //om användaren inte har fyllt i ett namn
-            if(input.getText().equals("")){
+            if( nameInput.getText().equals("")){
                 errorMessage.setStyle("visibility: visible;");
 
             } else{ // om användaren  fyllt i ett namn
-                user.setName(input.getText());
+                user.setName(nameInput.getText());
                 window.close();
             }
 
