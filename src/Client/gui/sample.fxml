@@ -10,7 +10,7 @@
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
 
-<Pane fx:id="root" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="552.0" prefWidth="771.0" style="-fx-background-color: #003049;" stylesheets="Design.css" xmlns="http://javafx.com/javafx/8.0.172-ea" xmlns:fx="http://javafx.com/fxml/1" fx:controller="Client.gui.Controller">
+<Pane fx:id="root" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="552.0" prefWidth="771.0" style="-fx-background-color: #003049;" xmlns="http://javafx.com/javafx/8.0.172-ea" xmlns:fx="http://javafx.com/fxml/1" fx:controller="Client.gui.Controller">
    <children>
       <TextField fx:id="input" alignment="TOP_LEFT" layoutX="29.0" layoutY="433.0" onAction="#sendBtnClick" prefHeight="53.0" prefWidth="484.0" />
       <Button fx:id="sendBtn" layoutX="520.0" layoutY="433.0" mnemonicParsing="false" onAction="#sendBtnClick" prefHeight="53.0" prefWidth="89.0" text="Send" />

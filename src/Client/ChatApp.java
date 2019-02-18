@@ -26,7 +26,6 @@ public class ChatApp extends Application {
         Parent root = loader.load();
         controller = loader.getController();
         primaryStage.setScene(new Scene(root));
-        root.getStylesheets().add("Client/gui/Design.css");
         primaryStage.show();
         primaryStage.setTitle("Chattack");
     }
