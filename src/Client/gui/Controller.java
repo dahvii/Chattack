@@ -111,23 +111,23 @@ public class Controller {
         HBox chatMessageContainer = new HBox();
         Label message = new Label(msg.getSender() + "\n" + msg.getMessageData() + "\n" + new Timestamp(msg.getTime()));
         message.setMinHeight(Control.USE_PREF_SIZE);
+        messages.getChildren().add(chatMessageContainer);
+        styleMessage(message, chatMessageContainer);
+        scroll();
+    }
+
+    public void styleMessage(Label message, HBox chatMessageContainer){
         DropShadow dropShadow = new DropShadow();
         dropShadow.setRadius(5.0);
         dropShadow.setOffsetX(3.0);
         dropShadow.setOffsetY(3.0);
         dropShadow.setColor(Color.color(0.4, 0.5, 0.5));
-
         message.setWrapText(true);
         message.setPadding(new Insets(5, 5, 5, 5));
         message.setStyle("-fx-background-color: #46A59F; -fx-background-radius: 5");
         chatMessageContainer.getChildren().add(message);
         chatMessageContainer.setMargin(message, new Insets(5, 5, 5, 5));
         chatMessageContainer.setEffect(dropShadow);
-
-
-        messages.getChildren().add(chatMessageContainer);
-        scroll();
-
     }
 
     public User getUser() {
