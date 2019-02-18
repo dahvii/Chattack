@@ -1,6 +1,8 @@
 package Client.gui;
 
+import Client.ClientSwitch;
 import Client.User;
+import Data.DataMessage;
 import javafx.application.Platform;
 import javafx.geometry.Insets;
 import Data.DataHandler;
@@ -23,7 +25,7 @@ import java.util.Date;
 
 public class Controller {
 
-
+    private ClientSwitch clientSwitch;
     public Button sendBtn;
     public TextField input;
     public VBox messages;
@@ -32,6 +34,7 @@ public class Controller {
     private String receiverName = "Jebidiah";
 
     public Controller(){
+        clientSwitch = new ClientSwitch(this);
     }
 
     @FXML
@@ -39,32 +42,17 @@ public class Controller {
         promt();
         DataHandler.getInstance().loadMessages(user.getName());
         DataHandler.getInstance().getAllMessages().forEach(this::printMessage);
-        new Thread(this::messageListener).start();
+        new Thread(clientSwitch::messageListener).start();
     }
 
 
     public void sendBtnClick(){
         Message message = new Message(input.getText(), new Date().getTime(), user.getName(), receiverName);
-//        DataMessage dataMessage = new DataMessage(0, message);
+        DataMessage dataMessage = new DataMessage(1, message);
         input.clear();
-        NetworkClient.getInstance().sendToServer(message);
+        NetworkClient.getInstance().sendToServer(dataMessage);
     }
 
-    private void messageListener(){
-        while (NetworkClient.getInstance().isActive()){
-            Object o = NetworkClient.getInstance().getMessageQueue().poll();
-            //TODO: INSERT SWITCHCALL HERE
-            if (o instanceof Message) {
-                DataHandler.getInstance().addMessage((Message) o);
-                Platform.runLater(() -> printMessage((Message) o));
-            }
-            try {
-                Thread.sleep(100);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
-        }
-    }
 
     private void promt(){
         Stage window = new Stage();
