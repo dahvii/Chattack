@@ -5,7 +5,6 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.Socket;
 import java.util.Queue;
-import java.util.concurrent.ConcurrentLinkedDeque;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.atomic.AtomicBoolean;
 
@@ -26,7 +25,6 @@ public class NetworkClient {
         if (instance == null) instance = new NetworkClient();
         return instance;
     }
-
 
     public void init(){
         try {
