@@ -9,11 +9,10 @@ import Client.NetworkClient;
 import javafx.fxml.FXML;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
-import javafx.scene.control.Button;
-import javafx.scene.control.Label;
-import javafx.scene.control.TextField;
+import javafx.scene.control.*;
 import javafx.scene.effect.DropShadow;
 import javafx.scene.layout.HBox;
+import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.stage.Modality;
@@ -28,6 +27,7 @@ public class Controller {
     public Button sendBtn;
     public TextField input;
     public VBox messages;
+    public ScrollPane allMessagesWindow;
     private User user = new User();
     private String receiverName = "Jebidiah";
 
@@ -93,9 +93,9 @@ public class Controller {
     }
     
     private void printMessage(Message msg){
-
         HBox chatMessageContainer = new HBox();
         Label message = new Label(msg.getSender() + "\n" + msg.getMessageData() + "\n" + new Timestamp(msg.getTime()));
+        message.setMinHeight(Control.USE_PREF_SIZE);
         DropShadow dropShadow = new DropShadow();
         dropShadow.setRadius(5.0);
         dropShadow.setOffsetX(3.0);
@@ -111,9 +111,14 @@ public class Controller {
 
 
         messages.getChildren().add(chatMessageContainer);
-    }
+        //allMessagesWindow.setVvalue(1);
+        scroll();
 
     public User getUser() {
         return user;
+    }
+
+    private void scroll(){
+        allMessagesWindow.setVvalue(1);
     }
 }
