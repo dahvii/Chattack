@@ -80,7 +80,7 @@ public class Controller {
         window.showAndWait();
     }
     
-    private void printMessage(Message msg) {
+    public void printMessage(Message msg) {
         HBox chatMessageContainer = new HBox();
         Label message = new Label(msg.getSender() + "\n" + msg.getMessageData() + "\n" + new Timestamp(msg.getTime()));
         message.setMinHeight(Control.USE_PREF_SIZE);
