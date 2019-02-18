@@ -80,7 +80,7 @@ public class Controller {
         window.showAndWait();
     }
     
-    private void printMessage(Message msg){
+    private void printMessage(Message msg) {
         HBox chatMessageContainer = new HBox();
         Label message = new Label(msg.getSender() + "\n" + msg.getMessageData() + "\n" + new Timestamp(msg.getTime()));
         message.setMinHeight(Control.USE_PREF_SIZE);
@@ -94,14 +94,15 @@ public class Controller {
         message.setPadding(new Insets(5, 5, 5, 5));
         message.setStyle("-fx-background-color: #46A59F; -fx-background-radius: 5");
         chatMessageContainer.getChildren().add(message);
-        chatMessageContainer.setMargin(message, new Insets(5,5,5,5));
+        chatMessageContainer.setMargin(message, new Insets(5, 5, 5, 5));
         chatMessageContainer.setEffect(dropShadow);
 
 
         messages.getChildren().add(chatMessageContainer);
         //allMessagesWindow.setVvalue(1);
         scroll();
-
+    }
+    
     public User getUser() {
         return user;
     }
