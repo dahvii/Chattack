@@ -4,21 +4,18 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.Socket;
+import java.util.Queue;
+import java.util.concurrent.ConcurrentLinkedDeque;
+import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.atomic.AtomicBoolean;
 
-public class NetworkClient implements Runnable {
+public class NetworkClient {
     private static NetworkClient instance;
+    private Queue<Object> messageQueue;
     private String name;
     private Socket socket;
     private AtomicBoolean isActive;
     private ObjectOutputStream objectOutputStream;
-//    private Client client;
-//
-//    public NetworkClient(Client client) {
-//        isActive = new AtomicBoolean();
-//        this.client = client;
-//        init();
-//    }
 
     private NetworkClient(){
         isActive = new AtomicBoolean();
@@ -33,14 +30,16 @@ public class NetworkClient implements Runnable {
 
     public void init(){
         try {
+            messageQueue = new ConcurrentLinkedQueue<>();
             socket = new Socket("localhost", 3000);
             objectOutputStream = new ObjectOutputStream(socket.getOutputStream());
             socket.setTcpNoDelay(true);
+
         } catch (IOException e) {
             e.printStackTrace();
         }
         setActive(true);
-        Thread listenerThread = new Thread(this);
+        Thread listenerThread = new Thread(this::run);
         listenerThread.setDaemon(true);
         listenerThread.start();
     }
@@ -53,8 +52,14 @@ public class NetworkClient implements Runnable {
         }
     }
 
+    private synchronized void addMessage(Object o){
+        messageQueue.add(o);
+    }
 
-    @Override
+    public synchronized Queue<Object> getMessageQueue(){
+        return messageQueue;
+    }
+
     public void run() {
         ObjectInputStream objectInputStream  = null;
         try {
@@ -66,7 +71,11 @@ public class NetworkClient implements Runnable {
         while (isActive()){
             try {
                 Object o =  objectInputStream.readObject();
-                if (o !=null) System.out.println(o);
+                if (o !=null) {
+                    addMessage(o);
+                    System.out.println("From server: " + o);
+                }
+                Thread.sleep(1);
             } catch (Exception e) {
                 e.printStackTrace();
                 setActive(false);

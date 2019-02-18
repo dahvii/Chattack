@@ -5,12 +5,11 @@ import java.io.Serializable;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.*;
-import java.util.concurrent.ConcurrentLinkedDeque;
+import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 public class NetworkServer implements Runnable {
 
-//    FIX CONSUMER, TEMPQUEUE
     private Queue<Serializable> onReceiveCallBack;
     private ServerSocket serverSocket;
     private AtomicBoolean isActive = new AtomicBoolean();
@@ -18,7 +17,7 @@ public class NetworkServer implements Runnable {
 
     public NetworkServer() {
         connectionList = Collections.synchronizedList(new ArrayList<Connection>());
-        onReceiveCallBack = new ConcurrentLinkedDeque<>();
+        onReceiveCallBack = new ConcurrentLinkedQueue<>();
         try {
             serverSocket = new ServerSocket(3000);
         } catch (IOException e) {
@@ -41,11 +40,9 @@ public class NetworkServer implements Runnable {
             }
         }
     }
-//    private synchronized List<Connection> getConnectionList(){
-//        return connectionList;
-//    }
 
     private void addConnection(Socket socket){
+
         connectionList.add(new Connection(this, socket));
     }
 
@@ -74,7 +71,8 @@ public class NetworkServer implements Runnable {
                 try {
                     Socket s = serverSocket.accept();
                     addConnection(s);
-                } catch (IOException e) {
+                    Thread.sleep(1);
+                } catch (IOException | InterruptedException e) {
                     e.printStackTrace();
                 }
             }
