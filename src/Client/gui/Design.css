@@ -1,3 +1,3 @@
-.root{
-    -fx-background-color: blue;
+#sendBtn{
+    -fx-background-color: red;
 }
