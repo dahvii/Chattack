@@ -47,8 +47,7 @@ public class Controller {
 
 
     public void sendBtnClick(){
-        Message message = new Message(input.getText(), new Date().getTime(), user.getName(), receiverName);
-        DataMessage dataMessage = new DataMessage(1, message);
+        DataMessage dataMessage = new DataMessage(0, new Message(input.getText(), new Date().getTime(), user.getName(), receiverName));
         input.clear();
         NetworkClient.getInstance().sendToServer(dataMessage);
     }
@@ -66,6 +65,7 @@ public class Controller {
         label.setText("Välj ett användarnamn");
         TextField input = new TextField();
         Button closeButton = new Button("Ok");
+        closeButton.setDefaultButton(true);
         closeButton.setOnAction(e -> {
             user.setName(input.getText());
             window.close();
