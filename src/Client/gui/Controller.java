@@ -32,12 +32,12 @@ public class Controller {
     private String receiverName = "Jebidiah";
 
     public Controller(){
-
     }
 
     @FXML
     public void initialize(){
         promt();
+        DataHandler.getInstance().loadMessages(user.getName());
         DataHandler.getInstance().getAllMessages().forEach(this::printMessage);
         new Thread(this::messageListener).start();
     }
@@ -50,9 +50,10 @@ public class Controller {
         NetworkClient.getInstance().sendToServer(message);
     }
 
-    public void messageListener(){
+    private void messageListener(){
         while (NetworkClient.getInstance().isActive()){
             Object o = NetworkClient.getInstance().getMessageQueue().poll();
+            //TODO: INSERT SWITCHCALL HERE
             if (o instanceof Message) {
                 DataHandler.getInstance().addMessage((Message) o);
                 Platform.runLater(() -> printMessage((Message) o));
@@ -65,7 +66,7 @@ public class Controller {
         }
     }
 
-    public void promt(){
+    private void promt(){
         Stage window = new Stage();
         window.initModality(Modality.APPLICATION_MODAL);
         window.setTitle("Välj användarnamn");
@@ -108,8 +109,11 @@ public class Controller {
         chatMessageContainer.setMargin(message, new Insets(5,5,5,5));
         chatMessageContainer.setEffect(dropShadow);
 
+
         messages.getChildren().add(chatMessageContainer);
+    }
 
-
+    public User getUser() {
+        return user;
     }
 }

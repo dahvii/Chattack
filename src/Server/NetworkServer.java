@@ -42,6 +42,7 @@ public class NetworkServer implements Runnable {
     }
 
     private void addConnection(Socket socket){
+
         connectionList.add(new Connection(this, socket));
     }
 

@@ -2,7 +2,6 @@ package Data;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
 public class DataHandler {
     private List<Message> allMessages;
@@ -16,19 +15,18 @@ public class DataHandler {
     }
 
     private DataHandler() {
-        loadMessages();
     }
 
-    private void loadMessages(){
-        Object obj = FileHandler.getInstance().readFile("messages.dat");
+    public void loadMessages(String name){
+        Object obj = FileHandler.getInstance().readFile(name.toLowerCase()+"-messages.dat");
         if (obj instanceof ArrayList) {
             allMessages = (ArrayList<Message>) obj;
             System.out.println(allMessages.size());
         } else allMessages = new ArrayList<>();
     }
 
-    public void saveMessages(){
-        FileHandler.getInstance().writeFile("messages.dat", allMessages);
+    public void saveMessages(String name){
+        FileHandler.getInstance().writeFile(name.toLowerCase()+"-messages.dat", allMessages);
     }
 
     public void addMessage(Message msg){
