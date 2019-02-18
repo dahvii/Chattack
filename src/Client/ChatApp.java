@@ -3,6 +3,7 @@ package Client;
 import Client.gui.Controller;
 import Data.DataHandler;
 import javafx.application.Application;
+import javafx.application.Platform;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
@@ -25,7 +26,6 @@ public class ChatApp extends Application {
         FXMLLoader loader = new FXMLLoader(getClass().getResource("gui/sample.fxml"));
         Parent root = loader.load();
         controller = loader.getController();
-
         primaryStage.setScene(new Scene(root));
         primaryStage.show();
         primaryStage.setTitle("Chattack");

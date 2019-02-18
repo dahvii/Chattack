@@ -4,9 +4,6 @@ import java.io.Serializable;
 
 public class DataMessage implements Serializable {
     int commando;
-
-
-
     private Message message;
 
     public DataMessage(int commando, Message message){
@@ -18,4 +15,7 @@ public class DataMessage implements Serializable {
         return message;
     }
 
+    public int getCommando() {
+        return commando;
+    }
 }
