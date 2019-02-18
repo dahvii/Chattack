@@ -99,8 +99,8 @@ public class Controller {
 
 
         messages.getChildren().add(chatMessageContainer);
-        //allMessagesWindow.setVvalue(1);
         scroll();
+
     }
     
     public User getUser() {
@@ -108,6 +108,6 @@ public class Controller {
     }
 
     private void scroll(){
-        allMessagesWindow.setVvalue(1);
+        messages.heightProperty().addListener(observable -> allMessagesWindow.setVvalue(1.0));
     }
 }
