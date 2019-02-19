@@ -28,5 +28,6 @@
             <Font name="Yu Gothic UI Bold" size="36.0" />
          </font>
       </Label>
+      <Label fx:id="inlogg" layoutX="360.0" layoutY="22.0" style="-fx-color: #003049" text="" textFill="WHITE" />
    </children>
 </Pane>

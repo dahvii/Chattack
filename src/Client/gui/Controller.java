@@ -29,6 +29,7 @@ public class Controller {
     public Button sendBtn;
     public TextField input;
     public VBox messages;
+    public Label inlogg;
     public ScrollPane allMessagesWindow;
     private User user = new User();
     private String receiverName = "Jebidiah";
@@ -43,6 +44,7 @@ public class Controller {
         DataHandler.getInstance().loadMessages(user.getName());
         DataHandler.getInstance().getAllMessages().forEach(this::printMessage);
         new Thread(clientSwitch::messageListener).start();
+
     }
 
 
@@ -104,6 +106,7 @@ public class Controller {
         Scene scene = new Scene(layout);
         window.setScene(scene);
         window.showAndWait();
+        inlogg.setText("Inloggad användare: " + user.getName());
 
     }
     
