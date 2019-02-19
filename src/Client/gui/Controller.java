@@ -75,12 +75,16 @@ public class Controller {
         Button button = new Button("Ok");
 
         Label label = new Label();
+        Label welcome = new Label();
+        welcome.setText("Välkommen till Chatack!");
+
         label.setText("Välj ett användarnamn");
 
         //lägg till elementen till layouten
         VBox layout = new VBox(10);
-        layout.getChildren().addAll(label,nameInput,  button, errorMessage);
+        layout.getChildren().addAll(welcome, label,nameInput,  button, errorMessage);
         layout.setAlignment(Pos.CENTER);
+        window.setResizable(false);
 
 
         //skapa funktionalitet och eventhantering
