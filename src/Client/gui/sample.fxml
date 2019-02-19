@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import javafx.scene.control.Button?>
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.ScrollPane?>
 <?import javafx.scene.control.TextField?>
@@ -10,10 +9,9 @@
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
 
-<Pane fx:id="root" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="511.0" prefWidth="701.0" style="-fx-background-color: #003049;" xmlns="http://javafx.com/javafx/8.0.121" xmlns:fx="http://javafx.com/fxml/1" fx:controller="Client.gui.Controller">
+<Pane fx:id="root" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" onMouseClicked="#sendBtnClick" prefHeight="511.0" prefWidth="701.0" style="-fx-background-color: linear-gradient(from 25% 25% to 100% 100%, #9da4ad, #bcd3cc);" xmlns="http://javafx.com/javafx/8.0.172-ea" xmlns:fx="http://javafx.com/fxml/1" fx:controller="Client.gui.Controller">
    <children>
       <TextField fx:id="input" alignment="TOP_LEFT" layoutX="61.0" layoutY="433.0" onAction="#sendBtnClick" prefHeight="44.0" prefWidth="484.0" />
-      <Button fx:id="sendBtn" layoutX="552.0" layoutY="433.0" mnemonicParsing="false" onAction="#sendBtnClick" prefHeight="44.0" prefWidth="89.0" text="Send" />
       <ScrollPane fx:id="allMessagesWindow" hbarPolicy="NEVER" layoutX="61.0" layoutY="55.0" prefHeight="352.0" prefWidth="580.0">
          <content>
             <VBox fx:id="messages" prefHeight="352.0" prefWidth="564.0" />
@@ -29,5 +27,10 @@
          </font>
       </Label>
       <Label fx:id="inlogg" layoutX="360.0" layoutY="22.0" style="-fx-color: #003049" text="" textFill="WHITE" />
+      <ImageView fitHeight="53.0" fitWidth="44.0" layoutX="568.0" layoutY="433.0" pickOnBounds="true" preserveRatio="true">
+         <image>
+            <Image url="@icons8-send-comment-50.png" />
+         </image>
+      </ImageView>
    </children>
 </Pane>
