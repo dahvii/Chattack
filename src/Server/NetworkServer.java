@@ -1,5 +1,7 @@
 package Server;
 
+import Data.DataMessage;
+
 import java.io.IOException;
 import java.io.Serializable;
 import java.net.ServerSocket;
@@ -10,14 +12,16 @@ import java.util.concurrent.atomic.AtomicBoolean;
 
 public class NetworkServer implements Runnable {
 
-    private Queue<Serializable> onReceiveCallBack;
+    private Queue<Serializable> dataMessageQueue;
     private ServerSocket serverSocket;
     private AtomicBoolean isActive = new AtomicBoolean();
     private List<Connection> connectionList;
+    private ServerSwitch serverSwitch;
 
     public NetworkServer() {
         connectionList = Collections.synchronizedList(new ArrayList<Connection>());
-        onReceiveCallBack = new ConcurrentLinkedQueue<>();
+        dataMessageQueue = new ConcurrentLinkedQueue<>();
+        serverSwitch = new ServerSwitch(this);
         try {
             serverSocket = new ServerSocket(3000);
         } catch (IOException e) {
@@ -29,7 +33,7 @@ public class NetworkServer implements Runnable {
         consumerThread.start();
     }
 
-    private synchronized void sendToAll(Object o) {
+    public synchronized void sendToAll(Object o) {
         Iterator<Connection> connections = connectionList.iterator();
         while(connections.hasNext()){
             Connection c = connections.next();
@@ -42,12 +46,11 @@ public class NetworkServer implements Runnable {
     }
 
     private void addConnection(Socket socket){
-
         connectionList.add(new Connection(this, socket));
     }
 
     public void addMessage(Object o){
-        onReceiveCallBack.add((Serializable) o);
+        dataMessageQueue.add((Serializable) o);
     }
 
     public boolean isActive() {
@@ -60,8 +63,13 @@ public class NetworkServer implements Runnable {
 
     private void consume(){
         while (isActive()){
-                Object o = onReceiveCallBack.poll();
-                if(o != null) sendToAll(o);
+                Object o = dataMessageQueue.poll();
+                if(o instanceof DataMessage) serverSwitch.switchDataMessage((DataMessage) o);
+            try {
+                Thread.sleep(1);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
         }
     }
 
@@ -76,7 +84,5 @@ public class NetworkServer implements Runnable {
                     e.printStackTrace();
                 }
             }
-
     }
-
 }

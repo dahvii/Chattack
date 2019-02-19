@@ -56,9 +56,8 @@ public class Connection {
                 networkServer.addMessage(o);
                 Thread.sleep(1);
             } catch (Exception e) {
-                closeConnection();
-                e.printStackTrace();
-            }
+                System.out.println("Connection by client");
+                closeConnection(); }
         }
     }
 
