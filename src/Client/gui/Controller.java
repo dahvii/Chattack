@@ -131,7 +131,7 @@ public class Controller {
         dropShadow.setColor(Color.color(0.4, 0.5, 0.5));
         message.setWrapText(true);
         message.setPadding(new Insets(5, 5, 5, 5));
-        message.setStyle("-fx-background-color: #46A59F; -fx-background-radius: 5");
+        message.setStyle("-fx-background-color: linear-gradient(from 25% 25% to 100% 100%, #3ead3a, #93d379); -fx-background-radius: 5");
         chatMessageContainer.getChildren().add(message);
         chatMessageContainer.setMargin(message, new Insets(5, 5, 5, 5));
         chatMessageContainer.setEffect(dropShadow);

@@ -14,16 +14,16 @@
       <TextField fx:id="input" alignment="TOP_LEFT" layoutX="61.0" layoutY="433.0" onAction="#sendBtnClick" prefHeight="44.0" prefWidth="484.0" />
       <ScrollPane fx:id="allMessagesWindow" hbarPolicy="NEVER" layoutX="61.0" layoutY="55.0" prefHeight="352.0" prefWidth="580.0">
          <content>
-            <VBox fx:id="messages" prefHeight="352.0" prefWidth="564.0" />
+            <VBox fx:id="messages" prefHeight="350.0" prefWidth="564.0" />
          </content></ScrollPane>
       <ImageView fitHeight="44.0" fitWidth="57.0" layoutX="61.0" layoutY="8.0" pickOnBounds="true" preserveRatio="true">
          <image>
             <Image url="@media1.png" />
          </image>
       </ImageView>
-      <Label layoutX="115.0" layoutY="8.0" text="Chattack" textFill="WHITE">
+      <Label layoutX="105.0" layoutY="4.0" text="Chattack" textFill="WHITE">
          <font>
-            <Font name="Yu Gothic UI Bold" size="36.0" />
+            <Font name="Yu Gothic UI Bold" size="40.0" />
          </font>
       </Label>
       <Label fx:id="inlogg" layoutX="360.0" layoutY="22.0" style="-fx-color: #003049" text="" textFill="WHITE" />
