@@ -17,6 +17,7 @@ public class NetworkServer implements Runnable {
     private AtomicBoolean isActive = new AtomicBoolean();
     private List<Connection> connectionList;
     private ServerSwitch serverSwitch;
+    //private List<ChatRoom> chatRooms;
 
     public NetworkServer() {
         connectionList = Collections.synchronizedList(new ArrayList<Connection>());
