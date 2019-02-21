@@ -111,7 +111,7 @@ public class Controller {
         Scene scene = new Scene(layout);
         window.setScene(scene);
         window.showAndWait();
-        inlogg.setText("Inloggad användare: " + user.getName());
+        //inlogg.setText("Inloggad användare: " + user.getName());
 
     }
     
@@ -145,6 +145,9 @@ public class Controller {
     private void scroll(){
         messages.heightProperty().addListener(observable -> allMessagesWindow.setVvalue(1.0));
     }
+
+    @FXML
+    private void changeRoom() { }
 }
 
 

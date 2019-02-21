@@ -1,5 +1,14 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import javafx.geometry.*?>
+<?import java.net.*?>
+<?import javafx.scene.effect.*?>
+<?import javafx.scene.paint.*?>
+<?import java.lang.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.image.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.text.*?>
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.ScrollPane?>
 <?import javafx.scene.control.TextField?>
@@ -8,29 +17,58 @@
 <?import javafx.scene.layout.Pane?>
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
+<?import java.net.URL?>
 
-<Pane fx:id="root" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" onMouseClicked="#sendBtnClick" prefHeight="511.0" prefWidth="701.0" style="-fx-background-color: linear-gradient(from 25% 25% to 100% 100%, #9da4ad, #bcd3cc);" xmlns="http://javafx.com/javafx/8.0.172-ea" xmlns:fx="http://javafx.com/fxml/1" fx:controller="Client.gui.Controller">
+<Pane fx:id="root" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" onMouseClicked="#sendBtnClick" prefHeight="643.0" prefWidth="937.0" style="-fx-background-color: linear-gradient(from 25% 25% to 100% 100%, #9da4ad, #bcd3cc);" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="Client.gui.Controller">
    <children>
-      <TextField fx:id="input" alignment="TOP_LEFT" layoutX="61.0" layoutY="433.0" onAction="#sendBtnClick" prefHeight="44.0" prefWidth="484.0" />
-      <ScrollPane fx:id="allMessagesWindow" hbarPolicy="NEVER" layoutX="61.0" layoutY="55.0" prefHeight="352.0" prefWidth="580.0">
+      <TextField fx:id="input" alignment="TOP_LEFT" layoutX="184.0" layoutY="452.0" onAction="#sendBtnClick" prefHeight="44.0" prefWidth="484.0" />
+      <ScrollPane fx:id="allMessagesWindow" hbarPolicy="NEVER" layoutX="184.0" layoutY="62.0" prefHeight="372.0" prefWidth="558.0">
          <content>
             <VBox fx:id="messages" prefHeight="350.0" prefWidth="564.0" />
          </content></ScrollPane>
-      <ImageView fitHeight="44.0" fitWidth="57.0" layoutX="61.0" layoutY="8.0" pickOnBounds="true" preserveRatio="true">
+      <ImageView fitHeight="44.0" fitWidth="57.0" layoutX="184.0" layoutY="14.0" pickOnBounds="true" preserveRatio="true">
          <image>
             <Image url="@media1.png" />
          </image>
       </ImageView>
-      <Label layoutX="105.0" layoutY="4.0" text="Chattack" textFill="WHITE">
+      <Label layoutX="228.0" layoutY="7.0" text="Chattack" textFill="WHITE">
          <font>
             <Font name="Yu Gothic UI Bold" size="40.0" />
          </font>
       </Label>
-      <Label fx:id="inlogg" layoutX="360.0" layoutY="22.0" style="-fx-color: #003049" text="" textFill="WHITE" />
-      <ImageView fitHeight="53.0" fitWidth="44.0" layoutX="568.0" layoutY="433.0" pickOnBounds="true" preserveRatio="true">
+      <ImageView fitHeight="53.0" fitWidth="44.0" layoutX="698.0" layoutY="452.0" pickOnBounds="true" preserveRatio="true">
          <image>
             <Image url="@icons8-send-comment-50.png" />
          </image>
       </ImageView>
+      <ScrollPane id="paneUsers" layoutX="761.0" layoutY="62.0" prefHeight="372.0" prefWidth="148.0">
+        <content>
+          <AnchorPane disable="true" minHeight="0.0" minWidth="0.0" prefHeight="202.0" prefWidth="143.0" />
+        </content>
+      </ScrollPane>
+      <VBox id="vBoxRooms" layoutX="21.0" layoutY="62.0" prefHeight="372.0" prefWidth="148.0">
+         <children>
+            <Label id="lblRoom1" alignment="CENTER" contentDisplay="CENTER" onMouseClicked="#changeRoom" prefHeight="54.0" prefWidth="173.0" styleClass="roomLblStyle" text="Skitsnack">
+               <VBox.margin>
+                  <Insets bottom="10.0" />
+               </VBox.margin></Label>
+            <Label id="lblRoom2" alignment="CENTER" onMouseClicked="#changeRoom" prefHeight="60.0" prefWidth="163.0" styleClass="roomLblStyle" text="Om Ninjas" textAlignment="CENTER">
+               <VBox.margin>
+                  <Insets bottom="10.0" />
+               </VBox.margin></Label>
+            <Label id="lblRoom3" alignment="CENTER" onMouseClicked="#changeRoom" prefHeight="59.0" prefWidth="153.0" styleClass="roomLblStyle" text="Fräsiga Memes">
+               <VBox.margin>
+                  <Insets bottom="10.0" />
+               </VBox.margin></Label>
+            <Label id="lblRoom4" alignment="CENTER" onMouseClicked="#changeRoom" prefHeight="63.0" prefWidth="165.0" styleClass="roomLblStyle" text="Spel">
+               <VBox.margin>
+                  <Insets bottom="10.0" />
+               </VBox.margin></Label>
+            <Label id="lblRoom5" alignment="CENTER" onMouseClicked="#changeRoom" prefHeight="63.0" prefWidth="149.0" styleClass="roomLblStyle" text="Hästklubben" />
+         </children>
+      </VBox>
    </children>
+  <stylesheets>
+      <URL value="@Style.css" />
+   </stylesheets>
 </Pane>

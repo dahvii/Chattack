@@ -23,6 +23,7 @@ public class ChatApp extends Application {
     @Override
     public void start(Stage primaryStage) throws Exception {
         FXMLLoader loader = new FXMLLoader(getClass().getResource("gui/sample.fxml"));
+
         Parent root = loader.load();
         controller = loader.getController();
         primaryStage.setScene(new Scene(root));
