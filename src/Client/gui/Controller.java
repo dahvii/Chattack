@@ -62,8 +62,8 @@ public class Controller {
         Stage window = new Stage();
         window.initModality(Modality.APPLICATION_MODAL);
         window.setTitle("Välj användarnamn");
-        window.setMinWidth(250);
-        window.setMinHeight(300);
+        window.setMinWidth(300);
+        window.setMinHeight(400);
 
         //skapa element och egenskaperna för innehållet
         Label errorMessage= new Label();
@@ -71,20 +71,26 @@ public class Controller {
         errorMessage.setStyle("visibility: hidden");
 
         TextField nameInput= new TextField();
+        TextField passwordInput= new TextField();
 
-        Button button = new Button("Ok");
+        Button okButton = new Button("Ok");
+        Button newUser = new Button ("Inte meddlem? \n Tryck här!");
 
-        Label label = new Label();
-        Label welcome = new Label();
-        welcome.setText("Välkommen till Chatack!");
+        Label userLabel = new Label();
+        Label passwordLabel = new Label();
+        Label welcomeLabel = new Label();
+        welcomeLabel.setText("Välkommen till Chatack!");
 
-        label.setText("Välj ett användarnamn");
+        userLabel.setText("Användarnamn");
+        passwordLabel.setText("Lösenord");
 
         //lägg till elementen till layouten
         VBox layout = new VBox(10);
-        layout.getChildren().addAll(welcome, label,nameInput,  button, errorMessage);
+        layout.getChildren().addAll(welcomeLabel, userLabel ,nameInput, passwordLabel, passwordInput,  okButton, errorMessage, newUser);
         layout.setAlignment(Pos.CENTER);
         window.setResizable(false);
+
+
 
 
         //skapa funktionalitet och eventhantering
@@ -93,8 +99,8 @@ public class Controller {
             Platform.exit();
         });
 
-        button.setDefaultButton(true);
-        button.setOnAction(e -> {
+        okButton.setDefaultButton(true);
+        okButton.setOnAction(e -> {
             //om användaren inte har fyllt i ett namn
             //remove whitespaces
             String name = nameInput.getText().replaceAll("\\s+","");
@@ -106,6 +112,8 @@ public class Controller {
             }
 
         });
+
+        
 
         //skapa en ny scen med innehållet och lägg upp och visa den
         Scene scene = new Scene(layout);
