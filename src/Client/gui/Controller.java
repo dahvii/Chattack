@@ -102,11 +102,14 @@ public class Controller {
         okButton.setDefaultButton(true);
         okButton.setOnAction(e -> {
             //om användaren inte har fyllt i ett namn
-            if( nameInput.getText().equals("")){
+            //remove whitespaces
+            String password = passwordInput.getText().replaceAll("\\s+", "");
+            String name = nameInput.getText().replaceAll("\\s+","");
+            if( name.equals("") & password.equals("")) {
                 errorMessage.setStyle("visibility: visible;");
-
             } else{ // om användaren  fyllt i ett namn
-                user.setName(nameInput.getText());
+                user.setName(name);
+                user.setPassword(password);
                 window.close();
             }
 

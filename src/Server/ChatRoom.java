@@ -2,23 +2,25 @@ package Server;
 
 import java.util.ArrayList;
 import java.util.List;
+import Client.User;
 
 public class ChatRoom {
 
-    public int roomNumber;
+    public String roomName;
+    //ArrayList of User objects
     private List roomMembers;
 
-    public ChatRoom(int roomNumber) {
-        this.roomNumber = roomNumber;
+    public ChatRoom(String roomNumber) {
+        this.roomName = roomName;
         this.roomMembers = new ArrayList();
     }
 
-    private void addToRoom(Object User) {
-        this.roomMembers.add(User);
+    private void addToRoom(User user) {
+        this.roomMembers.add(user);
     }
 
-    private void removeFromRoom(Object User) {
-        this.roomMembers.remove(User);
+    private void removeFromRoom(User user) {
+        this.roomMembers.remove(user);
     }
 
     private List getRoomMembers() {
