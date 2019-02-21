@@ -96,11 +96,12 @@ public class Controller {
         button.setDefaultButton(true);
         button.setOnAction(e -> {
             //om användaren inte har fyllt i ett namn
-            if( nameInput.getText().equals("")){
+            //remove whitespaces
+            String name = nameInput.getText().replaceAll("\\s+","");
+            if( name.equals("")){
                 errorMessage.setStyle("visibility: visible;");
-
             } else{ // om användaren  fyllt i ett namn
-                user.setName(nameInput.getText());
+                user.setName(name);
                 window.close();
             }
 
