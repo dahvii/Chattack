@@ -10,7 +10,7 @@ public class User implements Serializable {
     private String roomName;
 
     public User(){}
-    public User(String name){
+    public User(String name, String password, boolean online){
         this.name = name;
         this.password = password;
 
@@ -27,6 +27,10 @@ public class User implements Serializable {
 
     public void setStatus() {
         this.online = !this.online;
+    }
+
+    public boolean getStatus() {
+        return online;
     }
 
     public String getPassword() {
