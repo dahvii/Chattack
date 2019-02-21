@@ -1,7 +1,7 @@
 package Client.gui;
 
 import Client.ClientSwitch;
-import Client.User;
+import Data.User;
 import Data.DataMessage;
 import javafx.application.Platform;
 import javafx.geometry.Insets;
