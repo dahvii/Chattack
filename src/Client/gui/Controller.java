@@ -69,7 +69,7 @@ public class Controller {
         errorMessageName.setText("Du måste fylla i ett användarnamn");
         errorMessageName.setStyle("visibility: hidden");
         Label errorMessagePassword= new Label();
-        errorMessagePassword.setText("Minst en liten bokstav \n Minst en stor bokstav \n Minst en siffra \n Inga blanka tecken");
+        errorMessagePassword.setText("Minst en liten bokstav \n Minst en stor bokstav \n Minst en siffra \n Inga blanka tecken \n Minst 5 tecken");
         errorMessagePassword.setStyle("visibility: hidden");
 
 
@@ -139,7 +139,7 @@ public class Controller {
     }
 
     public boolean passwordCheck(String password, Label errorMessagePassword){
-        if (!password.matches("^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=\\S+$).{8,}$")){
+        if (!password.matches("^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=\\S+$).{5,}$")){
             System.out.println("false");
             errorMessagePassword.setStyle("visibility: visible");
             return false;
