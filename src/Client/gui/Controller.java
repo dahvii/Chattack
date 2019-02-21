@@ -14,11 +14,13 @@ import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.effect.DropShadow;
 import javafx.scene.layout.HBox;
+import javafx.scene.layout.Pane;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
+import org.w3c.dom.Text;
 
 import java.sql.Timestamp;
 import java.util.Date;
@@ -72,20 +74,16 @@ public class Controller {
         errorMessagePassword.setText("Minst en liten bokstav \n Minst en stor bokstav \n Minst en siffra \n Inga blanka tecken \n Minst 5 tecken");
         errorMessagePassword.setStyle("visibility: hidden");
 
-
         TextField nameInput= new TextField();
         TextField passwordInput= new TextField();
 
         Button okButton = new Button("Ok");
-        Button newUser = new Button ("Inte meddlem? \n Tryck här!");
+        Button newUser = new Button ("Inte medlem? \n Tryck här!");
+        newUser.setOnAction(event -> registerForm());
 
-        Label userLabel = new Label();
-        Label passwordLabel = new Label();
-        Label welcomeLabel = new Label();
-        welcomeLabel.setText("Välkommen till Chatack!");
-
-        userLabel.setText("Användarnamn");
-        passwordLabel.setText("Lösenord");
+        Label userLabel = new Label("Användarnamn");
+        Label passwordLabel = new Label("Lösenord");
+        Label welcomeLabel = new Label("Chattack!");
 
         //lägg till elementen till layouten
         VBox layout = new VBox(10);
@@ -101,9 +99,6 @@ public class Controller {
                 newUser);
         layout.setAlignment(Pos.CENTER);
         window.setResizable(false);
-
-
-
 
         //skapa funktionalitet och eventhantering
         window.setOnCloseRequest(e -> {
@@ -127,7 +122,6 @@ public class Controller {
                 user.setPassword(password);
                 window.close();
             }
-
         });
 
         //skapa en ny scen med innehållet och lägg upp och visa den
@@ -135,7 +129,6 @@ public class Controller {
         window.setScene(scene);
         window.showAndWait();
         inlogg.setText("Inloggad användare: " + user.getName());
-
     }
 
     public boolean passwordCheck(String password, Label errorMessagePassword){
@@ -148,6 +141,34 @@ public class Controller {
         System.out.println("True");
         return true;
     }
+
+    public void registerForm(){
+        Stage registerWindow = new Stage();
+        registerWindow.initModality(Modality.APPLICATION_MODAL);
+        registerWindow.setTitle("Ny användare");
+        registerWindow.setResizable(false);
+        TextField name = new TextField();
+//        name.setPromptText("Namn");
+        name.setMaxWidth(200);
+        TextField password = new TextField();
+//        password.setPromptText("Lösenord");
+        password.setMaxWidth(200);
+        Button registerButton = new Button("Registrera");
+        VBox layout = new VBox(10);
+
+        layout.getChildren().addAll(name, password, registerButton);
+        Scene scene1 = new Scene(layout, 300, 300);
+        layout.setAlignment(Pos.TOP_CENTER);
+
+        registerWindow.setScene(scene1);
+        registerWindow.show();
+
+
+
+
+    }
+
+
     
     public void printMessage(Message msg) {
         HBox chatMessageContainer = new HBox();
