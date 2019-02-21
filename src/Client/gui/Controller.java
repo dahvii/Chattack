@@ -117,6 +117,7 @@ public class Controller {
             if (name.equals("")) {
                 errorMessageName.setStyle("visibility: visible;");
             }else if (!passwordCheck(password, errorMessagePassword )){
+                // TODO: Kolla användare mot listan och se om det matchar
             }else { // om användaren  fyllt i ett namn och lösen korrekt
                 user.setName(name);
                 user.setPassword(password);
@@ -137,35 +138,62 @@ public class Controller {
             errorMessagePassword.setStyle("visibility: visible");
             return false;
         }
-
         System.out.println("True");
         return true;
     }
 
     public void registerForm(){
+        Label errorMessageName= new Label("Du måste fylla i ett användarnamn");
+        errorMessageName.setStyle("visibility: hidden");
+        Label nameLabel = new Label("Användarnamn");
+        Label passwordLabel = new Label("Lösenord");
+
+        Label errorMessagePassword= new Label("Minst en liten bokstav \n Minst en stor bokstav \n Minst en siffra \n Inga blanka tecken \n Minst 5 tecken");
+        errorMessagePassword.setStyle("visibility: hidden");
+
         Stage registerWindow = new Stage();
         registerWindow.initModality(Modality.APPLICATION_MODAL);
         registerWindow.setTitle("Ny användare");
         registerWindow.setResizable(false);
-        TextField name = new TextField();
-//        name.setPromptText("Namn");
-        name.setMaxWidth(200);
-        TextField password = new TextField();
-//        password.setPromptText("Lösenord");
-        password.setMaxWidth(200);
+        TextField nameInputRegistration = new TextField();
+        nameInputRegistration.setPromptText("Namn");
+        nameInputRegistration.setMaxWidth(200);
+        TextField passwordInputRegistration = new TextField();
+        passwordInputRegistration.setPromptText("Lösenord");
+        passwordInputRegistration.setMaxWidth(200);
         Button registerButton = new Button("Registrera");
         VBox layout = new VBox(10);
 
-        layout.getChildren().addAll(name, password, registerButton);
+        layout.getChildren().addAll(
+                nameLabel,
+                nameInputRegistration,
+                errorMessageName,
+                passwordLabel,
+                passwordInputRegistration,
+                errorMessagePassword,
+                registerButton);
         Scene scene1 = new Scene(layout, 300, 300);
-        layout.setAlignment(Pos.TOP_CENTER);
+        layout.setAlignment(Pos.CENTER);
 
         registerWindow.setScene(scene1);
         registerWindow.show();
 
-
-
-
+        registerButton.setDefaultButton(true);
+        registerButton.setOnAction(e -> {
+            errorMessageName.setStyle("visibility: hidden;");
+            //om användaren inte har fyllt i ett namn
+            //remove whitespaces
+            String password = passwordInputRegistration.getText();
+            String name = nameInputRegistration.getText().replaceAll("\\s+","");
+            if (name.equals("")) {
+                errorMessageName.setStyle("visibility: visible;");
+            }else if (!passwordCheck(password, errorMessagePassword )){ //Metod som kollar att lösen är korrekt
+            }else { // om användaren  fyllt i ett namn och lösen korrekt
+                user.setName(name);
+                user.setPassword(password);
+                registerWindow.close();
+            }
+        });
     }
 
 
