@@ -33,7 +33,6 @@ public class Controller {
     public ScrollPane allMessagesWindow;
     private User user = new User();
     private String receiverName = "Jebidiah";
-
     public Controller(){
         clientSwitch = new ClientSwitch(this);
     }
@@ -57,7 +56,7 @@ public class Controller {
     }
 
 
-    private void promt(){
+    protected void promt(){
         //skapa ny stage och sätt lite egenskaper
         Stage window = new Stage();
         window.initModality(Modality.APPLICATION_MODAL);
@@ -69,21 +68,10 @@ public class Controller {
         Label errorMessageName= new Label();
         errorMessageName.setText("Du måste fylla i ett användarnamn");
         errorMessageName.setStyle("visibility: hidden");
-        Label errorMessagePasswordNumber= new Label();
-        errorMessagePasswordNumber.setText("Minst en siffra");
-        errorMessagePasswordNumber.setStyle("visibility: hidden");
-        Label errorMessagePasswordSmallLetters= new Label();
-        errorMessagePasswordSmallLetters.setText("Minst en gemen (liten bokstav)");
-        errorMessagePasswordSmallLetters.setStyle("visibility: hidden");
-        Label errorMessagePasswordBigLetters= new Label();
-        errorMessagePasswordBigLetters.setText("Minst en versal (stor bokstav)");
-        errorMessagePasswordBigLetters.setStyle("visibility: hidden");
-        Label errorMessagePasswordSpaces= new Label();
-        errorMessagePasswordSpaces.setText("Inga mellanslag är tillåtna!");
-        errorMessagePasswordSpaces.setStyle("visibility: hidden");
-        Label errorMessagePasswordSix= new Label();
-        errorMessagePasswordSix.setText("Minst 6 tecken!");
-        errorMessagePasswordSix.setStyle("visibility: hidden");
+        Label errorMessagePassword= new Label();
+        errorMessagePassword.setText("Minst en liten bokstav \n Minst en stor bokstav \n Minst en siffra \n Inga blanka tecken");
+        errorMessagePassword.setStyle("visibility: hidden");
+
 
         TextField nameInput= new TextField();
         TextField passwordInput= new TextField();
@@ -109,10 +97,7 @@ public class Controller {
                 passwordInput,
                 okButton,
                 errorMessageName,
-                errorMessagePasswordBigLetters,
-                errorMessagePasswordSix,
-                errorMessagePasswordSmallLetters,
-                errorMessagePasswordSpaces,
+                errorMessagePassword,
                 newUser);
         layout.setAlignment(Pos.CENTER);
         window.setResizable(false);
@@ -129,30 +114,15 @@ public class Controller {
         okButton.setDefaultButton(true);
         okButton.setOnAction(e -> {
             errorMessageName.setStyle("visibility: hidden;");
-            errorMessagePasswordBigLetters.setStyle("visibility: hidden;");
-            errorMessagePasswordNumber.setStyle("visibility: hidden;");
-            errorMessagePasswordSix.setStyle("visibility: hidden;");
-            errorMessagePasswordSmallLetters.setStyle("visibility: hidden;");
-            errorMessagePasswordSpaces.setStyle("visibility: hidden;");
-            boolean check = false;
             //om användaren inte har fyllt i ett namn
             //remove whitespaces
             String password = passwordInput.getText();
             String name = nameInput.getText().replaceAll("\\s+","");
-            if( name.equals("")) {
+
+            if (name.equals("")) {
                 errorMessageName.setStyle("visibility: visible;");
-            }else if (!password.matches("(.*[a-z])")){ //små bokstäver
-                errorMessagePasswordSmallLetters.setStyle("visibility: visible;");
-            }else if (!password.matches("(.*[0-9])")) { //minst en siffra
-                errorMessagePasswordNumber.setStyle("visibility: visible;");
-            }else if (!password.matches("(.*[A-Z])")) { // stora bokstäver
-                errorMessagePasswordBigLetters.setStyle("visibility: visible;");
-            }else if (!password.matches("(\\\\S+$)")) { //inga blankspaces
-                errorMessagePasswordSpaces.setStyle("visibility: visible;");
-            }else if (!password.matches(".{6,}")) { //minst 6 tecken
-                errorMessagePasswordSix.setStyle("visibility: visible;");
-            }
-            else { // om användaren  fyllt i ett namn och lösen korrekt
+            }else if (!passwordCheck(password, errorMessagePassword )){
+            }else { // om användaren  fyllt i ett namn och lösen korrekt
                 user.setName(name);
                 user.setPassword(password);
                 window.close();
@@ -160,14 +130,23 @@ public class Controller {
 
         });
 
-        
-
         //skapa en ny scen med innehållet och lägg upp och visa den
         Scene scene = new Scene(layout);
         window.setScene(scene);
         window.showAndWait();
         inlogg.setText("Inloggad användare: " + user.getName());
 
+    }
+
+    public boolean passwordCheck(String password, Label errorMessagePassword){
+        if (!password.matches("^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=\\S+$).{8,}$")){
+            System.out.println("false");
+            errorMessagePassword.setStyle("visibility: visible");
+            return false;
+        }
+
+        System.out.println("True");
+        return true;
     }
     
     public void printMessage(Message msg) {
