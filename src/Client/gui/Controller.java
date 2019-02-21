@@ -15,6 +15,7 @@ import javafx.scene.control.*;
 import javafx.scene.effect.DropShadow;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
+import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.stage.Modality;
@@ -33,6 +34,7 @@ public class Controller {
     public ScrollPane allMessagesWindow;
     private User user = new User();
     private String receiverName = "Jebidiah";
+    public StackPane stackPane;
 
     public Controller(){
         clientSwitch = new ClientSwitch(this);
@@ -116,12 +118,12 @@ public class Controller {
     }
     
     public void printMessage(Message msg) {
-        HBox chatMessageContainer = new HBox();
+        /*HBox chatMessageContainer = new HBox();
         Label message = new Label(msg.getSender() + "\n" + msg.getMessageData() + "\n" + new Timestamp(msg.getTime()));
         message.setMinHeight(Control.USE_PREF_SIZE);
         messages.getChildren().add(chatMessageContainer);
         styleMessage(message, chatMessageContainer);
-        scroll();
+        scroll();*/
     }
 
     public void styleMessage(Label message, HBox chatMessageContainer){
@@ -147,7 +149,9 @@ public class Controller {
     }
 
     @FXML
-    private void changeRoom() { }
+    private void changeRoom() {
+        //stackPane.toFront();
+    }
 }
 
 

@@ -22,10 +22,6 @@
 <Pane fx:id="root" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" onMouseClicked="#sendBtnClick" prefHeight="643.0" prefWidth="937.0" style="-fx-background-color: linear-gradient(from 25% 25% to 100% 100%, #9da4ad, #bcd3cc);" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="Client.gui.Controller">
    <children>
       <TextField fx:id="input" alignment="TOP_LEFT" layoutX="184.0" layoutY="452.0" onAction="#sendBtnClick" prefHeight="44.0" prefWidth="484.0" />
-      <ScrollPane fx:id="allMessagesWindow" hbarPolicy="NEVER" layoutX="184.0" layoutY="62.0" prefHeight="372.0" prefWidth="558.0">
-         <content>
-            <VBox fx:id="messages" prefHeight="350.0" prefWidth="564.0" />
-         </content></ScrollPane>
       <ImageView fitHeight="44.0" fitWidth="57.0" layoutX="184.0" layoutY="14.0" pickOnBounds="true" preserveRatio="true">
          <image>
             <Image url="@media1.png" />
@@ -46,27 +42,36 @@
           <AnchorPane disable="true" minHeight="0.0" minWidth="0.0" prefHeight="202.0" prefWidth="143.0" />
         </content>
       </ScrollPane>
-      <VBox id="vBoxRooms" layoutX="21.0" layoutY="62.0" prefHeight="372.0" prefWidth="148.0">
+      <VBox id="vBoxRooms" layoutX="21.0" layoutY="102.0" prefHeight="332.0" prefWidth="148.0">
          <children>
-            <Label id="lblRoom1" alignment="CENTER" contentDisplay="CENTER" onMouseClicked="#changeRoom" prefHeight="54.0" prefWidth="173.0" styleClass="roomLblStyle" text="Skitsnack">
+            <Label id="lblRoom1" alignment="CENTER" contentDisplay="CENTER" onMouseClicked="#changeRoom" prefHeight="55.0" prefWidth="175.0" styleClass="roomLblStyle" text="Skitsnack">
                <VBox.margin>
                   <Insets bottom="10.0" />
                </VBox.margin></Label>
-            <Label id="lblRoom2" alignment="CENTER" onMouseClicked="#changeRoom" prefHeight="60.0" prefWidth="163.0" styleClass="roomLblStyle" text="Om Ninjas" textAlignment="CENTER">
+            <Label id="lblRoom2" alignment="CENTER" onMouseClicked="#changeRoom" prefHeight="55.0" prefWidth="175.0" styleClass="roomLblStyle" text="Om Ninjas" textAlignment="CENTER">
                <VBox.margin>
                   <Insets bottom="10.0" />
                </VBox.margin></Label>
-            <Label id="lblRoom3" alignment="CENTER" onMouseClicked="#changeRoom" prefHeight="59.0" prefWidth="153.0" styleClass="roomLblStyle" text="Fräsiga Memes">
+            <Label id="lblRoom3" alignment="CENTER" onMouseClicked="#changeRoom" prefHeight="55.0" prefWidth="175.0" styleClass="roomLblStyle" text="Fräsiga Memes">
                <VBox.margin>
                   <Insets bottom="10.0" />
                </VBox.margin></Label>
-            <Label id="lblRoom4" alignment="CENTER" onMouseClicked="#changeRoom" prefHeight="63.0" prefWidth="165.0" styleClass="roomLblStyle" text="Spel">
+            <Label id="lblRoom4" alignment="CENTER" onMouseClicked="#changeRoom" prefHeight="55.0" prefWidth="175.0" styleClass="roomLblStyle" text="Spel">
                <VBox.margin>
                   <Insets bottom="10.0" />
                </VBox.margin></Label>
-            <Label id="lblRoom5" alignment="CENTER" onMouseClicked="#changeRoom" prefHeight="63.0" prefWidth="149.0" styleClass="roomLblStyle" text="Hästklubben" />
+            <Label id="lblRoom5" alignment="CENTER" onMouseClicked="#changeRoom" prefHeight="55.0" prefWidth="175.0" styleClass="roomLblStyle" text="Hästklubben" />
          </children>
       </VBox>
+      <StackPane id="stackPane" layoutX="184.0" layoutY="62.0" prefHeight="372.0" prefWidth="559.0">
+         <children>
+            <TextArea id="txaStackPane5" prefHeight="200.0" prefWidth="200.0" text="5" />
+            <TextArea id="txaStackPane4" prefHeight="200.0" prefWidth="200.0" text="4" />
+            <TextArea id="txaStackPane3" prefHeight="200.0" prefWidth="200.0" text="3" />
+            <TextArea id="txaStackPane2" prefHeight="200.0" prefWidth="200.0" text="2" />
+            <TextArea id="txaStackPane1" prefHeight="200.0" prefWidth="200.0" text="1" />
+         </children>
+      </StackPane>
    </children>
   <stylesheets>
       <URL value="@Style.css" />

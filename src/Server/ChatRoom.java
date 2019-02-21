@@ -10,9 +10,12 @@ public class ChatRoom {
     //ArrayList of User objects
     private List roomMembers;
 
-    public ChatRoom(String roomNumber) {
-        this.roomName = roomName;
-        this.roomMembers = new ArrayList();
+    public ChatRoom() {
+        createRooms();
+    }
+
+    private void createRooms() {
+
     }
 
     private void addToRoom(User user) {
