@@ -60,6 +60,8 @@ public class Controller {
 
 
     private void promt(){
+        //TODO: skapa scen istället för stage och lägg till i primarystage
+
         //skapa ny stage och sätt lite egenskaper
         Stage window = new Stage();
         window.initModality(Modality.APPLICATION_MODAL);
