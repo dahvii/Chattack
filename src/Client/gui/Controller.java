@@ -33,7 +33,6 @@ public class Controller {
     public ScrollPane allMessagesWindow;
     private User user = new User();
     private String receiverName = "Jebidiah";
-
     public Controller(){
         clientSwitch = new ClientSwitch(this);
     }
@@ -57,7 +56,7 @@ public class Controller {
     }
 
 
-    private void promt(){
+    protected void promt(){
         //skapa ny stage och sätt lite egenskaper
         Stage window = new Stage();
         window.initModality(Modality.APPLICATION_MODAL);
@@ -66,9 +65,13 @@ public class Controller {
         window.setMinHeight(400);
 
         //skapa element och egenskaperna för innehållet
-        Label errorMessage= new Label();
-        errorMessage.setText("Du måste fylla i ett användarnamn");
-        errorMessage.setStyle("visibility: hidden");
+        Label errorMessageName= new Label();
+        errorMessageName.setText("Du måste fylla i ett användarnamn");
+        errorMessageName.setStyle("visibility: hidden");
+        Label errorMessagePassword= new Label();
+        errorMessagePassword.setText("Minst en liten bokstav \n Minst en stor bokstav \n Minst en siffra \n Inga blanka tecken");
+        errorMessagePassword.setStyle("visibility: hidden");
+
 
         TextField nameInput= new TextField();
         TextField passwordInput= new TextField();
@@ -86,7 +89,16 @@ public class Controller {
 
         //lägg till elementen till layouten
         VBox layout = new VBox(10);
-        layout.getChildren().addAll(welcomeLabel, userLabel ,nameInput, passwordLabel, passwordInput,  okButton, errorMessage, newUser);
+        layout.getChildren().addAll(
+                welcomeLabel,
+                userLabel,
+                nameInput,
+                passwordLabel,
+                passwordInput,
+                okButton,
+                errorMessageName,
+                errorMessagePassword,
+                newUser);
         layout.setAlignment(Pos.CENTER);
         window.setResizable(false);
 
@@ -101,13 +113,16 @@ public class Controller {
 
         okButton.setDefaultButton(true);
         okButton.setOnAction(e -> {
+            errorMessageName.setStyle("visibility: hidden;");
             //om användaren inte har fyllt i ett namn
             //remove whitespaces
-            String password = passwordInput.getText().replaceAll("\\s+", "");
+            String password = passwordInput.getText();
             String name = nameInput.getText().replaceAll("\\s+","");
-            if( name.equals("") & password.equals("")) {
-                errorMessage.setStyle("visibility: visible;");
-            } else{ // om användaren  fyllt i ett namn
+
+            if (name.equals("")) {
+                errorMessageName.setStyle("visibility: visible;");
+            }else if (!passwordCheck(password, errorMessagePassword )){
+            }else { // om användaren  fyllt i ett namn och lösen korrekt
                 user.setName(name);
                 user.setPassword(password);
                 window.close();
@@ -115,14 +130,23 @@ public class Controller {
 
         });
 
-        
-
         //skapa en ny scen med innehållet och lägg upp och visa den
         Scene scene = new Scene(layout);
         window.setScene(scene);
         window.showAndWait();
         inlogg.setText("Inloggad användare: " + user.getName());
 
+    }
+
+    public boolean passwordCheck(String password, Label errorMessagePassword){
+        if (!password.matches("^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=\\S+$).{8,}$")){
+            System.out.println("false");
+            errorMessagePassword.setStyle("visibility: visible");
+            return false;
+        }
+
+        System.out.println("True");
+        return true;
     }
     
     public void printMessage(Message msg) {
