@@ -3,6 +3,7 @@ package Client.gui;
 import Client.ClientSwitch;
 import Client.User;
 import Data.DataMessage;
+import Server.ChatRoom;
 import javafx.application.Platform;
 import javafx.geometry.Insets;
 import Data.DataHandler;
@@ -22,6 +23,7 @@ import javafx.stage.Modality;
 import javafx.stage.Stage;
 
 import java.sql.Timestamp;
+import java.util.ArrayList;
 import java.util.Date;
 
 public class Controller {
@@ -35,6 +37,9 @@ public class Controller {
     private User user = new User();
     private String receiverName = "Jebidiah";
     public StackPane stackPane;
+    public VBox msgBox;
+    private ArrayList<ChatRoom> chatRooms = new ArrayList<>();
+
 
     public Controller(){
         clientSwitch = new ClientSwitch(this);
@@ -47,6 +52,13 @@ public class Controller {
         DataHandler.getInstance().getAllMessages().forEach(this::printMessage);
         new Thread(clientSwitch::messageListener).start();
 
+        chatRooms.add(new ChatRoom("skitsnack", 1));
+        chatRooms.add(new ChatRoom("Om Ninjas", 2));
+        chatRooms.add(new ChatRoom("Fräsiga Memes", 3));
+        chatRooms.add(new ChatRoom("spel", 4));
+        chatRooms.add(new ChatRoom("Hästklubben", 5));
+
+        changeRoom(1);
     }
 
 
@@ -160,9 +172,59 @@ public class Controller {
         messages.heightProperty().addListener(observable -> allMessagesWindow.setVvalue(1.0));
     }
 
+
+
+   /* @FXML
+    private void test(MouseEvent event)
+    {
+        System.out.println("You clicked button: " + ((Button)event.getSource()).getId());
+    }*/
+
+    public void lblRoom1() {
+        changeRoom(1);
+    }
+    public  void lblRoom2() {
+        changeRoom(2);
+    }
+    public  void lblRoom3() {
+        changeRoom(3);
+    }
+    public  void lblRoom4() {
+        changeRoom(4);
+    }
+    public  void lblRoom5() {
+        changeRoom(5);
+    }
+
+
     @FXML
-    private void changeRoom() {
-        //stackPane.toFront();
+    private void changeRoom(int i) {
+        System.out.println("changeroom metoden för rum nr"+i);
+        msgBox.getChildren().clear();
+
+        //loopa igenom meddelanden i det aktuella chatrummet
+        for (int counter = 0; counter < chatRooms.get(i-1).getMessages().size(); counter++) {
+            Message msg = chatRooms.get(i-1).getMessages().get(counter);
+
+            Label message = new Label(msg.getSender() + "\n" + msg.getMessageData() + "\n" + new Timestamp(msg.getTime()));
+
+            msgBox.getChildren().add(message);
+        }
+        /*
+
+        System.out.println("1"+stackPane.getChildren());
+        stackPane.getChildren().get(2).toFront();
+        System.out.println("2"+stackPane.getChildren());
+
+
+        ObservableList<Node> childs = this.stackPane.getChildren();
+
+        if (childs.size() > 1) {
+
+            Node topNode = childs.get(childs.size()-1);
+            topNode.toFront();
+        }
+      */
     }
 }
 

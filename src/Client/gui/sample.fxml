@@ -39,39 +39,32 @@
       </ImageView>
       <ScrollPane id="paneUsers" layoutX="761.0" layoutY="62.0" prefHeight="372.0" prefWidth="148.0">
         <content>
-          <AnchorPane disable="true" minHeight="0.0" minWidth="0.0" prefHeight="202.0" prefWidth="143.0" />
+          <AnchorPane disable="true" minHeight="0.0" minWidth="0.0" prefHeight="202.0" prefWidth="133.0" />
         </content>
       </ScrollPane>
       <VBox id="vBoxRooms" layoutX="21.0" layoutY="102.0" prefHeight="332.0" prefWidth="148.0">
          <children>
-            <Label id="lblRoom1" alignment="CENTER" contentDisplay="CENTER" onMouseClicked="#changeRoom" prefHeight="55.0" prefWidth="175.0" styleClass="roomLblStyle" text="Skitsnack">
+            <Label id="lblRoom1" alignment="CENTER" contentDisplay="CENTER" onMouseClicked="#lblRoom1" prefHeight="55.0" prefWidth="175.0" styleClass="roomLblStyle" text="Skitsnack">
                <VBox.margin>
                   <Insets bottom="10.0" />
                </VBox.margin></Label>
-            <Label id="lblRoom2" alignment="CENTER" onMouseClicked="#changeRoom" prefHeight="55.0" prefWidth="175.0" styleClass="roomLblStyle" text="Om Ninjas" textAlignment="CENTER">
+            <Label id="lblRoom2" alignment="CENTER" onMouseClicked="#lblRoom2" prefHeight="55.0" prefWidth="175.0" styleClass="roomLblStyle" text="Om Ninjas" textAlignment="CENTER">
                <VBox.margin>
                   <Insets bottom="10.0" />
                </VBox.margin></Label>
-            <Label id="lblRoom3" alignment="CENTER" onMouseClicked="#changeRoom" prefHeight="55.0" prefWidth="175.0" styleClass="roomLblStyle" text="Fräsiga Memes">
+            <Label id="lblRoom3" alignment="CENTER" onMouseClicked="#lblRoom3" prefHeight="55.0" prefWidth="175.0" styleClass="roomLblStyle" text="Fräsiga Memes">
                <VBox.margin>
                   <Insets bottom="10.0" />
                </VBox.margin></Label>
-            <Label id="lblRoom4" alignment="CENTER" onMouseClicked="#changeRoom" prefHeight="55.0" prefWidth="175.0" styleClass="roomLblStyle" text="Spel">
+            <Label id="lblRoom4" alignment="CENTER" onMouseClicked="#lblRoom4" prefHeight="55.0" prefWidth="175.0" styleClass="roomLblStyle" text="Spel">
                <VBox.margin>
                   <Insets bottom="10.0" />
                </VBox.margin></Label>
-            <Label id="lblRoom5" alignment="CENTER" onMouseClicked="#changeRoom" prefHeight="55.0" prefWidth="175.0" styleClass="roomLblStyle" text="Hästklubben" />
+            <Label id="lblRoom5" alignment="CENTER" onMouseClicked="#lblRoom5" prefHeight="55.0" prefWidth="175.0" styleClass="roomLblStyle" text="Hästklubben" />
          </children>
       </VBox>
-      <StackPane id="stackPane" layoutX="184.0" layoutY="62.0" prefHeight="372.0" prefWidth="559.0">
-         <children>
-            <TextArea id="txaStackPane5" prefHeight="200.0" prefWidth="200.0" text="5" />
-            <TextArea id="txaStackPane4" prefHeight="200.0" prefWidth="200.0" text="4" />
-            <TextArea id="txaStackPane3" prefHeight="200.0" prefWidth="200.0" text="3" />
-            <TextArea id="txaStackPane2" prefHeight="200.0" prefWidth="200.0" text="2" />
-            <TextArea id="txaStackPane1" prefHeight="200.0" prefWidth="200.0" text="1" />
-         </children>
-      </StackPane>
+      <VBox fx:id="msgBox" layoutX="184.0" layoutY="85.0" prefHeight="349.0" prefWidth="567.0" />
+
    </children>
   <stylesheets>
       <URL value="@Style.css" />
