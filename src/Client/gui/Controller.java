@@ -66,9 +66,24 @@ public class Controller {
         window.setMinHeight(400);
 
         //skapa element och egenskaperna för innehållet
-        Label errorMessage= new Label();
-        errorMessage.setText("Du måste fylla i ett användarnamn");
-        errorMessage.setStyle("visibility: hidden");
+        Label errorMessageName= new Label();
+        errorMessageName.setText("Du måste fylla i ett användarnamn");
+        errorMessageName.setStyle("visibility: hidden");
+        Label errorMessagePasswordNumber= new Label();
+        errorMessagePasswordNumber.setText("Minst en siffra");
+        errorMessagePasswordNumber.setStyle("visibility: hidden");
+        Label errorMessagePasswordSmallLetters= new Label();
+        errorMessagePasswordSmallLetters.setText("Minst en gemen (liten bokstav)");
+        errorMessagePasswordSmallLetters.setStyle("visibility: hidden");
+        Label errorMessagePasswordBigLetters= new Label();
+        errorMessagePasswordBigLetters.setText("Minst en versal (stor bokstav)");
+        errorMessagePasswordBigLetters.setStyle("visibility: hidden");
+        Label errorMessagePasswordSpaces= new Label();
+        errorMessagePasswordSpaces.setText("Inga mellanslag är tillåtna!");
+        errorMessagePasswordSpaces.setStyle("visibility: hidden");
+        Label errorMessagePasswordSix= new Label();
+        errorMessagePasswordSix.setText("Minst 6 tecken!");
+        errorMessagePasswordSix.setStyle("visibility: hidden");
 
         TextField nameInput= new TextField();
         TextField passwordInput= new TextField();
@@ -86,7 +101,19 @@ public class Controller {
 
         //lägg till elementen till layouten
         VBox layout = new VBox(10);
-        layout.getChildren().addAll(welcomeLabel, userLabel ,nameInput, passwordLabel, passwordInput,  okButton, errorMessage, newUser);
+        layout.getChildren().addAll(
+                welcomeLabel,
+                userLabel,
+                nameInput,
+                passwordLabel,
+                passwordInput,
+                okButton,
+                errorMessageName,
+                errorMessagePasswordBigLetters,
+                errorMessagePasswordSix,
+                errorMessagePasswordSmallLetters,
+                errorMessagePasswordSpaces,
+                newUser);
         layout.setAlignment(Pos.CENTER);
         window.setResizable(false);
 
@@ -101,13 +128,31 @@ public class Controller {
 
         okButton.setDefaultButton(true);
         okButton.setOnAction(e -> {
+            errorMessageName.setStyle("visibility: hidden;");
+            errorMessagePasswordBigLetters.setStyle("visibility: hidden;");
+            errorMessagePasswordNumber.setStyle("visibility: hidden;");
+            errorMessagePasswordSix.setStyle("visibility: hidden;");
+            errorMessagePasswordSmallLetters.setStyle("visibility: hidden;");
+            errorMessagePasswordSpaces.setStyle("visibility: hidden;");
+            boolean check = false;
             //om användaren inte har fyllt i ett namn
             //remove whitespaces
-            String password = passwordInput.getText().replaceAll("\\s+", "");
+            String password = passwordInput.getText();
             String name = nameInput.getText().replaceAll("\\s+","");
-            if( name.equals("") & password.equals("")) {
-                errorMessage.setStyle("visibility: visible;");
-            } else{ // om användaren  fyllt i ett namn
+            if( name.equals("")) {
+                errorMessageName.setStyle("visibility: visible;");
+            }else if (!password.matches("(.*[a-z])")){ //små bokstäver
+                errorMessagePasswordSmallLetters.setStyle("visibility: visible;");
+            }else if (!password.matches("(.*[0-9])")) { //minst en siffra
+                errorMessagePasswordNumber.setStyle("visibility: visible;");
+            }else if (!password.matches("(.*[A-Z])")) { // stora bokstäver
+                errorMessagePasswordBigLetters.setStyle("visibility: visible;");
+            }else if (!password.matches("(\\\\S+$)")) { //inga blankspaces
+                errorMessagePasswordSpaces.setStyle("visibility: visible;");
+            }else if (!password.matches(".{6,}")) { //minst 6 tecken
+                errorMessagePasswordSix.setStyle("visibility: visible;");
+            }
+            else { // om användaren  fyllt i ett namn och lösen korrekt
                 user.setName(name);
                 user.setPassword(password);
                 window.close();
