@@ -32,7 +32,6 @@ public class Controller {
     public ScrollPane allMessagesWindow;
     private User user = new User();
     private String receiverName = "Jebidiah";
-
     public Controller(){
         clientSwitch = new ClientSwitch(this);
     }
@@ -56,34 +55,53 @@ public class Controller {
     }
 
 
-    private void promt(){
+    protected void promt(){
         //skapa ny stage och sätt lite egenskaper
         Stage window = new Stage();
         window.initModality(Modality.APPLICATION_MODAL);
         window.setTitle("Välj användarnamn");
-        window.setMinWidth(250);
-        window.setMinHeight(300);
+        window.setMinWidth(300);
+        window.setMinHeight(400);
 
         //skapa element och egenskaperna för innehållet
-        Label errorMessage= new Label();
-        errorMessage.setText("Du måste fylla i ett användarnamn");
-        errorMessage.setStyle("visibility: hidden");
+        Label errorMessageName= new Label();
+        errorMessageName.setText("Du måste fylla i ett användarnamn");
+        errorMessageName.setStyle("visibility: hidden");
+        Label errorMessagePassword= new Label();
+        errorMessagePassword.setText("Minst en liten bokstav \n Minst en stor bokstav \n Minst en siffra \n Inga blanka tecken \n Minst 5 tecken");
+        errorMessagePassword.setStyle("visibility: hidden");
+
 
         TextField nameInput= new TextField();
+        TextField passwordInput= new TextField();
 
-        Button button = new Button("Ok");
+        Button okButton = new Button("Ok");
+        Button newUser = new Button ("Inte meddlem? \n Tryck här!");
 
-        Label label = new Label();
-        Label welcome = new Label();
-        welcome.setText("Välkommen till Chatack!");
+        Label userLabel = new Label();
+        Label passwordLabel = new Label();
+        Label welcomeLabel = new Label();
+        welcomeLabel.setText("Välkommen till Chatack!");
 
-        label.setText("Välj ett användarnamn");
+        userLabel.setText("Användarnamn");
+        passwordLabel.setText("Lösenord");
 
         //lägg till elementen till layouten
         VBox layout = new VBox(10);
-        layout.getChildren().addAll(welcome, label,nameInput,  button, errorMessage);
+        layout.getChildren().addAll(
+                welcomeLabel,
+                userLabel,
+                nameInput,
+                passwordLabel,
+                passwordInput,
+                okButton,
+                errorMessageName,
+                errorMessagePassword,
+                newUser);
         layout.setAlignment(Pos.CENTER);
         window.setResizable(false);
+
+
 
 
         //skapa funktionalitet och eventhantering
@@ -92,15 +110,20 @@ public class Controller {
             Platform.exit();
         });
 
-        button.setDefaultButton(true);
-        button.setOnAction(e -> {
+        okButton.setDefaultButton(true);
+        okButton.setOnAction(e -> {
+            errorMessageName.setStyle("visibility: hidden;");
             //om användaren inte har fyllt i ett namn
             //remove whitespaces
+            String password = passwordInput.getText();
             String name = nameInput.getText().replaceAll("\\s+","");
-            if( name.equals("")){
-                errorMessage.setStyle("visibility: visible;");
-            } else{ // om användaren  fyllt i ett namn
+
+            if (name.equals("")) {
+                errorMessageName.setStyle("visibility: visible;");
+            }else if (!passwordCheck(password, errorMessagePassword )){
+            }else { // om användaren  fyllt i ett namn och lösen korrekt
                 user.setName(name);
+                user.setPassword(password);
                 window.close();
             }
 
@@ -112,6 +135,17 @@ public class Controller {
         window.showAndWait();
         inlogg.setText("Inloggad användare: " + user.getName());
 
+    }
+
+    public boolean passwordCheck(String password, Label errorMessagePassword){
+        if (!password.matches("^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=\\S+$).{5,}$")){
+            System.out.println("false");
+            errorMessagePassword.setStyle("visibility: visible");
+            return false;
+        }
+
+        System.out.println("True");
+        return true;
     }
     
     public void printMessage(Message msg) {
