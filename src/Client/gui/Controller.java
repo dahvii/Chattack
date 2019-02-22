@@ -1,9 +1,9 @@
 package Client.gui;
 
 import Client.ClientSwitch;
-import Client.User;
+import Data.User;
 import Data.DataMessage;
-import Server.ChatRoom;
+import Client.ChatRoom;
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.geometry.Insets;
@@ -17,12 +17,14 @@ import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.effect.DropShadow;
 import javafx.scene.layout.HBox;
+import javafx.scene.layout.Pane;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
+import org.w3c.dom.Text;
 
 import java.sql.Timestamp;
 import java.util.ArrayList;
@@ -85,32 +87,40 @@ public class Controller {
         window.setMinHeight(400);
 
         //skapa element och egenskaperna för innehållet
-        Label errorMessage= new Label();
-        errorMessage.setText("Du måste fylla i ett användarnamn");
-        errorMessage.setStyle("visibility: hidden");
+        Label errorMessageName= new Label();
+        errorMessageName.setText("Du måste fylla i ett användarnamn");
+        errorMessageName.setStyle("visibility: hidden");
+        Label errorMessagePassword= new Label();
+        errorMessagePassword.setText("Minst en liten bokstav \n Minst en stor bokstav \n Minst en siffra \n Inga blanka tecken \n Minst 5 tecken");
+        errorMessagePassword.setStyle("visibility: hidden");
 
         TextField nameInput= new TextField();
-        TextField passwordInput= new TextField();
+        nameInput.setMaxWidth(200);
+        PasswordField passwordInput= new PasswordField();
+        passwordInput.setMaxWidth(200);
 
         Button okButton = new Button("Ok");
-        Button newUser = new Button ("Inte meddlem? \n Tryck här!");
+        Button newUser = new Button ("Inte medlem? \n Tryck här!");
+        newUser.setOnAction(event -> registerForm());
 
-        Label userLabel = new Label();
-        Label passwordLabel = new Label();
-        Label welcomeLabel = new Label();
-        welcomeLabel.setText("Välkommen till Chatack!");
-
-        userLabel.setText("Användarnamn");
-        passwordLabel.setText("Lösenord");
+        Label userLabel = new Label("Användarnamn");
+        Label passwordLabel = new Label("Lösenord");
+        Label welcomeLabel = new Label("Chattack!");
 
         //lägg till elementen till layouten
         VBox layout = new VBox(10);
-        layout.getChildren().addAll(welcomeLabel, userLabel ,nameInput, passwordLabel, passwordInput,  okButton, errorMessage, newUser);
+        layout.getChildren().addAll(
+                welcomeLabel,
+                userLabel,
+                nameInput,
+                passwordLabel,
+                passwordInput,
+                okButton,
+                errorMessageName,
+                errorMessagePassword,
+                newUser);
         layout.setAlignment(Pos.CENTER);
         window.setResizable(false);
-
-
-
 
         //skapa funktionalitet och eventhantering
         window.setOnCloseRequest(e -> {
@@ -120,28 +130,38 @@ public class Controller {
 
         okButton.setDefaultButton(true);
         okButton.setOnAction(e -> {
+            errorMessageName.setStyle("visibility: hidden;");
             //om användaren inte har fyllt i ett namn
             //remove whitespaces
-            String password = passwordInput.getText().replaceAll("\\s+", "");
+            String password = passwordInput.getText();
             String name = nameInput.getText().replaceAll("\\s+","");
-            if( name.equals("") & password.equals("")) {
-                errorMessage.setStyle("visibility: visible;");
-            } else{ // om användaren  fyllt i ett namn
+
+            if (name.equals("")) {
+                errorMessageName.setStyle("visibility: visible;");
+            }else if (!passwordCheck(password, errorMessagePassword )){
+                // TODO: Kolla användare mot listan och se om det matchar
+            }else { // om användaren  fyllt i ett namn och lösen korrekt
                 user.setName(name);
                 user.setPassword(password);
                 window.close();
             }
-
         });
 
-        
-
         //skapa en ny scen med innehållet och lägg upp och visa den
-        Scene scene = new Scene(layout);
+        Scene scene = new Scene(layout, 300, 300);
         window.setScene(scene);
         window.showAndWait();
-        //inlogg.setText("Inloggad användare: " + user.getName());
+//        inlogg.setText("Inloggad användare: " + user.getName());
+    }
 
+    public boolean passwordCheck(String password, Label errorMessagePassword){
+        if (!password.matches("^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=\\S+$).{5,}$")){
+            System.out.println("false");
+            errorMessagePassword.setStyle("visibility: visible");
+            return false;
+        }
+        System.out.println("True");
+        return true;
     }
     private void printMesseges(int roomNr) {
         //loopa igenom meddelanden i det aktuella chatrummet
@@ -152,6 +172,63 @@ public class Controller {
         }
     }
 
+
+    public void registerForm(){
+        Label errorMessageName= new Label("Du måste fylla i ett användarnamn");
+        errorMessageName.setStyle("visibility: hidden");
+        Label nameLabel = new Label("Användarnamn");
+        Label passwordLabel = new Label("Lösenord");
+
+        Label errorMessagePassword= new Label("Minst en liten bokstav \n Minst en stor bokstav \n Minst en siffra \n Inga blanka tecken \n Minst 5 tecken");
+        errorMessagePassword.setStyle("visibility: hidden");
+
+        Stage registerWindow = new Stage();
+        registerWindow.initModality(Modality.APPLICATION_MODAL);
+        registerWindow.setTitle("Ny användare");
+        registerWindow.setResizable(false);
+        TextField nameInputRegistration = new TextField();
+        nameInputRegistration.setPromptText("Namn");
+        nameInputRegistration.setMaxWidth(200);
+        TextField passwordInputRegistration = new TextField();
+        passwordInputRegistration.setPromptText("Lösenord");
+        passwordInputRegistration.setMaxWidth(200);
+        Button registerButton = new Button("Registrera");
+        VBox layout = new VBox(10);
+
+        layout.getChildren().addAll(
+                nameLabel,
+                nameInputRegistration,
+                errorMessageName,
+                passwordLabel,
+                passwordInputRegistration,
+                errorMessagePassword,
+                registerButton);
+        Scene scene1 = new Scene(layout, 300, 300);
+        layout.setAlignment(Pos.CENTER);
+
+        registerWindow.setScene(scene1);
+        registerWindow.show();
+
+        registerButton.setDefaultButton(true);
+        registerButton.setOnAction(e -> {
+            errorMessageName.setStyle("visibility: hidden;");
+            //om användaren inte har fyllt i ett namn
+            //remove whitespaces
+            String password = passwordInputRegistration.getText();
+            String name = nameInputRegistration.getText().replaceAll("\\s+","");
+            if (name.equals("")) {
+                errorMessageName.setStyle("visibility: visible;");
+            }else if (!passwordCheck(password, errorMessagePassword )){ //Metod som kollar att lösen är korrekt
+            }else { // om användaren  fyllt i ett namn och lösen korrekt
+                user.setName(name);
+                user.setPassword(password);
+                registerWindow.close();
+            }
+        });
+    }
+
+
+    
     public void printMessage(Message msg) {
         HBox chatMessageContainer = new HBox();
         Label message = new Label(msg.getSender() + "\n" + msg.getMessageData() + "\n" + new Timestamp(msg.getTime()));
