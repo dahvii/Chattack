@@ -2,7 +2,7 @@ package Client;
 
 import Client.gui.Controller;
 import Data.DataHandler;
-import Server.ChatRoom;
+import Client.ChatRoom;
 import javafx.application.Application;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXMLLoader;

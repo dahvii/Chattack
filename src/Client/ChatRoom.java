@@ -1,7 +1,9 @@
-package Server;
+package Client;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import Data.Message;
 import Data.User;
 
 public class ChatRoom {

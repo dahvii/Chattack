@@ -3,7 +3,7 @@ package Client.gui;
 import Client.ClientSwitch;
 import Data.User;
 import Data.DataMessage;
-import Server.ChatRoom;
+import Client.ChatRoom;
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.geometry.Insets;
@@ -147,7 +147,7 @@ public class Controller {
         Scene scene = new Scene(layout, 300, 300);
         window.setScene(scene);
         window.showAndWait();
-        inlogg.setText("Inloggad användare: " + user.getName());
+//        inlogg.setText("Inloggad användare: " + user.getName());
     }
 
     public boolean passwordCheck(String password, Label errorMessagePassword){
