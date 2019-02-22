@@ -12,6 +12,7 @@ import Data.Message;
 import Client.NetworkClient;
 import javafx.fxml.FXML;
 import javafx.geometry.Pos;
+import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.effect.DropShadow;
@@ -27,7 +28,9 @@ import org.w3c.dom.Text;
 
 import java.sql.Timestamp;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Date;
+import java.util.List;
 
 public class Controller {
 
@@ -40,6 +43,7 @@ public class Controller {
     private String receiverName = "Jebidiah";
     public VBox msgBox;
     private ArrayList<ChatRoom> chatRooms = new ArrayList<>();
+    private Accordion accOnlineUsers;
 
 
     public Controller(){
@@ -60,8 +64,8 @@ public class Controller {
         chatRooms.add(new ChatRoom("Hästklubben"));
 
         printMesseges(0);
+        changeRoom(1);
     }
-
 
     public void sendBtnClick(){
             if( !input.getText().equals("")){
@@ -267,6 +271,36 @@ public class Controller {
         printMesseges(roomNr);
     }
 
+
+    @FXML
+    private void changeRoom(int i) {
+        System.out.println("changeroom metoden för rum nr"+i);
+        msgBox.getChildren().clear();
+
+        //loopa igenom meddelanden i det aktuella chatrummet
+        for (int counter = 0; counter < chatRooms.get(i-1).getMessages().size(); counter++) {
+            Message msg = chatRooms.get(i-1).getMessages().get(counter);
+
+            Label message = new Label(msg.getSender() + "\n" + msg.getMessageData() + "\n" + new Timestamp(msg.getTime()));
+
+            msgBox.getChildren().add(message);
+        }
+        /*
+
+        System.out.println("1"+stackPane.getChildren());
+        stackPane.getChildren().get(2).toFront();
+        System.out.println("2"+stackPane.getChildren());
+
+
+        ObservableList<Node> childs = this.stackPane.getChildren();
+
+        if (childs.size() > 1) {
+
+            Node topNode = childs.get(childs.size()-1);
+            topNode.toFront();
+        }
+      */
+    }
 
 }
 
