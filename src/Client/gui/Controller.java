@@ -26,7 +26,10 @@ import javafx.stage.Modality;
 import javafx.stage.Stage;
 import org.w3c.dom.Text;
 
+import java.io.Serializable;
 import java.sql.Timestamp;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
@@ -41,6 +44,10 @@ public class Controller {
     public ScrollPane allMessagesWindow;
     private User user = new User();
     private String receiverName = "Jebidiah";
+    private LocalDateTime time = LocalDateTime.now();
+    private DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+    //String dateAndTime = time.format(formatter);
+
     public VBox msgBox;
     private ArrayList<ChatRoom> chatRooms = new ArrayList<>();
     private Accordion accOnlineUsers;
@@ -69,7 +76,7 @@ public class Controller {
 
     public void sendBtnClick(){
             if( !input.getText().equals("")){
-                DataMessage dataMessage = new DataMessage(0, new Message(input.getText(), new Date().getTime(), user.getName(), receiverName));
+                DataMessage dataMessage = new DataMessage(0, new Message(input.getText(), LocalDateTime.now(), user.getName(), receiverName));
                 NetworkClient.getInstance().sendToServer(dataMessage);
                 input.clear();
             }
@@ -228,10 +235,10 @@ public class Controller {
     }
 
 
-    
+
     public void printMessage(Message msg) {
         HBox chatMessageContainer = new HBox();
-        Label message = new Label(msg.getSender() + "\n" + msg.getMessageData() + "\n" + new Timestamp(msg.getTime()));
+        Label message = new Label(msg.getSender() + "\n" + msg.getMessageData() + "\n" + msg.getTime().format(formatter));
         message.setMinHeight(Control.USE_PREF_SIZE);
         msgBox.getChildren().add(chatMessageContainer);
         styleMessage(message, chatMessageContainer);
@@ -303,7 +310,3 @@ public class Controller {
     }
 
 }
-
-
-
-
