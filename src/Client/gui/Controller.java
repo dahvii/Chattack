@@ -288,7 +288,7 @@ public class Controller {
         for (int counter = 0; counter < chatRooms.get(i-1).getMessages().size(); counter++) {
             Message msg = chatRooms.get(i-1).getMessages().get(counter);
 
-            Label message = new Label(msg.getSender() + "\n" + msg.getMessageData() + "\n" + new Timestamp(msg.getTime()));
+            Label message = new Label(msg.getSender() + "\n" + msg.getMessageData() + "\n" + msg.getTime().format(formatter));
 
             msgBox.getChildren().add(message);
         }

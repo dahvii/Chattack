@@ -1,5 +1,6 @@
 package Client;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -35,7 +36,7 @@ public class ChatRoom {
         Long time = (long) 13.37;
 
         for (int i =0; i < 10; i++) {
-            messages.add(new Message("Testmeddelande från " + roomName, time, "", ""));
+            messages.add(new Message("Testmeddelande från " + roomName, LocalDateTime.now(), "", ""));
         }
     }
     private void createRooms() {
