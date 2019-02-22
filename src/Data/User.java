@@ -4,7 +4,7 @@ import java.io.Serializable;
 
 public class User implements Serializable {
 
-    private String name;
+    private String name = "";
     private String password;
     private boolean online;
     private String roomName;

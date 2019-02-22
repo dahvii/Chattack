@@ -75,7 +75,9 @@ public class Controller {
         errorMessagePassword.setStyle("visibility: hidden");
 
         TextField nameInput= new TextField();
-        TextField passwordInput= new TextField();
+        nameInput.setMaxWidth(200);
+        PasswordField passwordInput= new PasswordField();
+        passwordInput.setMaxWidth(200);
 
         Button okButton = new Button("Ok");
         Button newUser = new Button ("Inte medlem? \n Tryck här!");
@@ -126,7 +128,7 @@ public class Controller {
         });
 
         //skapa en ny scen med innehållet och lägg upp och visa den
-        Scene scene = new Scene(layout);
+        Scene scene = new Scene(layout, 300, 300);
         window.setScene(scene);
         window.showAndWait();
         inlogg.setText("Inloggad användare: " + user.getName());
