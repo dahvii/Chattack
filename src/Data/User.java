@@ -1,14 +1,16 @@
-package Client;
+package Data;
 
-public class User {
+import java.io.Serializable;
 
-    private String name;
+public class User implements Serializable {
+
+    private String name = "";
     private String password;
     private boolean online;
     private String roomName;
 
     public User(){}
-    public User(String name){
+    public User(String name, String password, boolean online){
         this.name = name;
         this.password = password;
 
@@ -25,6 +27,10 @@ public class User {
 
     public void setStatus() {
         this.online = !this.online;
+    }
+
+    public boolean getStatus() {
+        return online;
     }
 
     public String getPassword() {
