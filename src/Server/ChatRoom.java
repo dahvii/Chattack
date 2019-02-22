@@ -49,7 +49,7 @@ public class ChatRoom {
         this.roomMembers.remove(user);
     }
 
-    private List getRoomMembers() {
+    public List getRoomMembers() {
         return this.roomMembers;
     }
 
