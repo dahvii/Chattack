@@ -1,5 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import java.lang.*?>
+<?import java.net.*?>
+<?import javafx.geometry.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.image.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.text.*?>
 <?import java.net.URL?>
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.control.Label?>
@@ -11,9 +18,11 @@
 <?import javafx.scene.layout.Pane?>
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
-
 <?import javafx.scene.control.Button?>
-<Pane fx:id="root" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" onMouseClicked="#sendBtnClick" prefHeight="643.0" prefWidth="937.0" style="-fx-background-color: linear-gradient(from 25% 25% to 100% 100%, #9da4ad, #bcd3cc);" xmlns="http://javafx.com/javafx/8.0.172-ea" xmlns:fx="http://javafx.com/fxml/1" fx:controller="Client.gui.Controller">
+<?import javafx.scene.control.Accordion?>
+<?import javafx.scene.control.TitledPane?>
+
+<Pane fx:id="root" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" onMouseClicked="#sendBtnClick" prefHeight="643.0" prefWidth="985.0" style="-fx-background-color: linear-gradient(from 25% 25% to 100% 100%, #9da4ad, #bcd3cc);" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="Client.gui.Controller">
    <children>
       <TextField fx:id="input" alignment="TOP_LEFT" layoutX="184.0" layoutY="452.0" onAction="#sendBtnClick" prefHeight="44.0" prefWidth="484.0" />
       <ImageView fitHeight="44.0" fitWidth="57.0" layoutX="184.0" layoutY="14.0" pickOnBounds="true" preserveRatio="true">
@@ -54,9 +63,9 @@
       </VBox>
       <VBox fx:id="msgBox" layoutX="184.0" layoutY="85.0" prefHeight="349.0" prefWidth="567.0" />
       <Accordion layoutX="742.0" layoutY="102.0" prefHeight="383.0" prefWidth="93.0" />
-      <Accordion id="accOnlineUsers" layoutX="751.0" layoutY="102.0">
+      <Accordion id="accOnlineUsers" layoutX="759.0" layoutY="102.0">
         <panes>
-       <!--<TitledPane id="titleSkit" animated="false" text="Skitsnack">
+       <TitledPane id="titleSkit" animated="false" text="Skitsnack">
             <content>
               <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0" />
             </content>
@@ -80,7 +89,7 @@
                <content>
                   <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0" />
                </content>
-            </TitledPane>-->
+            </TitledPane>
         </panes>
       </Accordion>
 

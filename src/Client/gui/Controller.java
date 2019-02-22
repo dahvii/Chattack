@@ -12,6 +12,7 @@ import Data.Message;
 import Client.NetworkClient;
 import javafx.fxml.FXML;
 import javafx.geometry.Pos;
+import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.effect.DropShadow;
@@ -62,9 +63,7 @@ public class Controller {
 
         printMesseges(0);
         changeRoom(1);
-       // displayUsers(chatRooms);
     }
-
 
     public void sendBtnClick(){
             if( !input.getText().equals("")){
@@ -226,16 +225,6 @@ public class Controller {
       */
     }
 
-    private void displayUsers(ArrayList chatrooms) {
-        for (ChatRoom room : chatRooms) {
-            List <User> usersOnline = room.getRoomMembers();
-            TextArea online = new TextArea();
-                for (User user : usersOnline) {
-                    online.appendText(user.getName());
-                    //accOnlineUsers.getPanes().addAll((Collection<? extends TitledPane>) online);
-                }
-        }
-    }
 }
 
 
