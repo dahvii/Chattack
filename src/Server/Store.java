@@ -13,7 +13,7 @@ import java.util.List;
 
 public class Store {
 
-    public List <User> allUsers;
+    public List<User> allUsers;
     //lists for user messages?
     private FileOutputStream fos;
     private FileInputStream fis;
@@ -27,14 +27,14 @@ public class Store {
     }
 
     private void fillWithUsers() {
-        for(int i = 0; i < 10; i++) {
-            allUsers.add(i, new User("Kate" + i, i+"mmmm12MMM", true));
+        for (int i = 0; i < 10; i++) {
+            allUsers.add(i, new User("Kate" + i, i + "mmmm12MMM", true));
             System.out.println("post user add");
         }
     }
 
     private void showUsers() throws FileNotFoundException {
-        for(User user : allUsers) {
+        for (User user : allUsers) {
             System.out.println(user.getName());
             System.out.println(user.getPassword());
             System.out.println(user.getStatus());
@@ -55,17 +55,25 @@ public class Store {
         }
     }
 
-    public Object readFile(){
+    public Object readFile() {
         try (ObjectInputStream ois = new ObjectInputStream(fis)) {
             System.out.println(allUsers.toString());
             return ois.readObject();
-        }
-        catch (NoSuchFileException e) {
+        } catch (NoSuchFileException e) {
             return null;
-        }
-        catch (IOException | ClassNotFoundException e) {
+        } catch (IOException | ClassNotFoundException e) {
             e.printStackTrace();
         }
         return null;
+    }
+
+    private void uniqueUserName(User user) {
+        String username = user.getName();
+
+        for (User obj : allUsers) {
+            if (username.equals(obj.getName())) {
+                System.out.println("username taken!");
+            }
+        }
     }
 }
