@@ -1,25 +1,19 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import javafx.geometry.*?>
-<?import java.net.*?>
-<?import javafx.scene.effect.*?>
-<?import javafx.scene.paint.*?>
-<?import java.lang.*?>
-<?import javafx.scene.control.*?>
-<?import javafx.scene.image.*?>
-<?import javafx.scene.layout.*?>
-<?import javafx.scene.text.*?>
+<?import java.net.URL?>
+<?import javafx.geometry.Insets?>
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.ScrollPane?>
 <?import javafx.scene.control.TextField?>
 <?import javafx.scene.image.Image?>
 <?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.layout.Pane?>
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
-<?import java.net.URL?>
 
-<Pane fx:id="root" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" onMouseClicked="#sendBtnClick" prefHeight="643.0" prefWidth="937.0" style="-fx-background-color: linear-gradient(from 25% 25% to 100% 100%, #9da4ad, #bcd3cc);" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="Client.gui.Controller">
+<?import javafx.scene.control.Button?>
+<Pane fx:id="root" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" onMouseClicked="#sendBtnClick" prefHeight="643.0" prefWidth="937.0" style="-fx-background-color: linear-gradient(from 25% 25% to 100% 100%, #9da4ad, #bcd3cc);" xmlns="http://javafx.com/javafx/8.0.172-ea" xmlns:fx="http://javafx.com/fxml/1" fx:controller="Client.gui.Controller">
    <children>
       <TextField fx:id="input" alignment="TOP_LEFT" layoutX="184.0" layoutY="452.0" onAction="#sendBtnClick" prefHeight="44.0" prefWidth="484.0" />
       <ImageView fitHeight="44.0" fitWidth="57.0" layoutX="184.0" layoutY="14.0" pickOnBounds="true" preserveRatio="true">
@@ -44,23 +38,23 @@
       </ScrollPane>
       <VBox id="vBoxRooms" layoutX="21.0" layoutY="102.0" prefHeight="332.0" prefWidth="148.0">
          <children>
-            <Label id="lblRoom1" alignment="CENTER" contentDisplay="CENTER" onMouseClicked="#lblRoom1" prefHeight="55.0" prefWidth="175.0" styleClass="roomLblStyle" text="Skitsnack">
+            <Button id="0" alignment="CENTER" contentDisplay="CENTER" onAction="#changeRoom" prefHeight="55.0" prefWidth="175.0" styleClass="roomLblStyle" text="Skitsnack">
                <VBox.margin>
                   <Insets bottom="10.0" />
-               </VBox.margin></Label>
-            <Label id="lblRoom2" alignment="CENTER" onMouseClicked="#lblRoom2" prefHeight="55.0" prefWidth="175.0" styleClass="roomLblStyle" text="Om Ninjas" textAlignment="CENTER">
+               </VBox.margin></Button>
+            <Button id="1" alignment="CENTER" onAction="#changeRoom" prefHeight="55.0" prefWidth="175.0" styleClass="roomLblStyle" text="Om Ninjas" textAlignment="CENTER">
                <VBox.margin>
                   <Insets bottom="10.0" />
-               </VBox.margin></Label>
-            <Label id="lblRoom3" alignment="CENTER" onMouseClicked="#lblRoom3" prefHeight="55.0" prefWidth="175.0" styleClass="roomLblStyle" text="Fräsiga Memes">
+               </VBox.margin></Button>
+            <Button id="2" alignment="CENTER" onAction="#changeRoom" prefHeight="55.0" prefWidth="175.0" styleClass="roomLblStyle" text="Fräsiga Memes">
                <VBox.margin>
                   <Insets bottom="10.0" />
-               </VBox.margin></Label>
-            <Label id="lblRoom4" alignment="CENTER" onMouseClicked="#lblRoom4" prefHeight="55.0" prefWidth="175.0" styleClass="roomLblStyle" text="Spel">
+               </VBox.margin></Button>
+            <Button id="3" alignment="CENTER" onAction="#changeRoom" prefHeight="55.0" prefWidth="175.0" styleClass="roomLblStyle" text="Spel">
                <VBox.margin>
                   <Insets bottom="10.0" />
-               </VBox.margin></Label>
-            <Label id="lblRoom5" alignment="CENTER" onMouseClicked="#lblRoom5" prefHeight="55.0" prefWidth="175.0" styleClass="roomLblStyle" text="Hästklubben" />
+               </VBox.margin></Button>
+            <Button id="4" alignment="CENTER" onAction="#changeRoom" prefHeight="55.0" prefWidth="175.0" styleClass="roomLblStyle" text="Hästklubben" />
          </children>
       </VBox>
       <VBox fx:id="msgBox" layoutX="184.0" layoutY="85.0" prefHeight="349.0" prefWidth="567.0" />

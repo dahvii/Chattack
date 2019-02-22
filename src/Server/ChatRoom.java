@@ -10,7 +10,7 @@ public class ChatRoom {
     public String roomName;
     //ArrayList of User objects
     private List roomMembers;
-    int roomNr;
+
 
 
 
@@ -21,9 +21,8 @@ public class ChatRoom {
         createRooms();
     }
 
-    public ChatRoom(String roomName, int roomNr){
+    public ChatRoom(String roomName){
         this.roomName = roomName;
-        this.roomNr= roomNr;
 
         //just for testing
         addMessages();
