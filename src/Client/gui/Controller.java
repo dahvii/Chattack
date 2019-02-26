@@ -3,7 +3,9 @@ package Client.gui;
 import Client.ClientSwitch;
 import Data.User;
 import Data.DataMessage;
+import Client.ChatRoom;
 import javafx.application.Platform;
+import javafx.event.ActionEvent;
 import javafx.geometry.Insets;
 import Data.DataHandler;
 import Data.Message;
@@ -14,33 +16,30 @@ import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.effect.DropShadow;
 import javafx.scene.layout.HBox;
-import javafx.scene.layout.Pane;
-import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
-import org.w3c.dom.Text;
-
-import java.io.Serializable;
-import java.sql.Timestamp;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.Date;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
 
 public class Controller {
 
     private ClientSwitch clientSwitch;
-    public Button sendBtn;
     public TextField input;
-    public VBox messages;
-    public Label inlogg;
     public ScrollPane allMessagesWindow;
     private User user = new User();
-    private String receiverName = "Jebidiah";
-    private LocalDateTime time = LocalDateTime.now();
     private DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
-    //String dateAndTime = time.format(formatter);
+    public VBox msgBox;
+    private Map<String, ChatRoom> chatRooms;
+    private String activeRoom;
+    private Accordion accOnlineUsers;
+
+    private final String[] roomNames = new String[]{"main", "ninjas", "memes", "gaming", "horses"};
+
 
     public Controller(){
         clientSwitch = new ClientSwitch(this);
@@ -48,24 +47,32 @@ public class Controller {
 
     @FXML
     public void initialize(){
-        promt();
-        DataHandler.getInstance().loadMessages(user.getName());
-        DataHandler.getInstance().getAllMessages().forEach(this::printMessage);
+        loginPrompt();
+        chatRooms = Collections.synchronizedMap(new HashMap<>());
+
+        for(String roomName: roomNames) {
+            chatRooms.put(roomName, new ChatRoom(roomName));
+            DataHandler.getInstance().addRoom(roomName);
+            DataHandler.getInstance().loadRoomMessages(roomName);
+        }
+
+        setActiveRoom("main");
+        printRoomMessages(getActiveRoom());
+
         new Thread(clientSwitch::messageListener).start();
-
     }
-
 
     public void sendBtnClick(){
             if( !input.getText().equals("")){
-                DataMessage dataMessage = new DataMessage(0, new Message(input.getText(), LocalDateTime.now(), user.getName(), receiverName));
+                DataMessage dataMessage = new DataMessage(0, new Message(input.getText(), LocalDateTime.now(), user.getName(), getActiveRoom()));
                 NetworkClient.getInstance().sendToServer(dataMessage);
                 input.clear();
             }
     }
 
+    private void loginPrompt(){
+        //TODO: skapa scen istället för stage och lägg till i primarystage
 
-    protected void promt(){
         //skapa ny stage och sätt lite egenskaper
         Stage window = new Stage();
         window.initModality(Modality.APPLICATION_MODAL);
@@ -138,7 +145,7 @@ public class Controller {
         Scene scene = new Scene(layout, 300, 300);
         window.setScene(scene);
         window.showAndWait();
-        inlogg.setText("Inloggad användare: " + user.getName());
+//        inlogg.setText("Inloggad användare: " + user.getName());
     }
 
     public boolean passwordCheck(String password, Label errorMessagePassword){
@@ -205,13 +212,15 @@ public class Controller {
         });
     }
 
-
+    private void printRoomMessages(String roomName) {
+        DataHandler.getInstance().getRoomMessages(roomName).forEach(this::printMessage);
+    }
 
     public void printMessage(Message msg) {
         HBox chatMessageContainer = new HBox();
         Label message = new Label(msg.getSender() + "\n" + msg.getMessageData() + "\n" + msg.getTime().format(formatter));
         message.setMinHeight(Control.USE_PREF_SIZE);
-        messages.getChildren().add(chatMessageContainer);
+        msgBox.getChildren().add(chatMessageContainer);
         styleMessage(message, chatMessageContainer);
         scroll();
     }
@@ -230,11 +239,27 @@ public class Controller {
         chatMessageContainer.setEffect(dropShadow);
     }
 
+    private void scroll(){
+        msgBox.heightProperty().addListener(observable -> allMessagesWindow.setVvalue(1.0));
+    }
+
+    @FXML
+    private void changeRoom(ActionEvent event) {
+        String newRoom = ((Button) event.getSource()).getId();
+        msgBox.getChildren().clear();
+        printRoomMessages(newRoom);
+        setActiveRoom(newRoom);
+    }
+
     public User getUser() {
         return user;
     }
 
-    private void scroll(){
-        messages.heightProperty().addListener(observable -> allMessagesWindow.setVvalue(1.0));
+    public synchronized String getActiveRoom() {
+        return activeRoom;
+    }
+
+    public synchronized void setActiveRoom(String activeRoom) {
+        this.activeRoom = activeRoom;
     }
 }

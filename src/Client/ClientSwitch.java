@@ -16,7 +16,9 @@ public class ClientSwitch {
         switch (data.getCommando()) {
             case (0):
                 DataHandler.getInstance().addMessage(data.getMessage());
-                Platform.runLater(() -> controller.printMessage(data.getMessage()));
+                if(data.getMessage().getReceiver().equals(controller.getActiveRoom())){
+                    Platform.runLater(() -> controller.printMessage(data.getMessage()));
+                }
                 break;
             case(1):
                 System.out.println("CASE 1-" + data.getMessage().getMessageData());
