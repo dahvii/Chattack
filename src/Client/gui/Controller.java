@@ -21,8 +21,11 @@ import javafx.scene.paint.Color;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 
+import java.io.Serializable;
 import java.sql.Timestamp;
-import java.util.*;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.util.Date;
 
 public class Controller {
 
@@ -30,6 +33,7 @@ public class Controller {
     public TextField input;
     public ScrollPane allMessagesWindow;
     private User user = new User();
+    private DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
     public VBox msgBox;
     private Map<String, ChatRoom> chatRooms;
     private String activeRoom;
@@ -61,7 +65,7 @@ public class Controller {
 
     public void sendBtnClick(){
             if( !input.getText().equals("")){
-                DataMessage dataMessage = new DataMessage(0, new Message(input.getText(), new Date().getTime(), user.getName(), getActiveRoom()));
+                DataMessage dataMessage = new DataMessage(0, new Message(input.getText(), LocalDateTime.now(), user.getName(), getActiveRoom()));
                 NetworkClient.getInstance().sendToServer(dataMessage);
                 input.clear();
             }
@@ -215,7 +219,7 @@ public class Controller {
 
     public void printMessage(Message msg) {
         HBox chatMessageContainer = new HBox();
-        Label message = new Label(msg.getSender() + "\n" + msg.getMessageData() + "\n" + new Timestamp(msg.getTime()));
+        Label message = new Label(msg.getSender() + "\n" + msg.getMessageData() + "\n" + msg.getTime().format(formatter));
         message.setMinHeight(Control.USE_PREF_SIZE);
         msgBox.getChildren().add(chatMessageContainer);
         styleMessage(message, chatMessageContainer);
@@ -260,7 +264,3 @@ public class Controller {
         this.activeRoom = activeRoom;
     }
 }
-
-
-
-
