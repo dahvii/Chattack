@@ -1,11 +1,9 @@
 package Data;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 
 public class DataHandler {
-    private List<Message> allMessages;
-//    private Map<String, List<Message>> allRooms;  //For later use
+    private Map<String, List<Message>> allMessages;  //For later use
 
     private static DataHandler instance;
 
@@ -15,25 +13,35 @@ public class DataHandler {
     }
 
     private DataHandler() {
+        allMessages = Collections.synchronizedMap(new HashMap<>());
     }
 
-    public void loadMessages(String name){
-        Object obj = FileHandler.getInstance().readFile(name.toLowerCase()+"-messages.dat");
+    public void loadRoomMessages(String roomName){
+        Object obj = FileHandler.getInstance().readFile(roomName.toLowerCase()+"-messages.dat");
         if (obj instanceof ArrayList) {
-            allMessages = (ArrayList<Message>) obj;
-            System.out.println(allMessages.size());
-        } else allMessages = new ArrayList<>();
+            ((ArrayList<Message>) obj).forEach(this::addMessage);
+        }
     }
 
-    public void saveMessages(String name){
-        FileHandler.getInstance().writeFile(name.toLowerCase()+"-messages.dat", allMessages);
+    public void saveMessages(){
+        getMessageMap().entrySet().forEach(entry ->
+                FileHandler.getInstance().writeFile(
+                        entry.getKey().toLowerCase()+"-messages.dat", entry.getValue()));
+    }
+
+    public void addRoom(String roomName){
+        getMessageMap().putIfAbsent(roomName, new ArrayList<>());
     }
 
     public void addMessage(Message msg){
-        allMessages.add(msg);
+        getMessageMap().get(msg.getReceiver()).add(msg);
     }
 
-    public List<Message> getAllMessages() {
+    public List<Message> getRoomMessages(String roomName){
+        return getMessageMap().get(roomName);
+    }
+
+    public synchronized Map<String, List<Message>> getMessageMap() {
         return allMessages;
     }
 

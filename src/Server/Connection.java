@@ -8,6 +8,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 
 public class Connection {
     private String name;
+    private String activeRoom;
     private NetworkServer networkServer;
     private Socket socket;
     private AtomicBoolean isActive;
@@ -78,4 +79,19 @@ public class Connection {
         this.isActive.set(isActive);
     }
 
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public String getActiveRoom() {
+        return activeRoom;
+    }
+
+    public void setActiveRoom(String activeRoom) {
+        this.activeRoom = activeRoom;
+    }
 }

@@ -12,38 +12,30 @@ import Data.Message;
 import Client.NetworkClient;
 import javafx.fxml.FXML;
 import javafx.geometry.Pos;
-import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.effect.DropShadow;
 import javafx.scene.layout.HBox;
-import javafx.scene.layout.Pane;
-import javafx.scene.layout.Priority;
-import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
-import org.w3c.dom.Text;
 
 import java.sql.Timestamp;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
 
 public class Controller {
 
     private ClientSwitch clientSwitch;
-    public Button sendBtn;
     public TextField input;
-    public Label inlogg;
     public ScrollPane allMessagesWindow;
     private User user = new User();
-    private String receiverName = "Jebidiah";
     public VBox msgBox;
-    private ArrayList<ChatRoom> chatRooms = new ArrayList<>();
+    private Map<String, ChatRoom> chatRooms;
+    private String activeRoom;
     private Accordion accOnlineUsers;
+
+    private final String[] roomNames = new String[]{"main", "ninjas", "memes", "gaming", "horses"};
 
 
     public Controller(){
@@ -52,31 +44,30 @@ public class Controller {
 
     @FXML
     public void initialize(){
-        promt();
-        DataHandler.getInstance().loadMessages(user.getName());
-        DataHandler.getInstance().getAllMessages().forEach(this::printMessage);
+        loginPrompt();
+        chatRooms = Collections.synchronizedMap(new HashMap<>());
+
+        for(String roomName: roomNames) {
+            chatRooms.put(roomName, new ChatRoom(roomName));
+            DataHandler.getInstance().addRoom(roomName);
+            DataHandler.getInstance().loadRoomMessages(roomName);
+        }
+
+        setActiveRoom("main");
+        printRoomMessages(getActiveRoom());
+
         new Thread(clientSwitch::messageListener).start();
-
-        chatRooms.add(new ChatRoom("skitsnack"));
-        chatRooms.add(new ChatRoom("Om Ninjas"));
-        chatRooms.add(new ChatRoom("Fräsiga Memes"));
-        chatRooms.add(new ChatRoom("spel"));
-        chatRooms.add(new ChatRoom("Hästklubben"));
-
-        printMesseges(0);
-        changeRoom(1);
     }
 
     public void sendBtnClick(){
             if( !input.getText().equals("")){
-                DataMessage dataMessage = new DataMessage(0, new Message(input.getText(), new Date().getTime(), user.getName(), receiverName));
+                DataMessage dataMessage = new DataMessage(0, new Message(input.getText(), new Date().getTime(), user.getName(), getActiveRoom()));
                 NetworkClient.getInstance().sendToServer(dataMessage);
                 input.clear();
             }
     }
 
-
-    private void promt(){
+    private void loginPrompt(){
         //TODO: skapa scen istället för stage och lägg till i primarystage
 
         //skapa ny stage och sätt lite egenskaper
@@ -163,15 +154,6 @@ public class Controller {
         System.out.println("True");
         return true;
     }
-    private void printMesseges(int roomNr) {
-        //loopa igenom meddelanden i det aktuella chatrummet
-        for (int counter = 0; counter < chatRooms.get(roomNr).getMessages().size(); counter++) {
-
-            Message msg = chatRooms.get(roomNr).getMessages().get(counter);
-            printMessage(msg);
-        }
-    }
-
 
     public void registerForm(){
         Label errorMessageName= new Label("Du måste fylla i ett användarnamn");
@@ -227,8 +209,10 @@ public class Controller {
         });
     }
 
+    private void printRoomMessages(String roomName) {
+        DataHandler.getInstance().getRoomMessages(roomName).forEach(this::printMessage);
+    }
 
-    
     public void printMessage(Message msg) {
         HBox chatMessageContainer = new HBox();
         Label message = new Label(msg.getSender() + "\n" + msg.getMessageData() + "\n" + new Timestamp(msg.getTime()));
@@ -252,56 +236,29 @@ public class Controller {
         chatMessageContainer.setEffect(dropShadow);
     }
 
-    public User getUser() {
-        return user;
-    }
-
     private void scroll(){
         msgBox.heightProperty().addListener(observable -> allMessagesWindow.setVvalue(1.0));
     }
 
-
     @FXML
     private void changeRoom(ActionEvent event) {
-        Button button=(Button) event.getSource();
-        int roomNr =Integer.parseInt(button.getId());
-
+        String newRoom = ((Button) event.getSource()).getId();
         msgBox.getChildren().clear();
-
-        printMesseges(roomNr);
+        printRoomMessages(newRoom);
+        setActiveRoom(newRoom);
     }
 
-
-    @FXML
-    private void changeRoom(int i) {
-        System.out.println("changeroom metoden för rum nr"+i);
-        msgBox.getChildren().clear();
-
-        //loopa igenom meddelanden i det aktuella chatrummet
-        for (int counter = 0; counter < chatRooms.get(i-1).getMessages().size(); counter++) {
-            Message msg = chatRooms.get(i-1).getMessages().get(counter);
-
-            Label message = new Label(msg.getSender() + "\n" + msg.getMessageData() + "\n" + new Timestamp(msg.getTime()));
-
-            msgBox.getChildren().add(message);
-        }
-        /*
-
-        System.out.println("1"+stackPane.getChildren());
-        stackPane.getChildren().get(2).toFront();
-        System.out.println("2"+stackPane.getChildren());
-
-
-        ObservableList<Node> childs = this.stackPane.getChildren();
-
-        if (childs.size() > 1) {
-
-            Node topNode = childs.get(childs.size()-1);
-            topNode.toFront();
-        }
-      */
+    public User getUser() {
+        return user;
     }
 
+    public synchronized String getActiveRoom() {
+        return activeRoom;
+    }
+
+    public synchronized void setActiveRoom(String activeRoom) {
+        this.activeRoom = activeRoom;
+    }
 }
 
 

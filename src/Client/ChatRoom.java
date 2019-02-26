@@ -8,53 +8,24 @@ import Data.User;
 
 public class ChatRoom {
 
-    public String roomName;
-    //ArrayList of User objects
-    private List roomMembers;
+    private String name;
+    private List<String> users;
 
-
-
-
-    private ArrayList<Message> messages = new ArrayList<>();
-
-
-    public ChatRoom() {
-        createRooms();
+    public ChatRoom(String name){
+        this.name = name;
+        users = new ArrayList<>();
     }
 
-    public ChatRoom(String roomName){
-        this.roomName = roomName;
-
-        //just for testing
-        addMessages();
-        System.out.println("skapat chatroom "+roomName+" och "+messages.size()+" meddelanden");
+    public void addUser(String user) {
+        users.add(user);
     }
 
-    private void addMessages(){
-
-        Long time = (long) 13.37;
-
-        for (int i =0; i < 10; i++) {
-            messages.add(new Message("Testmeddelande från " + roomName, time, "", ""));
-        }
-    }
-    private void createRooms() {
-
+    public void removeUser(String user) {
+        users.remove(user);
     }
 
-    private void addToRoom(User user) {
-        this.roomMembers.add(user);
+    public List getUsers() {
+        return users;
     }
 
-    private void removeFromRoom(User user) {
-        this.roomMembers.remove(user);
-    }
-
-    public List getRoomMembers() {
-        return this.roomMembers;
-    }
-
-    public ArrayList<Message> getMessages() {
-        return messages;
-    }
 }

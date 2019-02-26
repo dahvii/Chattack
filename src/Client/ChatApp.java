@@ -2,13 +2,10 @@ package Client;
 
 import Client.gui.Controller;
 import Data.DataHandler;
-import Client.ChatRoom;
 import javafx.application.Application;
-import javafx.collections.ObservableList;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
-import javafx.scene.layout.StackPane;
 import javafx.stage.Stage;
 
 public class ChatApp extends Application {
@@ -37,7 +34,7 @@ public class ChatApp extends Application {
 
     @Override
     public void stop() {
-        DataHandler.getInstance().saveMessages(controller.getUser().getName());
+        DataHandler.getInstance().saveMessages();
         NetworkClient.getInstance().setActive(false);
     }
 
