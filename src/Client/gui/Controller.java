@@ -64,6 +64,7 @@ public class Controller {
         }
 
         buttons = new Button[]{main, ninjas, memes, gaming, horses};
+        styleActiveButton(true, main);
 
         setActiveRoom("main");
     }
@@ -279,14 +280,24 @@ public class Controller {
         msgBox.getChildren().clear();
         printRoomMessages(newRoom);
 
+        //find the exited roomButton and style it back to default
         for(Button button : buttons){
             if (button.getId().equals(activeRoom)){
-                button.setStyle(" -fx-background-color:  #c3c4c4, linear-gradient(#d6d6d6 50%, white 100%), radial-gradient(center 50% -40%, radius 200%, #e6e6e6 45%, rgba(230,230,230,0) 50%);");
+                styleActiveButton(false, button);
             }
         }
         setActiveRoom(newRoom);
         NetworkClient.getInstance().sendToServer(new DataMessage(1, new Message(newRoom, null, user.getName(), null)));
-        ((Button) event.getSource()).setStyle("-fx-background-color:  #c3c4c4, linear-gradient(from 25% 25% to 100% 100%, #3ead3a, #93d379), radial-gradient(center 50% -40%, radius 200%, #e6e6e6 45%, rgba(230,230,230,0) 50%);");
+        //style the active roomButton
+        styleActiveButton(true, ((Button) event.getSource()));
+    }
+
+    private void styleActiveButton(Boolean isActive, Button button){
+        if(isActive){
+            button.setStyle("-fx-background-color:  #c3c4c4, linear-gradient(from 25% 25% to 100% 100%, #3ead3a, #93d379), radial-gradient(center 50% -40%, radius 200%, #e6e6e6 45%, rgba(230,230,230,0) 50%);");
+        }else{
+            button.setStyle(" -fx-background-color:  #c3c4c4, linear-gradient(#d6d6d6 50%, white 100%), radial-gradient(center 50% -40%, radius 200%, #e6e6e6 45%, rgba(230,230,230,0) 50%);");
+        }
     }
 
     public User getUser() {
