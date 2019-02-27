@@ -271,6 +271,7 @@ public class Controller {
         msgBox.getChildren().clear();
         printRoomMessages(newRoom);
         setActiveRoom(newRoom);
+        NetworkClient.getInstance().sendToServer(new DataMessage(1, new Message(newRoom, null, user.getName(), null)));
     }
 
     public User getUser() {

@@ -23,7 +23,6 @@ public class ServerSwitch {
                 break;
             case (1):
                 networkServer.roomSwitch(data.getMessage().getSender(), data.getMessage().getMessageData());
-                networkServer.sendToAll(new DataMessage(5, data.getMessage()));
                 break;
         }
     }
