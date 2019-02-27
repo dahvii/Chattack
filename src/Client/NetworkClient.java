@@ -88,7 +88,6 @@ public class NetworkClient {
         } catch (IOException e) {
             e.printStackTrace();
         }
-
     }
 
     public boolean isActive() {

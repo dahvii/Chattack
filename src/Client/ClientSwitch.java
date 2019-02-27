@@ -16,7 +16,7 @@ public class ClientSwitch {
         switch (data.getCommando()) {
 //          Receive message
             case (0):
-                DataHandler.getInstance().addMessage(data.getMessage());
+                controller.addMessageToRoom(data.getMessage());
                 if(data.getMessage().getReceiver().equals(controller.getActiveRoom())){
                     Platform.runLater(() -> controller.printMessage(data.getMessage()));
                 }
@@ -35,9 +35,13 @@ public class ClientSwitch {
                 controller.setServerResponse(true);
                 controller.setServerWaiting(false);
                 break;
-//          Server delivers active user list
+//          Server delivers active user list for one room
             case(4):
-                System.out.println("CASE 1-" + data.getMessage().getMessageData());
+                controller.loadChatRoomUsers(data.getMessage());
+                break;
+//          Server delivers move user to new room
+            case(5):
+                controller.moveChatRoomUser(data.getMessage());
                 break;
         }
     }
@@ -49,7 +53,7 @@ public class ClientSwitch {
                 if (o instanceof DataMessage) {
                     switchDataMessage((DataMessage) o);
                 }
-                Thread.sleep(100);
+                Thread.sleep(50);
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }

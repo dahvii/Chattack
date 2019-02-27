@@ -7,7 +7,6 @@ import Client.ChatRoom;
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.geometry.Insets;
-import Server.DataHandler;
 import Data.Message;
 import Client.NetworkClient;
 import javafx.fxml.FXML;
@@ -58,13 +57,9 @@ public class Controller {
 
         for (String roomName : roomNames) {
             chatRooms.put(roomName, new ChatRoom(roomName));
-            DataHandler.getInstance().addRoom(roomName);
-            DataHandler.getInstance().loadRoomMessages(roomName);
         }
 
         setActiveRoom("main");
-        printRoomMessages(getActiveRoom());
-
     }
 
     public void sendBtnClick() {
@@ -235,8 +230,12 @@ public class Controller {
         });
     }
 
+    public void addMessageToRoom(Message msg){
+        getChatRoom(msg.getReceiver()).addMessage(msg);
+    }
+
     private void printRoomMessages(String roomName) {
-        DataHandler.getInstance().getRoomMessages(roomName).forEach(this::printMessage);
+        getChatRoom(roomName).getMessages().forEach(this::printMessage);
     }
 
     public void printMessage(Message msg) {
@@ -300,5 +299,25 @@ public class Controller {
 
     public void setServerWaiting(boolean serverWaiting) {
         this.serverWaiting.set(serverWaiting);
+    }
+
+    public void loadChatRoomUsers(Message msg){
+        String[] users = msg.getMessageData().split(",");
+        for (String user:users){
+            getChatRoom(msg.getReceiver()).addUser(user);
+        }
+        System.out.println(getChatRoom(msg.getReceiver()).getUsers().size());
+    }
+
+    public void moveChatRoomUser(Message msg){
+        getChatRoom(msg.getReceiver()).removeUser(msg.getSender());
+        getChatRoom(msg.getMessageData()).addUser(msg.getSender());
+//        TEST
+        System.out.println(getChatRoom(msg.getReceiver()).getUsers().size());
+        System.out.println(getChatRoom(msg.getMessageData()).getUsers().size());
+    }
+
+    private ChatRoom getChatRoom(String roomName){
+        return chatRooms.get(roomName);
     }
 }

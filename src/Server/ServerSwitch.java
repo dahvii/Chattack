@@ -1,6 +1,11 @@
 package Server;
 
 import Data.DataMessage;
+import Data.Message;
+
+import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 public class ServerSwitch {
     NetworkServer networkServer;
@@ -13,10 +18,12 @@ public class ServerSwitch {
     public void switchDataMessage(DataMessage data){
         switch (data.getCommando()) {
             case (0):
+                DataHandler.getInstance().addMessage(data.getMessage());
                 networkServer.sendToAll(data);
                 break;
             case(1):
-                networkServer.roomSwitch(data.getMessage().getSender(), data.getMessage().getReceiver());
+                networkServer.roomSwitch(data.getMessage().getSender(), data.getMessage().getMessageData());
+                networkServer.sendToAll(new DataMessage(5, data.getMessage()));
                 break;
         }
     }
@@ -37,5 +44,26 @@ public class ServerSwitch {
                     .checkUser(data.getMessage().getSender(), data.getMessage().getMessageData());
         }
         else return false;
+    }
+
+    public DataMessage getOnlineUsers(String roomName){
+        String s = "";
+        for(Connection c: networkServer.getConnectionList()) {
+            if (c.getActiveRoom().equals(roomName)) s+=c.getName()+",";
+        }
+        return new DataMessage(4, new Message(s, LocalDateTime.now(), null, roomName));
+    }
+
+    public ArrayList<DataMessage> getLatestMessages(){
+        ArrayList<DataMessage> messageList = new ArrayList<>();
+        LocalDateTime localDateTime = LocalDateTime.now();
+        for(List<Message> roomMessages: DataHandler.getInstance().getMessageMap().values()){
+            roomMessages.forEach(message -> {
+                if (message.getTime().isAfter(localDateTime.minusHours(24))){
+                    messageList.add(new DataMessage(0, message));
+                }
+            });
+        }
+        return messageList;
     }
 }

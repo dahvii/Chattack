@@ -20,6 +20,7 @@ public class DataHandler {
 
     public void loadRoomMessages(String roomName){
         Object obj = FileHandler.getInstance().readFile(roomName.toLowerCase()+"-messages.dat");
+        addRoom(roomName);
         if (obj instanceof ArrayList) {
             ArrayList<Message> messages = (ArrayList<Message>) obj;
             System.out.println(messages.size());
@@ -29,10 +30,8 @@ public class DataHandler {
         }
     }
 
-    public void saveMessages(){
-        getMessageMap().entrySet().forEach(entry ->
-                FileHandler.getInstance().writeFile(
-                        entry.getKey().toLowerCase()+"-messages.dat", entry.getValue()));
+    public void saveRoomMessages(String roomName){
+        FileHandler.getInstance().writeFile(roomName.toLowerCase()+"-messages.dat", getMessageMap().get(roomName));
     }
 
     public void addRoom(String roomName){
@@ -41,6 +40,7 @@ public class DataHandler {
 
     public void addMessage(Message msg){
         getMessageMap().get(msg.getReceiver()).add(msg);
+        saveRoomMessages(msg.getReceiver());
     }
 
     public List<Message> getRoomMessages(String roomName){

@@ -1,6 +1,7 @@
 package Server;
 
 import Data.DataMessage;
+import Data.Message;
 
 import java.io.IOException;
 import java.io.Serializable;
@@ -17,19 +18,19 @@ public class NetworkServer implements Runnable {
     private Queue<Serializable> dataMessageQueue;
     private Queue<Socket> socketQueue;
     private List<Connection> connectionList;
-    private Map<String, List<String>> roomUserMap;
+//    private Map<String, List<Message>> roomMessageMap;
     private ServerSwitch serverSwitch;
-    private final String[] roomNames = new String[]{"main", "ninjas", "memes", "gaming", "horses"};
+    public final static String[] roomNames = new String[]{"main", "ninjas", "memes", "gaming", "horses"};
 
     public NetworkServer() {
         connectionList = Collections.synchronizedList(new ArrayList<>());
-        roomUserMap = Collections.synchronizedMap(new HashMap<>());
+//        roomMessageMap = Collections.synchronizedMap(new HashMap<>());
         dataMessageQueue = new ConcurrentLinkedQueue<>();
         socketQueue = new ConcurrentLinkedQueue<>();
         serverSwitch = new ServerSwitch(this);
 
         for(String room:roomNames){
-            roomUserMap.put(room, new ArrayList<>());
+//            roomMessageMap.put(room, new ArrayList<>());
             DataHandler.getInstance().loadRoomMessages(room);
         }
 
@@ -78,6 +79,10 @@ public class NetworkServer implements Runnable {
                 roomSwitch(c.getName(), "main");
             }
         }
+    }
+
+    public synchronized List<Connection> getConnectionList() {
+        return connectionList;
     }
 
     public void addMessage(Object o){

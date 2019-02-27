@@ -1,6 +1,7 @@
 package Server;
 
 import Data.DataMessage;
+import Data.Message;
 
 import java.io.IOException;
 import java.io.ObjectInputStream;
@@ -40,6 +41,12 @@ public class Connection {
         Thread listenerThread = new Thread(this::run);
         listenerThread.setDaemon(true);
         listenerThread.start();
+
+        for(String roomName: NetworkServer.roomNames){
+            sendToClient(serverSwitch.getOnlineUsers(roomName));
+        }
+
+        serverSwitch.getLatestMessages().forEach(this::sendToClient);
     }
 
     private void login(){
