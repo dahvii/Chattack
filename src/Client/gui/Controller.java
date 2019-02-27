@@ -36,14 +36,15 @@ public class Controller {
     private AtomicBoolean serverWaiting = new AtomicBoolean(true);
     public TextField input;
     public ScrollPane allMessagesWindow;
-//    public VBox main;
-    private Map<String, VBox> userVboxMap = new HashMap<>();
     private User user = new User();
     private DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
     public VBox msgBox;
     private Map<String, ChatRoom> chatRooms;
     private String activeRoom;
     private Accordion accOnlineUsers;
+    @FXML VBox mainBox, ninjasBox, memesBox, gamingBox, horsesBox;
+    private VBox[] onlineBoxes;
+    private Map<String, VBox> userVboxMap = new HashMap<>();
     @FXML Button main, ninjas, memes, gaming, horses;
     private Button [] buttons;
 
@@ -58,20 +59,20 @@ public class Controller {
 
     @FXML
     public void initialize() {
-        new Thread(clientSwitch::messageListener).start();
-        loginPrompt();
-
         chatRooms = Collections.synchronizedMap(new HashMap<>());
+        onlineBoxes = new VBox[]{mainBox, ninjasBox, memesBox, gamingBox, horsesBox};
 
-        for (String roomName : roomNames) {
-            chatRooms.put(roomName, new ChatRoom(roomName));
-            userVboxMap.put(roomName, new VBox());
+        for (int i = 0; i<roomNames.length; i++){
+            chatRooms.put(roomNames[i], new ChatRoom(roomNames[i]));
+            userVboxMap.put(roomNames[i], onlineBoxes[i]);
         }
 
         buttons = new Button[]{main, ninjas, memes, gaming, horses};
         styleActiveButton(true, main);
 
         setActiveRoom("main");
+        new Thread(clientSwitch::messageListener).start();
+        loginPrompt();
     }
 
     public void sendBtnClick() {
@@ -281,9 +282,14 @@ public class Controller {
     }
 
     public void addOnlineUsersGraphic(String roomName, String name){
-        Label label1 = new Label(user.getName());
+        Label label1 = new Label(name);
         label1.setId(name);
-        userVboxMap.get(roomName).getChildren().add(label1);
+        try{
+            System.out.println(roomName + ":" + name);
+            System.out.println(userVboxMap.get(roomName).getChildren().add(label1));
+        } catch (Exception e){
+            e.printStackTrace();
+        }
     }
 
     private void scroll() {
@@ -353,7 +359,7 @@ public class Controller {
         if (users != null) {
             for (String user : users) {
                 getChatRoom(msg.getReceiver()).addUser(user);
-                addOnlineUsersGraphic(msg.getMessageData(), user);
+                addOnlineUsersGraphic(msg.getReceiver(), user);
             }
 
         }

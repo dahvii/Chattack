@@ -64,40 +64,56 @@
          </content></ScrollPane>
       <Accordion id="accOnlineUsers" layoutX="698.0" layoutY="73.0" prefHeight="361.0" prefWidth="212.0">
         <panes>
-       <TitledPane id="titleSkit" animated="false" text="Skitsnack">
+            <TitledPane id="pane-main" animated="false" text="Skitsnack">
                <content>
                   <ScrollPane prefHeight="148.0" prefWidth="210.0">
-                     <opaqueInsets>
-                        <Insets />
-                     </opaqueInsets>
+                     <!--<opaqueInsets>-->
+                        <!--<Insets />-->
+                     <!--</opaqueInsets>-->
                      <content>
-                        <VBox fx:id="main" prefHeight="200.0" prefWidth="209.0" />
-                     </content></ScrollPane>
+                        <VBox fx:id="mainBox" prefHeight="200.0" prefWidth="209.0" />
+                     </content>
+                  </ScrollPane>
                </content>
           </TitledPane>
-            <TitledPane id="titleKlubben" animated="false" layoutX="10.0" layoutY="127.0" prefHeight="20.0" prefWidth="202.0" text="Hästklubben">
+            <TitledPane id="pane-ninjas" animated="false" layoutX="10.0" layoutY="10.0" text="Om Ninjas">
+              <content>
+                 <ScrollPane prefHeight="200.0" prefWidth="200.0">
+                    <content>
+                       <VBox fx:id="ninjasBox" prefHeight="200.0" prefWidth="209.0" />
+                    </content>
+                 </ScrollPane>
+              </content>
+           </TitledPane>
+            <TitledPane id="pane-memes" animated="false" layoutX="10.0" layoutY="10.0" text="Fräsiga Memes">
                <content>
-                  <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0" />
+                  <ScrollPane prefHeight="200.0" prefWidth="200.0">
+                     <content>
+                        <VBox fx:id="memesBox" prefHeight="200.0" prefWidth="209.0" />
+                     </content>
+                  </ScrollPane>
                </content>
             </TitledPane>
-            <TitledPane id="titleSkit" animated="false" layoutX="10.0" layoutY="10.0" text="Om Ninjas">
+            <TitledPane id="pane-gaming" animated="false" layoutX="10.0" layoutY="10.0" text="Spel">
                <content>
-                  <ScrollPane prefHeight="200.0" prefWidth="200.0" />
+                  <ScrollPane prefHeight="200.0" prefWidth="200.0">
+                     <content>
+                        <VBox fx:id="gamingBox" prefHeight="200.0" prefWidth="209.0" />
+                     </content>
+                  </ScrollPane>
                </content>
-            </TitledPane>
-            <TitledPane id="titleSkit" animated="false" layoutX="10.0" layoutY="10.0" text="Fräsiga Memes">
+           </TitledPane>
+            <TitledPane id="pane-horses" animated="false" layoutX="10.0" layoutY="10.0" text="Hästklubben">
                <content>
-                  <ScrollPane prefHeight="200.0" prefWidth="200.0" />
-               </content>
-            </TitledPane>
-            <TitledPane id="titleSkit" animated="false" layoutX="10.0" layoutY="10.0" text="Hästklubben">
-               <content>
-                  <ScrollPane prefHeight="200.0" prefWidth="200.0" />
+                  <ScrollPane prefHeight="200.0" prefWidth="200.0">
+                     <content>
+                        <VBox fx:id="horsesBox" prefHeight="200.0" prefWidth="209.0" />
+                     </content>
+                  </ScrollPane>
                </content>
             </TitledPane>
         </panes>
       </Accordion>
-
    </children>
   <stylesheets>
       <URL value="@Style.css" />
