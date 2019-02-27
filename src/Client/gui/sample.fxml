@@ -2,6 +2,7 @@
 
 <?import java.net.URL?>
 <?import javafx.geometry.Insets?>
+<?import javafx.scene.Cursor?>
 <?import javafx.scene.control.Accordion?>
 <?import javafx.scene.control.Button?>
 <?import javafx.scene.control.Label?>
@@ -32,62 +33,78 @@
          <image>
             <Image url="@icons8-send-comment-50.png" />
          </image>
+         <cursor>
+            <Cursor fx:constant="CLOSED_HAND" />
+         </cursor>
       </ImageView>
-      <VBox id="vBoxRooms" alignment="BOTTOM_CENTER" layoutX="31.0" layoutY="58.0" prefHeight="289.0" prefWidth="129.0">
+      <VBox id="vBoxRooms" alignment="CENTER" layoutX="14.0" layoutY="45.0" prefHeight="318.0" prefWidth="148.0">
          <children>
-            <Button id="main" alignment="CENTER" contentDisplay="CENTER" onAction="#changeRoom" prefHeight="55.0" prefWidth="175.0" styleClass="roomLblStyle" text="Skitsnack">
+            <Label alignment="CENTER" contentDisplay="TOP" prefHeight="21.0" prefWidth="129.0" text="Rum">
+               <font>
+                  <Font size="27.0" />
+               </font>
+               <opaqueInsets>
+                  <Insets />
+               </opaqueInsets>
+            </Label>
+            <Button id="main" alignment="CENTER" contentDisplay="CENTER" onAction="#changeRoom" prefHeight="40.0" prefWidth="120.0" styleClass="roomLblStyle" text="Skitsnack">
                <VBox.margin>
                   <Insets bottom="10.0" />
                </VBox.margin></Button>
-            <Button id="ninjas" alignment="CENTER" onAction="#changeRoom" prefHeight="55.0" prefWidth="175.0" styleClass="roomLblStyle" text="Om Ninjas" textAlignment="CENTER">
+            <Button id="ninjas" alignment="CENTER" onAction="#changeRoom" prefHeight="40.0" prefWidth="120.0" styleClass="roomLblStyle" text="Om Ninjas" textAlignment="CENTER">
                <VBox.margin>
                   <Insets bottom="10.0" />
                </VBox.margin></Button>
-            <Button id="memes" alignment="CENTER" onAction="#changeRoom" prefHeight="55.0" prefWidth="175.0" styleClass="roomLblStyle" text="Fräsiga Memes">
+            <Button id="memes" alignment="CENTER" onAction="#changeRoom" prefHeight="40.0" prefWidth="120.0" styleClass="roomLblStyle" text="Fräsiga Memes">
                <VBox.margin>
                   <Insets bottom="10.0" />
                </VBox.margin></Button>
-            <Button id="gaming" alignment="CENTER" onAction="#changeRoom" prefHeight="55.0" prefWidth="175.0" styleClass="roomLblStyle" text="Spel">
+            <Button id="gaming" alignment="CENTER" onAction="#changeRoom" prefHeight="40.0" prefWidth="120.0" styleClass="roomLblStyle" text="Spel">
                <VBox.margin>
                   <Insets bottom="10.0" />
                </VBox.margin></Button>
-            <Button id="horses" alignment="CENTER" onAction="#changeRoom" prefHeight="55.0" prefWidth="175.0" styleClass="roomLblStyle" text="Hästklubben" />
+            <Button id="horses" alignment="CENTER" onAction="#changeRoom" prefHeight="40.0" prefWidth="120.0" styleClass="roomLblStyle" text="Hästklubben" />
          </children>
       </VBox>
-      <ScrollPane fx:id="allMessagesWindow" hbarPolicy="NEVER" layoutX="184.0" layoutY="7.0" prefHeight="470.0" prefWidth="484.0">
+      <ScrollPane fx:id="allMessagesWindow" hbarPolicy="NEVER" layoutX="184.0" layoutY="6.0" prefHeight="471.0" prefWidth="484.0">
          <content>
-            <VBox fx:id="msgBox" prefHeight="350.0" prefWidth="467.0" />
+            <VBox fx:id="msgBox" prefHeight="466.0" prefWidth="467.0" />
          </content></ScrollPane>
       <Accordion id="accOnlineUsers" layoutX="698.0" layoutY="73.0" prefHeight="361.0" prefWidth="212.0">
         <panes>
        <TitledPane id="titleSkit" animated="false" text="Skitsnack">
-            <content>
-              <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0" />
-            </content>
-          </TitledPane>
-          <TitledPane id="titleNinjas" animated="false" text="Om Ninjas">
-            <content>
-              <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0" />
-            </content>
-          </TitledPane>
-          <TitledPane id="titleMemes" animated="false" text="Fräsiga Memes">
-            <content>
-              <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0" />
-            </content>
-          </TitledPane>
-            <TitledPane id="titleSpel" animated="false" layoutX="10.0" layoutY="88.0" text="Spel">
                <content>
-                  <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0" />
+                  <ScrollPane prefHeight="148.0" prefWidth="210.0">
+                     <opaqueInsets>
+                        <Insets />
+                     </opaqueInsets>
+                     <content>
+                        <VBox fx:id="main" prefHeight="200.0" prefWidth="209.0" />
+                     </content></ScrollPane>
                </content>
-            </TitledPane>
+          </TitledPane>
             <TitledPane id="titleKlubben" animated="false" layoutX="10.0" layoutY="127.0" prefHeight="20.0" prefWidth="202.0" text="Hästklubben">
                <content>
                   <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0" />
                </content>
             </TitledPane>
+            <TitledPane id="titleSkit" animated="false" layoutX="10.0" layoutY="10.0" text="Om Ninjas">
+               <content>
+                  <ScrollPane prefHeight="200.0" prefWidth="200.0" />
+               </content>
+            </TitledPane>
+            <TitledPane id="titleSkit" animated="false" layoutX="10.0" layoutY="10.0" text="Fräsiga Memes">
+               <content>
+                  <ScrollPane prefHeight="200.0" prefWidth="200.0" />
+               </content>
+            </TitledPane>
+            <TitledPane id="titleSkit" animated="false" layoutX="10.0" layoutY="10.0" text="Hästklubben">
+               <content>
+                  <ScrollPane prefHeight="200.0" prefWidth="200.0" />
+               </content>
+            </TitledPane>
         </panes>
       </Accordion>
-      <Label alignment="CENTER" contentDisplay="TOP" layoutX="31.0" layoutY="26.0" prefHeight="21.0" prefWidth="129.0" text="Rum" />
 
    </children>
   <stylesheets>

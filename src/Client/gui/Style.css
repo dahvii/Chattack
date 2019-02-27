@@ -14,5 +14,7 @@
 }
 
 .root{
-    -fx-background-color: linear-gradient(from 25% 25% to 100% 100%, #9da4ad, #bcd3cc);
+    -fx-background-color: #525F73;
+    -fx-faint-focus-color: transparent;
+    -fx-focus-color: transparent;
 }

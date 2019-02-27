@@ -4,6 +4,8 @@ import Client.ClientSwitch;
 import Data.User;
 import Data.DataMessage;
 import Client.ChatRoom;
+import Server.NetworkServer;
+import Server.Server;
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.geometry.Insets;
@@ -34,6 +36,8 @@ public class Controller {
     private AtomicBoolean serverWaiting = new AtomicBoolean(true);
     public TextField input;
     public ScrollPane allMessagesWindow;
+//    public VBox main;
+    private Map<String, VBox> userVboxMap = new HashMap<>();
     private User user = new User();
     private DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
     public VBox msgBox;
@@ -57,7 +61,9 @@ public class Controller {
 
         for (String roomName : roomNames) {
             chatRooms.put(roomName, new ChatRoom(roomName));
+            userVboxMap.put(roomName, new VBox());
         }
+
 
         setActiveRoom("main");
     }
@@ -141,7 +147,7 @@ public class Controller {
         });
 
         //skapa en ny scen med innehållet och lägg upp och visa den
-        Scene scene = new Scene(layout, 300, 300);
+        Scene scene = new Scene(layout, 300, 400);
         window.setScene(scene);
         window.showAndWait();
 //        inlogg.setText("Inloggad användare: " + user.getName());
@@ -242,12 +248,13 @@ public class Controller {
         HBox chatMessageContainer = new HBox();
         Label message = new Label(msg.getSender() + "\n" + msg.getMessageData() + "\n" + msg.getTime().format(formatter));
         message.setMinHeight(Control.USE_PREF_SIZE);
+        message.setMinWidth(450);
         msgBox.getChildren().add(chatMessageContainer);
-        styleMessage(message, chatMessageContainer);
+        styleMessage(message, chatMessageContainer, msg);
         scroll();
     }
 
-    public void styleMessage(Label message, HBox chatMessageContainer) {
+    public void styleMessage(Label message, HBox chatMessageContainer, Message msg) {
         DropShadow dropShadow = new DropShadow();
         dropShadow.setRadius(5.0);
         dropShadow.setOffsetX(3.0);
@@ -256,9 +263,20 @@ public class Controller {
         message.setWrapText(true);
         message.setPadding(new Insets(5, 5, 5, 5));
         message.setStyle("-fx-background-color: linear-gradient(from 25% 25% to 100% 100%, #3ead3a, #93d379); -fx-background-radius: 5");
+        if(msg.getSender().equals(user.getName())){
+            message.setStyle("-fx-background-color: linear-gradient(from 25% 25% to 100% 100%, #525F73, #7a96aa); -fx-background-radius: 5");
+            message.setTextFill(Color.WHITE);
+        }
         chatMessageContainer.getChildren().add(message);
         chatMessageContainer.setMargin(message, new Insets(5, 5, 5, 5));
         chatMessageContainer.setEffect(dropShadow);
+    }
+
+//    public void addOnlineUsersGraphic(String roomName, String name){
+    public void addOnlineUsersGraphic(){
+        Label label1 = new Label(user.getName());
+//        label1.setId(name);
+//        userVboxMap.get(roomName).getChildren().add(label1);
     }
 
     private void scroll() {
@@ -310,14 +328,23 @@ public class Controller {
         if (users != null) {
             for (String user : users) {
                 getChatRoom(msg.getReceiver()).addUser(user);
+                addOnlineUsersGraphic();
+//                addOnlineUsersGraphic(msg.getMessageData(), user);
             }
+
         }
     }
 
     public void moveChatRoomUser(Message msg) {
         getChatRoom(msg.getReceiver()).removeUser(msg.getSender());
         getChatRoom(msg.getMessageData()).addUser(msg.getSender());
-//        TEST
+        int i;
+
+//        Label tempLabel = (Label) userVboxMap.get(msg.getReceiver()).lookup("#" + msg.getSender());
+//        userVboxMap.get(msg.getMessageData()).getChildren().add(tempLabel);
+//        userVboxMap.get(msg.getReceiver()).getChildren().remove(tempLabel);
+
+
         System.out.println(getChatRoom(msg.getReceiver()).getUsers().size());
         System.out.println(getChatRoom(msg.getMessageData()).getUsers().size());
     }
