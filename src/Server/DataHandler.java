@@ -1,4 +1,6 @@
-package Data;
+package Server;
+
+import Data.Message;
 
 import java.util.*;
 
@@ -19,7 +21,11 @@ public class DataHandler {
     public void loadRoomMessages(String roomName){
         Object obj = FileHandler.getInstance().readFile(roomName.toLowerCase()+"-messages.dat");
         if (obj instanceof ArrayList) {
-            ((ArrayList<Message>) obj).forEach(this::addMessage);
+            ArrayList<Message> messages = (ArrayList<Message>) obj;
+            System.out.println(messages.size());
+            if(!messages.isEmpty()) {
+                messages.forEach(this::addMessage);
+            }
         }
     }
 

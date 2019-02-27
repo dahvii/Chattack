@@ -1,7 +1,7 @@
 package Client;
 
 import Client.gui.Controller;
-import Data.DataHandler;
+import Server.DataHandler;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
@@ -34,7 +34,7 @@ public class ChatApp extends Application {
 
     @Override
     public void stop() {
-        DataHandler.getInstance().saveMessages();
+//        DataHandler.getInstance().saveMessages();
         NetworkClient.getInstance().setActive(false);
     }
 
