@@ -40,6 +40,10 @@ public class Controller {
     private Map<String, ChatRoom> chatRooms;
     private String activeRoom;
     private Accordion accOnlineUsers;
+    @FXML Button main, ninjas, memes, gaming, horses;
+    private Button [] buttons;
+
+
 
     private final String[] roomNames = new String[]{"main", "ninjas", "memes", "gaming", "horses"};
 
@@ -58,6 +62,8 @@ public class Controller {
         for (String roomName : roomNames) {
             chatRooms.put(roomName, new ChatRoom(roomName));
         }
+
+        buttons = new Button[]{main, ninjas, memes, gaming, horses};
 
         setActiveRoom("main");
     }
@@ -271,7 +277,14 @@ public class Controller {
         String newRoom = ((Button) event.getSource()).getId();
         msgBox.getChildren().clear();
         printRoomMessages(newRoom);
+
+        for(Button button : buttons){
+            if (button.getId().equals(activeRoom)){
+                button.setStyle(" -fx-background-color:  #c3c4c4, linear-gradient(#d6d6d6 50%, white 100%), radial-gradient(center 50% -40%, radius 200%, #e6e6e6 45%, rgba(230,230,230,0) 50%);");
+            }
+        }
         setActiveRoom(newRoom);
+        ((Button) event.getSource()).setStyle("-fx-background-color:  #c3c4c4, linear-gradient(from 25% 25% to 100% 100%, #3ead3a, #93d379), radial-gradient(center 50% -40%, radius 200%, #e6e6e6 45%, rgba(230,230,230,0) 50%);");
     }
 
     public User getUser() {
@@ -284,6 +297,7 @@ public class Controller {
 
     public synchronized void setActiveRoom(String activeRoom) {
         this.activeRoom = activeRoom;
+
     }
 
     public boolean getServerResponse() {
