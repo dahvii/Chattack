@@ -44,6 +44,10 @@ public class Controller {
     private Map<String, ChatRoom> chatRooms;
     private String activeRoom;
     private Accordion accOnlineUsers;
+    @FXML Button main, ninjas, memes, gaming, horses;
+    private Button [] buttons;
+
+
 
     private final String[] roomNames = new String[]{"main", "ninjas", "memes", "gaming", "horses"};
 
@@ -64,6 +68,8 @@ public class Controller {
             userVboxMap.put(roomName, new VBox());
         }
 
+        buttons = new Button[]{main, ninjas, memes, gaming, horses};
+        styleActiveButton(true, main);
 
         setActiveRoom("main");
     }
@@ -85,12 +91,9 @@ public class Controller {
         window.setMinHeight(400);
 
         //skapa element och egenskaperna för innehållet
-        Label errorMessageName = new Label();
-        errorMessageName.setText("Du måste fylla i ett användarnamn");
-        errorMessageName.setStyle("visibility: hidden");
-        Label errorMessagePassword = new Label();
-        errorMessagePassword.setText("Minst en liten bokstav \n Minst en stor bokstav \n Minst en siffra \n Inga blanka tecken \n Minst 5 tecken");
-        errorMessagePassword.setStyle("visibility: hidden");
+        Label errorMessage = new Label();
+        errorMessage.setText("Felaktigt användarnamn eller lösenord");
+        errorMessage.setStyle("visibility: hidden");
 
         TextField nameInput = new TextField();
         nameInput.setMaxWidth(200);
@@ -114,8 +117,7 @@ public class Controller {
                 passwordLabel,
                 passwordInput,
                 okButton,
-                errorMessageName,
-                errorMessagePassword,
+                errorMessage,
                 newUser);
         layout.setAlignment(Pos.CENTER);
         window.setResizable(false);
@@ -128,17 +130,15 @@ public class Controller {
 
         okButton.setDefaultButton(true);
         okButton.setOnAction(e -> {
-            errorMessageName.setStyle("visibility: hidden;");
+            errorMessage.setStyle("visibility: hidden;");
             //om användaren inte har fyllt i ett namn
             //remove whitespaces
             String password = passwordInput.getText();
             String name = nameInput.getText().replaceAll("\\s+", "");
 
             if (name.equals("")) {
-                errorMessageName.setStyle("visibility: visible;");
-            } else if (!password.matches("^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=\\S+$).{5,}$")) {
-                errorMessageName.setStyle("visibility: visible;");
-            } else if (!passwordCheck(name, password, errorMessagePassword)) {
+                errorMessage.setStyle("visibility: visible;");
+            } else if (!passwordCheck(name, password, errorMessage)) {
             } else { // om användaren  fyllt i ett namn och lösen korrekt
                 user.setName(name);
 //                user.setPassword(password);
@@ -153,20 +153,19 @@ public class Controller {
 //        inlogg.setText("Inloggad användare: " + user.getName());
     }
 
-    public boolean passwordCheck(String userName, String password, Label errorMessagePassword) {
+    public boolean passwordCheck(String userName, String password, Label errorMessage) {
         DataMessage dataMessage = new DataMessage(3, new Message(password, LocalDateTime.now(), userName, null));
-        return loginOrRegister(dataMessage, errorMessagePassword);
+        return loginOrRegister(dataMessage, errorMessage);
     }
 
 
-    private boolean registerCheck(String userName, String password, Label errorMessagePassword) {
+    private boolean registerCheck(String userName, String password, Label errorMessage) {
         DataMessage dataMessage = new DataMessage(2, new Message(password, LocalDateTime.now(), userName, null));
-        return loginOrRegister(dataMessage, errorMessagePassword);
+        return loginOrRegister(dataMessage, errorMessage);
     }
 
-    private boolean loginOrRegister(DataMessage msg, Label errorMessagePassword) {
-        while (isServerWaiting()) {
-        }
+    private boolean loginOrRegister(DataMessage msg, Label errorMessage){
+        while (isServerWaiting()){}
         NetworkClient.getInstance().sendToServer(msg);
         setServerWaiting(true);
 
@@ -177,7 +176,7 @@ public class Controller {
             return true;
         } else {
             System.out.println("false");
-            errorMessagePassword.setStyle("visibility: visible");
+            errorMessage.setStyle("visibility: visible");
         }
         return false;
     }
@@ -188,8 +187,11 @@ public class Controller {
         Label nameLabel = new Label("Användarnamn");
         Label passwordLabel = new Label("Lösenord");
 
-        Label errorMessagePassword = new Label("Minst en liten bokstav \n Minst en stor bokstav \n Minst en siffra \n Inga blanka tecken \n Minst 5 tecken");
+        Label errorMessagePassword = new Label("Lösenordet måste bestå av: \n Minst en liten bokstav \n Minst en stor bokstav \n Minst en siffra \n Inga blanka tecken \n Minst 5 tecken");
         errorMessagePassword.setStyle("visibility: hidden");
+
+        Label errorMessageRegister = new Label("Användarnamnet är upptaget");
+        errorMessageRegister.setStyle("visibility: hidden");
 
         Stage registerWindow = new Stage();
         registerWindow.initModality(Modality.APPLICATION_MODAL);
@@ -211,6 +213,7 @@ public class Controller {
                 passwordLabel,
                 passwordInputRegistration,
                 errorMessagePassword,
+                errorMessageRegister,
                 registerButton);
         Scene scene1 = new Scene(layout, 300, 300);
         layout.setAlignment(Pos.CENTER);
@@ -221,15 +224,20 @@ public class Controller {
         registerButton.setDefaultButton(true);
         registerButton.setOnAction(e -> {
             errorMessageName.setStyle("visibility: hidden;");
-            //om användaren inte har fyllt i ett namn
-            //remove whitespaces
+            errorMessagePassword.setStyle("visibility: hidden;");
+            errorMessageRegister.setStyle("visibility: hidden;");
+
+
+            //getpasswordinput
             String password = passwordInputRegistration.getText();
+            //get nameinput and remove whitespaces
             String name = nameInputRegistration.getText().replaceAll("\\s+", "");
+
             if (name.equals("")) {
                 errorMessageName.setStyle("visibility: visible;");
-            } else if (!password.matches("^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=\\S+$).{5,}$")) {
-                errorMessageName.setStyle("visibility: visible;");
-            } else if (!registerCheck(name, password, errorMessagePassword)) { //Metod som kollar att lösen är korrekt
+            } else if(!password.matches("^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=\\S+$).{5,}$")){
+                errorMessagePassword.setStyle("visibility: visible;");
+            } else if (!registerCheck(name, password, errorMessageRegister)) { //Metod som kollar att lösen är korrekt
             } else { // om användaren  fyllt i ett namn och lösen korrekt
                 registerWindow.close();
             }
@@ -287,8 +295,25 @@ public class Controller {
         String newRoom = ((Button) event.getSource()).getId();
         msgBox.getChildren().clear();
         printRoomMessages(newRoom);
+
+        //find the exited roomButton and style it back to default
+        for(Button button : buttons){
+            if (button.getId().equals(activeRoom)){
+                styleActiveButton(false, button);
+            }
+        }
         setActiveRoom(newRoom);
         NetworkClient.getInstance().sendToServer(new DataMessage(1, new Message(newRoom, null, user.getName(), null)));
+        //style the active roomButton
+        styleActiveButton(true, ((Button) event.getSource()));
+    }
+
+    private void styleActiveButton(Boolean isActive, Button button){
+        if(isActive){
+            button.setStyle("-fx-background-color:  #c3c4c4, linear-gradient(from 25% 25% to 100% 100%, #3ead3a, #93d379), radial-gradient(center 50% -40%, radius 200%, #e6e6e6 45%, rgba(230,230,230,0) 50%);");
+        }else{
+            button.setStyle(" -fx-background-color:  #c3c4c4, linear-gradient(#d6d6d6 50%, white 100%), radial-gradient(center 50% -40%, radius 200%, #e6e6e6 45%, rgba(230,230,230,0) 50%);");
+        }
     }
 
     public User getUser() {
@@ -301,6 +326,7 @@ public class Controller {
 
     public synchronized void setActiveRoom(String activeRoom) {
         this.activeRoom = activeRoom;
+
     }
 
     public boolean getServerResponse() {
