@@ -7,85 +7,70 @@ import Client.ChatRoom;
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.geometry.Insets;
-import Data.DataHandler;
 import Data.Message;
 import Client.NetworkClient;
 import javafx.fxml.FXML;
 import javafx.geometry.Pos;
-import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.effect.DropShadow;
 import javafx.scene.layout.HBox;
-import javafx.scene.layout.Pane;
-import javafx.scene.layout.Priority;
-import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
-import org.w3c.dom.Text;
 
-import java.io.Serializable;
-import java.sql.Timestamp;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Date;
-import java.util.List;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 public class Controller {
 
     private ClientSwitch clientSwitch;
-    public Button sendBtn;
+    private AtomicBoolean serverResponse = new AtomicBoolean(false);
+    private AtomicBoolean serverWaiting = new AtomicBoolean(true);
     public TextField input;
-    public Label inlogg;
     public ScrollPane allMessagesWindow;
     private User user = new User();
-    private String receiverName = "Jebidiah";
-    private LocalDateTime time = LocalDateTime.now();
     private DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
-    //String dateAndTime = time.format(formatter);
-
     public VBox msgBox;
-    private ArrayList<ChatRoom> chatRooms = new ArrayList<>();
+    private Map<String, ChatRoom> chatRooms;
+    private String activeRoom;
     private Accordion accOnlineUsers;
 
+    private final String[] roomNames = new String[]{"main", "ninjas", "memes", "gaming", "horses"};
 
-    public Controller(){
+
+    public Controller() {
         clientSwitch = new ClientSwitch(this);
     }
 
     @FXML
-    public void initialize(){
-        promt();
-        DataHandler.getInstance().loadMessages(user.getName());
-        DataHandler.getInstance().getAllMessages().forEach(this::printMessage);
+    public void initialize() {
         new Thread(clientSwitch::messageListener).start();
+        loginPrompt();
 
-        chatRooms.add(new ChatRoom("skitsnack"));
-        chatRooms.add(new ChatRoom("Om Ninjas"));
-        chatRooms.add(new ChatRoom("Fräsiga Memes"));
-        chatRooms.add(new ChatRoom("spel"));
-        chatRooms.add(new ChatRoom("Hästklubben"));
+        chatRooms = Collections.synchronizedMap(new HashMap<>());
 
-        printMesseges(0);
-        changeRoom(1);
+        for (String roomName : roomNames) {
+            chatRooms.put(roomName, new ChatRoom(roomName));
+        }
+
+        setActiveRoom("main");
     }
 
-    public void sendBtnClick(){
-            if( !input.getText().equals("")){
-                DataMessage dataMessage = new DataMessage(0, new Message(input.getText(), LocalDateTime.now(), user.getName(), receiverName));
-                NetworkClient.getInstance().sendToServer(dataMessage);
-                input.clear();
-            }
+    public void sendBtnClick() {
+        if (!input.getText().equals("")) {
+            DataMessage dataMessage = new DataMessage(0, new Message(input.getText(), LocalDateTime.now(), user.getName(), getActiveRoom()));
+            NetworkClient.getInstance().sendToServer(dataMessage);
+            input.clear();
+        }
     }
 
-
-    private void promt(){
-        //TODO: skapa scen istället för stage och lägg till i primarystage
-
+    private void loginPrompt() {
         //skapa ny stage och sätt lite egenskaper
         Stage window = new Stage();
         window.initModality(Modality.APPLICATION_MODAL);
@@ -94,20 +79,20 @@ public class Controller {
         window.setMinHeight(400);
 
         //skapa element och egenskaperna för innehållet
-        Label errorMessageName= new Label();
+        Label errorMessageName = new Label();
         errorMessageName.setText("Du måste fylla i ett användarnamn");
         errorMessageName.setStyle("visibility: hidden");
-        Label errorMessagePassword= new Label();
+        Label errorMessagePassword = new Label();
         errorMessagePassword.setText("Minst en liten bokstav \n Minst en stor bokstav \n Minst en siffra \n Inga blanka tecken \n Minst 5 tecken");
         errorMessagePassword.setStyle("visibility: hidden");
 
-        TextField nameInput= new TextField();
+        TextField nameInput = new TextField();
         nameInput.setMaxWidth(200);
-        PasswordField passwordInput= new PasswordField();
+        PasswordField passwordInput = new PasswordField();
         passwordInput.setMaxWidth(200);
 
         Button okButton = new Button("Ok");
-        Button newUser = new Button ("Inte medlem? \n Tryck här!");
+        Button newUser = new Button("Inte medlem? \n Tryck här!");
         newUser.setOnAction(event -> registerForm());
 
         Label userLabel = new Label("Användarnamn");
@@ -141,15 +126,16 @@ public class Controller {
             //om användaren inte har fyllt i ett namn
             //remove whitespaces
             String password = passwordInput.getText();
-            String name = nameInput.getText().replaceAll("\\s+","");
+            String name = nameInput.getText().replaceAll("\\s+", "");
 
             if (name.equals("")) {
                 errorMessageName.setStyle("visibility: visible;");
-            }else if (!passwordCheck(password, errorMessagePassword )){
-                // TODO: Kolla användare mot listan och se om det matchar
-            }else { // om användaren  fyllt i ett namn och lösen korrekt
+            } else if(!password.matches("^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=\\S+$).{5,}$")) {
+                errorMessageName.setStyle("visibility: visible;");
+            } else if (!passwordCheck(name, password, errorMessagePassword)) {
+            } else { // om användaren  fyllt i ett namn och lösen korrekt
                 user.setName(name);
-                user.setPassword(password);
+//                user.setPassword(password);
                 window.close();
             }
         });
@@ -161,32 +147,40 @@ public class Controller {
 //        inlogg.setText("Inloggad användare: " + user.getName());
     }
 
-    public boolean passwordCheck(String password, Label errorMessagePassword){
-        if (!password.matches("^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=\\S+$).{5,}$")){
+    public boolean passwordCheck(String userName, String password, Label errorMessagePassword) {
+        DataMessage dataMessage = new DataMessage(3, new Message(password, LocalDateTime.now(), userName, null));
+        return loginOrRegister(dataMessage, errorMessagePassword);
+    }
+
+
+    private boolean registerCheck(String userName, String password, Label errorMessagePassword) {
+        DataMessage dataMessage = new DataMessage(2, new Message(password, LocalDateTime.now(), userName, null));
+        return loginOrRegister(dataMessage, errorMessagePassword);
+    }
+
+    private boolean loginOrRegister(DataMessage msg, Label errorMessagePassword){
+        while (isServerWaiting()){}
+        NetworkClient.getInstance().sendToServer(msg);
+        setServerWaiting(true);
+
+        while (isServerWaiting()) {}
+        if(getServerResponse()) {
+            System.out.println("True");
+            return true;
+        } else {
             System.out.println("false");
             errorMessagePassword.setStyle("visibility: visible");
-            return false;
         }
-        System.out.println("True");
-        return true;
-    }
-    private void printMesseges(int roomNr) {
-        //loopa igenom meddelanden i det aktuella chatrummet
-        for (int counter = 0; counter < chatRooms.get(roomNr).getMessages().size(); counter++) {
-
-            Message msg = chatRooms.get(roomNr).getMessages().get(counter);
-            printMessage(msg);
-        }
+        return false;
     }
 
-
-    public void registerForm(){
-        Label errorMessageName= new Label("Du måste fylla i ett användarnamn");
+    public void registerForm() {
+        Label errorMessageName = new Label("Du måste fylla i ett användarnamn");
         errorMessageName.setStyle("visibility: hidden");
         Label nameLabel = new Label("Användarnamn");
         Label passwordLabel = new Label("Lösenord");
 
-        Label errorMessagePassword= new Label("Minst en liten bokstav \n Minst en stor bokstav \n Minst en siffra \n Inga blanka tecken \n Minst 5 tecken");
+        Label errorMessagePassword = new Label("Minst en liten bokstav \n Minst en stor bokstav \n Minst en siffra \n Inga blanka tecken \n Minst 5 tecken");
         errorMessagePassword.setStyle("visibility: hidden");
 
         Stage registerWindow = new Stage();
@@ -222,19 +216,25 @@ public class Controller {
             //om användaren inte har fyllt i ett namn
             //remove whitespaces
             String password = passwordInputRegistration.getText();
-            String name = nameInputRegistration.getText().replaceAll("\\s+","");
+            String name = nameInputRegistration.getText().replaceAll("\\s+", "");
             if (name.equals("")) {
                 errorMessageName.setStyle("visibility: visible;");
-            }else if (!passwordCheck(password, errorMessagePassword )){ //Metod som kollar att lösen är korrekt
-            }else { // om användaren  fyllt i ett namn och lösen korrekt
-                user.setName(name);
-                user.setPassword(password);
+            } else if(!password.matches("^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=\\S+$).{5,}$")){
+                errorMessageName.setStyle("visibility: visible;");
+            } else if (!registerCheck(name, password, errorMessagePassword)) { //Metod som kollar att lösen är korrekt
+            } else { // om användaren  fyllt i ett namn och lösen korrekt
                 registerWindow.close();
             }
         });
     }
 
+    public void addMessageToRoom(Message msg){
+        getChatRoom(msg.getReceiver()).addMessage(msg);
+    }
 
+    private void printRoomMessages(String roomName) {
+        getChatRoom(roomName).getMessages().forEach(this::printMessage);
+    }
 
     public void printMessage(Message msg) {
         HBox chatMessageContainer = new HBox();
@@ -245,7 +245,7 @@ public class Controller {
         scroll();
     }
 
-    public void styleMessage(Label message, HBox chatMessageContainer){
+    public void styleMessage(Label message, HBox chatMessageContainer) {
         DropShadow dropShadow = new DropShadow();
         dropShadow.setRadius(5.0);
         dropShadow.setOffsetX(3.0);
@@ -259,54 +259,63 @@ public class Controller {
         chatMessageContainer.setEffect(dropShadow);
     }
 
+    private void scroll() {
+        msgBox.heightProperty().addListener(observable -> allMessagesWindow.setVvalue(1.0));
+    }
+
+    @FXML
+    private void changeRoom(ActionEvent event) {
+        String newRoom = ((Button) event.getSource()).getId();
+        msgBox.getChildren().clear();
+        printRoomMessages(newRoom);
+        setActiveRoom(newRoom);
+    }
+
     public User getUser() {
         return user;
     }
 
-    private void scroll(){
-        msgBox.heightProperty().addListener(observable -> allMessagesWindow.setVvalue(1.0));
+    public synchronized String getActiveRoom() {
+        return activeRoom;
     }
 
-
-    @FXML
-    private void changeRoom(ActionEvent event) {
-        Button button=(Button) event.getSource();
-        int roomNr =Integer.parseInt(button.getId());
-
-        msgBox.getChildren().clear();
-
-        printMesseges(roomNr);
+    public synchronized void setActiveRoom(String activeRoom) {
+        this.activeRoom = activeRoom;
     }
 
+    public boolean getServerResponse() {
+        return serverResponse.get();
+    }
 
-    @FXML
-    private void changeRoom(int i) {
-        System.out.println("changeroom metoden för rum nr"+i);
-        msgBox.getChildren().clear();
+    public void setServerResponse(boolean serverResponse) {
+        this.serverResponse.set(serverResponse);
+    }
 
-        //loopa igenom meddelanden i det aktuella chatrummet
-        for (int counter = 0; counter < chatRooms.get(i-1).getMessages().size(); counter++) {
-            Message msg = chatRooms.get(i-1).getMessages().get(counter);
+    public boolean isServerWaiting() {
+        return serverWaiting.get();
+    }
 
-            Label message = new Label(msg.getSender() + "\n" + msg.getMessageData() + "\n" + msg.getTime().format(formatter));
+    public void setServerWaiting(boolean serverWaiting) {
+        this.serverWaiting.set(serverWaiting);
+    }
 
-            msgBox.getChildren().add(message);
+    public void loadChatRoomUsers(Message msg){
+        String[] users = msg.getMessageData().split(",");
+        for (String user:users){
+            getChatRoom(msg.getReceiver()).addUser(user);
         }
-        /*
-
-        System.out.println("1"+stackPane.getChildren());
-        stackPane.getChildren().get(2).toFront();
-        System.out.println("2"+stackPane.getChildren());
-
-
-        ObservableList<Node> childs = this.stackPane.getChildren();
-
-        if (childs.size() > 1) {
-
-            Node topNode = childs.get(childs.size()-1);
-            topNode.toFront();
-        }
-      */
+        System.out.println(getChatRoom(msg.getReceiver()).getUsers().size());
     }
 
+    public void moveChatRoomUser(Message msg){
+        getChatRoom(msg.getReceiver()).removeUser(msg.getSender());
+        getChatRoom(msg.getMessageData()).addUser(msg.getSender());
+//        TEST
+        System.out.println(getChatRoom(msg.getReceiver()).getUsers().size());
+        System.out.println(getChatRoom(msg.getMessageData()).getUsers().size());
+    }
+
+    private ChatRoom getChatRoom(String roomName){
+        return chatRooms.get(roomName);
+    }
 }
