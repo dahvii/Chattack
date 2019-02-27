@@ -76,7 +76,7 @@ public class NetworkServer implements Runnable {
             Connection c = new Connection(serverSwitch, s);
             if(c.isActive()) {
                 connectionList.add(c);
-                roomSwitch(c.getName(), "main");
+                //roomSwitch(c.getName(), "main");
             }
         }
     }
