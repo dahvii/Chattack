@@ -1,4 +1,4 @@
-package Data;
+package Server;
 
 import java.io.IOException;
 import java.io.ObjectInputStream;
@@ -16,8 +16,8 @@ public class FileHandler {
     }
 
     private FileHandler() {
-
     }
+
 
     public Object readFile(String path){
         try (ObjectInputStream ois = new ObjectInputStream(Files.newInputStream(Paths.get(path)))) {

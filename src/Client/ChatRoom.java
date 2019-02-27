@@ -10,10 +10,13 @@ public class ChatRoom {
 
     private String name;
     private List<String> users;
+    private List<Message> messages;
 
     public ChatRoom(String name){
         this.name = name;
         users = new ArrayList<>();
+        messages = new ArrayList<>();
+
     }
 
     public void addUser(String user) {
@@ -26,6 +29,14 @@ public class ChatRoom {
 
     public List getUsers() {
         return users;
+    }
+
+    public void addMessage(Message message) {
+        messages.add(message);
+    }
+
+    public List<Message> getMessages() {
+        return messages;
     }
 
 }

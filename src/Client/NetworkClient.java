@@ -11,10 +11,10 @@ import java.util.concurrent.atomic.AtomicBoolean;
 public class NetworkClient {
     private static NetworkClient instance;
     private Queue<Object> messageQueue;
-    private String name;
     private Socket socket;
     private AtomicBoolean isActive;
     private ObjectOutputStream objectOutputStream;
+    private ObjectInputStream objectInputStream;
 
     private NetworkClient(){
         isActive = new AtomicBoolean();
@@ -31,6 +31,7 @@ public class NetworkClient {
             messageQueue = new ConcurrentLinkedQueue<>();
             socket = new Socket("localhost", 3000);
             objectOutputStream = new ObjectOutputStream(socket.getOutputStream());
+            objectInputStream = new ObjectInputStream(socket.getInputStream());
             socket.setTcpNoDelay(true);
 
         } catch (IOException e) {
@@ -40,6 +41,15 @@ public class NetworkClient {
         Thread listenerThread = new Thread(this::run);
         listenerThread.setDaemon(true);
         listenerThread.start();
+    }
+
+    public Object receiveObject(){
+        try {
+            return objectInputStream.readObject();
+        } catch (IOException | ClassNotFoundException e) {
+            e.printStackTrace();
+        }
+        return null;
     }
 
     public void sendToServer(Object o){
@@ -59,16 +69,9 @@ public class NetworkClient {
     }
 
     public void run() {
-        ObjectInputStream objectInputStream  = null;
-        try {
-            objectInputStream = new ObjectInputStream(socket.getInputStream());
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-
         while (isActive()){
             try {
-                Object o =  objectInputStream.readObject();
+                Object o =  receiveObject();
                 if (o !=null) {
                     addMessage(o);
                     System.out.println("From server: " + o);
@@ -85,7 +88,6 @@ public class NetworkClient {
         } catch (IOException e) {
             e.printStackTrace();
         }
-
     }
 
     public boolean isActive() {
@@ -95,5 +97,4 @@ public class NetworkClient {
     public void setActive(boolean isActive) {
         this.isActive.set(isActive);
     }
-
 }

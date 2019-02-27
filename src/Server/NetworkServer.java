@@ -1,6 +1,7 @@
 package Server;
 
 import Data.DataMessage;
+import Data.Message;
 
 import java.io.IOException;
 import java.io.Serializable;
@@ -12,26 +13,38 @@ import java.util.concurrent.atomic.AtomicBoolean;
 
 public class NetworkServer implements Runnable {
 
-    private Queue<Serializable> dataMessageQueue;
     private ServerSocket serverSocket;
     private AtomicBoolean isActive = new AtomicBoolean();
+    private Queue<Serializable> dataMessageQueue;
+    private Queue<Socket> socketQueue;
     private List<Connection> connectionList;
     private ServerSwitch serverSwitch;
-    //private List<ChatRoom> chatRooms;
+    public final static String[] roomNames = new String[]{"main", "ninjas", "memes", "gaming", "horses"};
 
     public NetworkServer() {
-        connectionList = Collections.synchronizedList(new ArrayList<Connection>());
+        connectionList = Collections.synchronizedList(new ArrayList<>());
         dataMessageQueue = new ConcurrentLinkedQueue<>();
+        socketQueue = new ConcurrentLinkedQueue<>();
         serverSwitch = new ServerSwitch(this);
+
+        for(String room:roomNames){
+            DataHandler.getInstance().loadRoomMessages(room);
+        }
+
         try {
             serverSocket = new ServerSocket(3000);
         } catch (IOException e) {
             e.printStackTrace();
         }
+
         setActive(true);
-        Thread consumerThread = new Thread(this::consume);
-        consumerThread.setDaemon(true);
-        consumerThread.start();
+
+        Thread consumerMessagesThread = new Thread(this::consumeMessages);
+        Thread consumeSocketsThread = new Thread(this::consumeSockets);
+        consumerMessagesThread.setDaemon(true);
+        consumerMessagesThread.start();
+        consumeSocketsThread.setDaemon(true);
+        consumeSocketsThread.start();
     }
 
     public synchronized void sendToAll(Object o) {
@@ -46,8 +59,30 @@ public class NetworkServer implements Runnable {
         }
     }
 
-    private void addConnection(Socket socket){
-        connectionList.add(new Connection(this, socket));
+    public void roomSwitch(String user, String newRoom){
+        connectionList.forEach(c -> {
+            if(c.getName().equals(user)){
+                System.out.println("ROOMSWICH");
+                String oldRoom = c.getActiveRoom();
+                c.setActiveRoom(newRoom);
+                sendToAll(new DataMessage(5, new Message(newRoom, null, user, oldRoom)));
+            }
+        });
+    }
+
+    private void addConnection(){
+        Socket s = socketQueue.poll();
+        if(s!=null) {
+            Connection c = new Connection(serverSwitch, s);
+            if(c.isActive()) {
+                connectionList.add(c);
+                roomSwitch(c.getName(), "main");
+            }
+        }
+    }
+
+    public synchronized List<Connection> getConnectionList() {
+        return connectionList;
     }
 
     public void addMessage(Object o){
@@ -62,7 +97,18 @@ public class NetworkServer implements Runnable {
         isActive.set(active);
     }
 
-    private void consume(){
+    private void consumeSockets(){
+        while (isActive()){
+            if(!socketQueue.isEmpty()) new Thread(this::addConnection).start();
+            try {
+                Thread.sleep(1);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
+    private void consumeMessages(){
         while (isActive()){
                 Object o = dataMessageQueue.poll();
                 if(o instanceof DataMessage) serverSwitch.switchDataMessage((DataMessage) o);
@@ -79,7 +125,7 @@ public class NetworkServer implements Runnable {
             while (isActive()) {
                 try {
                     Socket s = serverSocket.accept();
-                    addConnection(s);
+                    socketQueue.add(s);
                     Thread.sleep(1);
                 } catch (IOException | InterruptedException e) {
                     e.printStackTrace();

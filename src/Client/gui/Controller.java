@@ -7,7 +7,6 @@ import Client.ChatRoom;
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.geometry.Insets;
-import Data.DataHandler;
 import Data.Message;
 import Client.NetworkClient;
 import javafx.fxml.FXML;
@@ -20,15 +19,19 @@ import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
+
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 public class Controller {
 
     private ClientSwitch clientSwitch;
+    private AtomicBoolean serverResponse = new AtomicBoolean(false);
+    private AtomicBoolean serverWaiting = new AtomicBoolean(true);
     public TextField input;
     public ScrollPane allMessagesWindow;
     private User user = new User();
@@ -41,38 +44,33 @@ public class Controller {
     private final String[] roomNames = new String[]{"main", "ninjas", "memes", "gaming", "horses"};
 
 
-    public Controller(){
+    public Controller() {
         clientSwitch = new ClientSwitch(this);
     }
 
     @FXML
-    public void initialize(){
+    public void initialize() {
+        new Thread(clientSwitch::messageListener).start();
         loginPrompt();
+
         chatRooms = Collections.synchronizedMap(new HashMap<>());
 
-        for(String roomName: roomNames) {
+        for (String roomName : roomNames) {
             chatRooms.put(roomName, new ChatRoom(roomName));
-            DataHandler.getInstance().addRoom(roomName);
-            DataHandler.getInstance().loadRoomMessages(roomName);
         }
 
         setActiveRoom("main");
-        printRoomMessages(getActiveRoom());
-
-        new Thread(clientSwitch::messageListener).start();
     }
 
-    public void sendBtnClick(){
-            if( !input.getText().equals("")){
-                DataMessage dataMessage = new DataMessage(0, new Message(input.getText(), LocalDateTime.now(), user.getName(), getActiveRoom()));
-                NetworkClient.getInstance().sendToServer(dataMessage);
-                input.clear();
-            }
+    public void sendBtnClick() {
+        if (!input.getText().equals("")) {
+            DataMessage dataMessage = new DataMessage(0, new Message(input.getText(), LocalDateTime.now(), user.getName(), getActiveRoom()));
+            NetworkClient.getInstance().sendToServer(dataMessage);
+            input.clear();
+        }
     }
 
-    private void loginPrompt(){
-        //TODO: skapa scen istället för stage och lägg till i primarystage
-
+    private void loginPrompt() {
         //skapa ny stage och sätt lite egenskaper
         Stage window = new Stage();
         window.initModality(Modality.APPLICATION_MODAL);
@@ -81,20 +79,20 @@ public class Controller {
         window.setMinHeight(400);
 
         //skapa element och egenskaperna för innehållet
-        Label errorMessageName= new Label();
+        Label errorMessageName = new Label();
         errorMessageName.setText("Du måste fylla i ett användarnamn");
         errorMessageName.setStyle("visibility: hidden");
-        Label errorMessagePassword= new Label();
+        Label errorMessagePassword = new Label();
         errorMessagePassword.setText("Minst en liten bokstav \n Minst en stor bokstav \n Minst en siffra \n Inga blanka tecken \n Minst 5 tecken");
         errorMessagePassword.setStyle("visibility: hidden");
 
-        TextField nameInput= new TextField();
+        TextField nameInput = new TextField();
         nameInput.setMaxWidth(200);
-        PasswordField passwordInput= new PasswordField();
+        PasswordField passwordInput = new PasswordField();
         passwordInput.setMaxWidth(200);
 
         Button okButton = new Button("Ok");
-        Button newUser = new Button ("Inte medlem? \n Tryck här!");
+        Button newUser = new Button("Inte medlem? \n Tryck här!");
         newUser.setOnAction(event -> registerForm());
 
         Label userLabel = new Label("Användarnamn");
@@ -128,15 +126,16 @@ public class Controller {
             //om användaren inte har fyllt i ett namn
             //remove whitespaces
             String password = passwordInput.getText();
-            String name = nameInput.getText().replaceAll("\\s+","");
+            String name = nameInput.getText().replaceAll("\\s+", "");
 
             if (name.equals("")) {
                 errorMessageName.setStyle("visibility: visible;");
-            }else if (!passwordCheck(password, errorMessagePassword )){
-                // TODO: Kolla användare mot listan och se om det matchar
-            }else { // om användaren  fyllt i ett namn och lösen korrekt
+            } else if(!password.matches("^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=\\S+$).{5,}$")) {
+                errorMessageName.setStyle("visibility: visible;");
+            } else if (!passwordCheck(name, password, errorMessagePassword)) {
+            } else { // om användaren  fyllt i ett namn och lösen korrekt
                 user.setName(name);
-                user.setPassword(password);
+//                user.setPassword(password);
                 window.close();
             }
         });
@@ -148,23 +147,40 @@ public class Controller {
 //        inlogg.setText("Inloggad användare: " + user.getName());
     }
 
-    public boolean passwordCheck(String password, Label errorMessagePassword){
-        if (!password.matches("^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=\\S+$).{5,}$")){
-            System.out.println("false");
-            errorMessagePassword.setStyle("visibility: visible");
-            return false;
-        }
-        System.out.println("True");
-        return true;
+    public boolean passwordCheck(String userName, String password, Label errorMessagePassword) {
+        DataMessage dataMessage = new DataMessage(3, new Message(password, LocalDateTime.now(), userName, null));
+        return loginOrRegister(dataMessage, errorMessagePassword);
     }
 
-    public void registerForm(){
-        Label errorMessageName= new Label("Du måste fylla i ett användarnamn");
+
+    private boolean registerCheck(String userName, String password, Label errorMessagePassword) {
+        DataMessage dataMessage = new DataMessage(2, new Message(password, LocalDateTime.now(), userName, null));
+        return loginOrRegister(dataMessage, errorMessagePassword);
+    }
+
+    private boolean loginOrRegister(DataMessage msg, Label errorMessagePassword){
+        while (isServerWaiting()){}
+        NetworkClient.getInstance().sendToServer(msg);
+        setServerWaiting(true);
+
+        while (isServerWaiting()) {}
+        if(getServerResponse()) {
+            System.out.println("True");
+            return true;
+        } else {
+            System.out.println("false");
+            errorMessagePassword.setStyle("visibility: visible");
+        }
+        return false;
+    }
+
+    public void registerForm() {
+        Label errorMessageName = new Label("Du måste fylla i ett användarnamn");
         errorMessageName.setStyle("visibility: hidden");
         Label nameLabel = new Label("Användarnamn");
         Label passwordLabel = new Label("Lösenord");
 
-        Label errorMessagePassword= new Label("Minst en liten bokstav \n Minst en stor bokstav \n Minst en siffra \n Inga blanka tecken \n Minst 5 tecken");
+        Label errorMessagePassword = new Label("Minst en liten bokstav \n Minst en stor bokstav \n Minst en siffra \n Inga blanka tecken \n Minst 5 tecken");
         errorMessagePassword.setStyle("visibility: hidden");
 
         Stage registerWindow = new Stage();
@@ -200,20 +216,24 @@ public class Controller {
             //om användaren inte har fyllt i ett namn
             //remove whitespaces
             String password = passwordInputRegistration.getText();
-            String name = nameInputRegistration.getText().replaceAll("\\s+","");
+            String name = nameInputRegistration.getText().replaceAll("\\s+", "");
             if (name.equals("")) {
                 errorMessageName.setStyle("visibility: visible;");
-            }else if (!passwordCheck(password, errorMessagePassword )){ //Metod som kollar att lösen är korrekt
-            }else { // om användaren  fyllt i ett namn och lösen korrekt
-                user.setName(name);
-                user.setPassword(password);
+            } else if(!password.matches("^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=\\S+$).{5,}$")){
+                errorMessageName.setStyle("visibility: visible;");
+            } else if (!registerCheck(name, password, errorMessagePassword)) { //Metod som kollar att lösen är korrekt
+            } else { // om användaren  fyllt i ett namn och lösen korrekt
                 registerWindow.close();
             }
         });
     }
 
+    public void addMessageToRoom(Message msg){
+        getChatRoom(msg.getReceiver()).addMessage(msg);
+    }
+
     private void printRoomMessages(String roomName) {
-        DataHandler.getInstance().getRoomMessages(roomName).forEach(this::printMessage);
+        getChatRoom(roomName).getMessages().forEach(this::printMessage);
     }
 
     public void printMessage(Message msg) {
@@ -225,7 +245,7 @@ public class Controller {
         scroll();
     }
 
-    public void styleMessage(Label message, HBox chatMessageContainer){
+    public void styleMessage(Label message, HBox chatMessageContainer) {
         DropShadow dropShadow = new DropShadow();
         dropShadow.setRadius(5.0);
         dropShadow.setOffsetX(3.0);
@@ -239,7 +259,7 @@ public class Controller {
         chatMessageContainer.setEffect(dropShadow);
     }
 
-    private void scroll(){
+    private void scroll() {
         msgBox.heightProperty().addListener(observable -> allMessagesWindow.setVvalue(1.0));
     }
 
@@ -261,5 +281,41 @@ public class Controller {
 
     public synchronized void setActiveRoom(String activeRoom) {
         this.activeRoom = activeRoom;
+    }
+
+    public boolean getServerResponse() {
+        return serverResponse.get();
+    }
+
+    public void setServerResponse(boolean serverResponse) {
+        this.serverResponse.set(serverResponse);
+    }
+
+    public boolean isServerWaiting() {
+        return serverWaiting.get();
+    }
+
+    public void setServerWaiting(boolean serverWaiting) {
+        this.serverWaiting.set(serverWaiting);
+    }
+
+    public void loadChatRoomUsers(Message msg){
+        String[] users = msg.getMessageData().split(",");
+        for (String user:users){
+            getChatRoom(msg.getReceiver()).addUser(user);
+        }
+        System.out.println(getChatRoom(msg.getReceiver()).getUsers().size());
+    }
+
+    public void moveChatRoomUser(Message msg){
+        getChatRoom(msg.getReceiver()).removeUser(msg.getSender());
+        getChatRoom(msg.getMessageData()).addUser(msg.getSender());
+//        TEST
+        System.out.println(getChatRoom(msg.getReceiver()).getUsers().size());
+        System.out.println(getChatRoom(msg.getMessageData()).getUsers().size());
+    }
+
+    private ChatRoom getChatRoom(String roomName){
+        return chatRooms.get(roomName);
     }
 }
