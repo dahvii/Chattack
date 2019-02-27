@@ -130,7 +130,7 @@ public class Controller {
 
             if (name.equals("")) {
                 errorMessageName.setStyle("visibility: visible;");
-            } else if(!password.matches("^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=\\S+$).{5,}$")) {
+            } else if (!password.matches("^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=\\S+$).{5,}$")) {
                 errorMessageName.setStyle("visibility: visible;");
             } else if (!passwordCheck(name, password, errorMessagePassword)) {
             } else { // om användaren  fyllt i ett namn och lösen korrekt
@@ -158,13 +158,15 @@ public class Controller {
         return loginOrRegister(dataMessage, errorMessagePassword);
     }
 
-    private boolean loginOrRegister(DataMessage msg, Label errorMessagePassword){
-        while (isServerWaiting()){}
+    private boolean loginOrRegister(DataMessage msg, Label errorMessagePassword) {
+        while (isServerWaiting()) {
+        }
         NetworkClient.getInstance().sendToServer(msg);
         setServerWaiting(true);
 
-        while (isServerWaiting()) {}
-        if(getServerResponse()) {
+        while (isServerWaiting()) {
+        }
+        if (getServerResponse()) {
             System.out.println("True");
             return true;
         } else {
@@ -219,7 +221,7 @@ public class Controller {
             String name = nameInputRegistration.getText().replaceAll("\\s+", "");
             if (name.equals("")) {
                 errorMessageName.setStyle("visibility: visible;");
-            } else if(!password.matches("^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=\\S+$).{5,}$")){
+            } else if (!password.matches("^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=\\S+$).{5,}$")) {
                 errorMessageName.setStyle("visibility: visible;");
             } else if (!registerCheck(name, password, errorMessagePassword)) { //Metod som kollar att lösen är korrekt
             } else { // om användaren  fyllt i ett namn och lösen korrekt
@@ -228,7 +230,7 @@ public class Controller {
         });
     }
 
-    public void addMessageToRoom(Message msg){
+    public void addMessageToRoom(Message msg) {
         getChatRoom(msg.getReceiver()).addMessage(msg);
     }
 
@@ -299,15 +301,19 @@ public class Controller {
         this.serverWaiting.set(serverWaiting);
     }
 
-    public void loadChatRoomUsers(Message msg){
-        String[] users = msg.getMessageData().split(",");
-        for (String user:users){
-            getChatRoom(msg.getReceiver()).addUser(user);
+    public void loadChatRoomUsers(Message msg) {
+        String[] users = null;
+        if (msg.getMessageData().length() >= 2) {
+            users = msg.getMessageData().split(",");
         }
-        System.out.println(getChatRoom(msg.getReceiver()).getUsers().size());
+        if (users != null) {
+            for (String user : users) {
+                getChatRoom(msg.getReceiver()).addUser(user);
+            }
+        }
     }
 
-    public void moveChatRoomUser(Message msg){
+    public void moveChatRoomUser(Message msg) {
         getChatRoom(msg.getReceiver()).removeUser(msg.getSender());
         getChatRoom(msg.getMessageData()).addUser(msg.getSender());
 //        TEST
@@ -315,7 +321,7 @@ public class Controller {
         System.out.println(getChatRoom(msg.getMessageData()).getUsers().size());
     }
 
-    private ChatRoom getChatRoom(String roomName){
+    private ChatRoom getChatRoom(String roomName) {
         return chatRooms.get(roomName);
     }
 }
