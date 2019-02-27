@@ -30,7 +30,7 @@ public class PasswordCheck extends BCrypt {
         if(users.containsKey(user)) return false;
         else {
             users.putIfAbsent(user, hashpw(password, gensalt()));
-            FileHandler.getInstance().writeFile("users.dat", users);
+            saveUsers();
             return true;
         }
     }

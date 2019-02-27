@@ -97,5 +97,4 @@ public class NetworkClient {
     public void setActive(boolean isActive) {
         this.isActive.set(isActive);
     }
-
 }

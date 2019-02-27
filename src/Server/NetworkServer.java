@@ -18,19 +18,16 @@ public class NetworkServer implements Runnable {
     private Queue<Serializable> dataMessageQueue;
     private Queue<Socket> socketQueue;
     private List<Connection> connectionList;
-//    private Map<String, List<Message>> roomMessageMap;
     private ServerSwitch serverSwitch;
     public final static String[] roomNames = new String[]{"main", "ninjas", "memes", "gaming", "horses"};
 
     public NetworkServer() {
         connectionList = Collections.synchronizedList(new ArrayList<>());
-//        roomMessageMap = Collections.synchronizedMap(new HashMap<>());
         dataMessageQueue = new ConcurrentLinkedQueue<>();
         socketQueue = new ConcurrentLinkedQueue<>();
         serverSwitch = new ServerSwitch(this);
 
         for(String room:roomNames){
-//            roomMessageMap.put(room, new ArrayList<>());
             DataHandler.getInstance().loadRoomMessages(room);
         }
 
@@ -65,7 +62,10 @@ public class NetworkServer implements Runnable {
     public void roomSwitch(String user, String newRoom){
         connectionList.forEach(c -> {
             if(c.getName().equals(user)){
+                System.out.println("ROOMSWICH");
+                String oldRoom = c.getActiveRoom();
                 c.setActiveRoom(newRoom);
+                sendToAll(new DataMessage(5, new Message(newRoom, null, user, oldRoom)));
             }
         });
     }

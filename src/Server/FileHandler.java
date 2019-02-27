@@ -16,8 +16,8 @@ public class FileHandler {
     }
 
     private FileHandler() {
-
     }
+
 
     public Object readFile(String path){
         try (ObjectInputStream ois = new ObjectInputStream(Files.newInputStream(Paths.get(path)))) {
