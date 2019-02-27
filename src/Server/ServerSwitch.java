@@ -11,30 +11,30 @@ public class ServerSwitch {
     NetworkServer networkServer;
 
 
-    public ServerSwitch(NetworkServer networkServer){
+    public ServerSwitch(NetworkServer networkServer) {
         this.networkServer = networkServer;
     }
 
-    public void switchDataMessage(DataMessage data){
+    public void switchDataMessage(DataMessage data) {
         switch (data.getCommando()) {
             case (0):
                 DataHandler.getInstance().addMessage(data.getMessage());
                 networkServer.sendToAll(data);
                 break;
-            case(1):
+            case (1):
                 networkServer.roomSwitch(data.getMessage().getSender(), data.getMessage().getMessageData());
-                networkServer.sendToAll(new DataMessage(5, data.getMessage()));
                 break;
         }
     }
 
-    public void addMessage(Object o){
-        networkServer.addMessage(o);{
+    public void addMessage(Object o) {
+        networkServer.addMessage(o);
+        {
         }
     }
 
-    public boolean switchLogin(DataMessage data){
-            //REGISTER
+    public boolean switchLogin(DataMessage data) {
+        //REGISTER
         if (data.getCommando() == 2) {
             return PasswordCheck.getInstance()
                     .addUser(data.getMessage().getSender(), data.getMessage().getMessageData());
@@ -42,24 +42,24 @@ public class ServerSwitch {
         } else if (data.getCommando() == 3) {
             return PasswordCheck.getInstance()
                     .checkUser(data.getMessage().getSender(), data.getMessage().getMessageData());
-        }
-        else return false;
+        } else return false;
     }
 
-    public DataMessage getOnlineUsers(String roomName){
-        String s = "";
-        for(Connection c: networkServer.getConnectionList()) {
-            if (c.getActiveRoom().equals(roomName)) s+=c.getName()+",";
+    public DataMessage getOnlineUsers(String roomName) {
+        String usersString = "";
+        for (Connection c : networkServer.getConnectionList()) {
+            if (c.getActiveRoom().equals(roomName)) usersString += c.getName() + ",";
         }
-        return new DataMessage(4, new Message(s, LocalDateTime.now(), null, roomName));
+        if (usersString.length() > 0) usersString = usersString.substring(0, usersString.length() - 1);
+        return new DataMessage(4, new Message(usersString, LocalDateTime.now(), null, roomName));
     }
 
-    public ArrayList<DataMessage> getLatestMessages(){
+    public ArrayList<DataMessage> getLatestMessages() {
         ArrayList<DataMessage> messageList = new ArrayList<>();
         LocalDateTime localDateTime = LocalDateTime.now();
-        for(List<Message> roomMessages: DataHandler.getInstance().getMessageMap().values()){
+        for (List<Message> roomMessages : DataHandler.getInstance().getMessageMap().values()) {
             roomMessages.forEach(message -> {
-                if (message.getTime().isAfter(localDateTime.minusHours(24))){
+                if (message.getTime().isAfter(localDateTime.minusHours(24))) {
                     messageList.add(new DataMessage(0, message));
                 }
             });

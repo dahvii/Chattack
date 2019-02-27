@@ -14,9 +14,13 @@ public class PasswordCheck extends BCrypt {
     }
 
     private PasswordCheck() {
+        loadUsers();
+    }
+
+    private void loadUsers() {
         Object o =  FileHandler.getInstance().readFile("users.dat");
-        if(o instanceof HashMap){
-            users = Collections.synchronizedMap((HashMap<String,String>) o) ;
+        if(o != null){
+            users = Collections.synchronizedMap((Map<String,String>) o) ;
         } else users = Collections.synchronizedMap(new HashMap<>());
     }
 

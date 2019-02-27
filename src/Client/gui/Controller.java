@@ -157,8 +157,9 @@ public class Controller {
         NetworkClient.getInstance().sendToServer(msg);
         setServerWaiting(true);
 
-        while (isServerWaiting()) {}
-        if(getServerResponse()) {
+        while (isServerWaiting()) {
+        }
+        if (getServerResponse()) {
             System.out.println("True");
             return true;
         } else {
@@ -231,7 +232,7 @@ public class Controller {
         });
     }
 
-    public void addMessageToRoom(Message msg){
+    public void addMessageToRoom(Message msg) {
         getChatRoom(msg.getReceiver()).addMessage(msg);
     }
 
@@ -272,6 +273,7 @@ public class Controller {
         msgBox.getChildren().clear();
         printRoomMessages(newRoom);
         setActiveRoom(newRoom);
+        NetworkClient.getInstance().sendToServer(new DataMessage(1, new Message(newRoom, null, user.getName(), null)));
     }
 
     public User getUser() {
@@ -302,15 +304,19 @@ public class Controller {
         this.serverWaiting.set(serverWaiting);
     }
 
-    public void loadChatRoomUsers(Message msg){
-        String[] users = msg.getMessageData().split(",");
-        for (String user:users){
-            getChatRoom(msg.getReceiver()).addUser(user);
+    public void loadChatRoomUsers(Message msg) {
+        String[] users = null;
+        if (msg.getMessageData().length() >= 2) {
+            users = msg.getMessageData().split(",");
         }
-        System.out.println(getChatRoom(msg.getReceiver()).getUsers().size());
+        if (users != null) {
+            for (String user : users) {
+                getChatRoom(msg.getReceiver()).addUser(user);
+            }
+        }
     }
 
-    public void moveChatRoomUser(Message msg){
+    public void moveChatRoomUser(Message msg) {
         getChatRoom(msg.getReceiver()).removeUser(msg.getSender());
         getChatRoom(msg.getMessageData()).addUser(msg.getSender());
 //        TEST
@@ -318,7 +324,7 @@ public class Controller {
         System.out.println(getChatRoom(msg.getMessageData()).getUsers().size());
     }
 
-    private ChatRoom getChatRoom(String roomName){
+    private ChatRoom getChatRoom(String roomName) {
         return chatRooms.get(roomName);
     }
 }
