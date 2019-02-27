@@ -13,6 +13,7 @@ import Data.Message;
 import Client.NetworkClient;
 import javafx.fxml.FXML;
 import javafx.geometry.Pos;
+import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.effect.DropShadow;
@@ -26,6 +27,7 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicBoolean;
 
@@ -73,6 +75,7 @@ public class Controller {
         setActiveRoom("main");
         new Thread(clientSwitch::messageListener).start();
         loginPrompt();
+        addOnlineUsersGraphic("main", user.getName());
     }
 
     public void sendBtnClick() {
@@ -370,9 +373,21 @@ public class Controller {
         getChatRoom(msg.getMessageData()).addUser(msg.getSender());
         int i;
 
-        Label tempLabel = (Label) userVboxMap.get(msg.getReceiver()).lookup("#" + msg.getSender());
-        userVboxMap.get(msg.getMessageData()).getChildren().add(tempLabel);
-        userVboxMap.get(msg.getReceiver()).getChildren().remove(tempLabel);
+        Platform.runLater(new Runnable() {
+            @Override
+            public void run() {
+                Label newLabel = new Label(msg.getSender());
+                newLabel.setId(msg.getSender());
+                Iterator<Node> onlineLabels = userVboxMap.get(msg.getReceiver()).getChildren().iterator();
+                while(onlineLabels.hasNext()){
+                    String id = onlineLabels.next().getId();
+                    if(id.equals(msg.getSender())) onlineLabels.remove();
+                }
+                System.out.println(newLabel + ":" + newLabel.getId());
+                userVboxMap.get(msg.getMessageData()).getChildren().add(newLabel);
+            }
+        });
+
 
 
         System.out.println(getChatRoom(msg.getReceiver()).getUsers().size());

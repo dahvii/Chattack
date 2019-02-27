@@ -43,6 +43,7 @@ public class ClientSwitch {
             case(5):
                 controller.moveChatRoomUser(data.getMessage());
                 break;
+
         }
     }
 

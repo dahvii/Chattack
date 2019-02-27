@@ -47,6 +47,7 @@ public class Connection {
         }
 
         serverSwitch.getLatestMessages().forEach(this::sendToClient);
+        serverSwitch.switchDataMessage(new DataMessage(5, new Message(getActiveRoom(), null, name, getActiveRoom())));
     }
 
     private void login(){
