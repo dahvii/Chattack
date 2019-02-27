@@ -272,11 +272,10 @@ public class Controller {
         chatMessageContainer.setEffect(dropShadow);
     }
 
-//    public void addOnlineUsersGraphic(String roomName, String name){
-    public void addOnlineUsersGraphic(){
+    public void addOnlineUsersGraphic(String roomName, String name){
         Label label1 = new Label(user.getName());
-//        label1.setId(name);
-//        userVboxMap.get(roomName).getChildren().add(label1);
+        label1.setId(name);
+        userVboxMap.get(roomName).getChildren().add(label1);
     }
 
     private void scroll() {
@@ -328,8 +327,7 @@ public class Controller {
         if (users != null) {
             for (String user : users) {
                 getChatRoom(msg.getReceiver()).addUser(user);
-                addOnlineUsersGraphic();
-//                addOnlineUsersGraphic(msg.getMessageData(), user);
+                addOnlineUsersGraphic(msg.getMessageData(), user);
             }
 
         }
@@ -340,9 +338,9 @@ public class Controller {
         getChatRoom(msg.getMessageData()).addUser(msg.getSender());
         int i;
 
-//        Label tempLabel = (Label) userVboxMap.get(msg.getReceiver()).lookup("#" + msg.getSender());
-//        userVboxMap.get(msg.getMessageData()).getChildren().add(tempLabel);
-//        userVboxMap.get(msg.getReceiver()).getChildren().remove(tempLabel);
+        Label tempLabel = (Label) userVboxMap.get(msg.getReceiver()).lookup("#" + msg.getSender());
+        userVboxMap.get(msg.getMessageData()).getChildren().add(tempLabel);
+        userVboxMap.get(msg.getReceiver()).getChildren().remove(tempLabel);
 
 
         System.out.println(getChatRoom(msg.getReceiver()).getUsers().size());
