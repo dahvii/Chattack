@@ -72,7 +72,7 @@ public class StressTest {
         while (nbrOfTestClients-- > 0 && totalMessageLimit.get() > 0){
             new Thread(new StressClient(totalMessageLimit, sleepTime)).start();
             try {
-                Thread.sleep(100);
+                Thread.sleep(1500);
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }

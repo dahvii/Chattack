@@ -18,10 +18,20 @@ public class ServerSwitch {
         switch (data.getCommando()) {
             case (0):
                 DataHandler.getInstance().addMessage(data.getMessage());
-                networkServer.sendToAll(data);
+                new Thread(new Runnable() {
+                    @Override
+                    public void run() {
+                        networkServer.sendToAll(data);
+                    }
+                }).start();
                 break;
             case (1):
-                networkServer.roomSwitch(data.getMessage().getSender(), data.getMessage().getMessageData());
+                new Thread(new Runnable() {
+                    @Override
+                    public void run() {
+                        networkServer.roomSwitch(data.getMessage().getSender(), data.getMessage().getMessageData());
+                    }
+                }).start();
                 break;
             case (5):
                 networkServer.sendToAll(data);

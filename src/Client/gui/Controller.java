@@ -104,8 +104,8 @@ public class Controller {
 
 
     public void sendBtnClick() {
-        if (!input2.getText().equals("")) {
-            String msg = input2.getText().trim();
+        String msg = input2.getText().trim();
+        if (!msg.equals("")) {
             if(msg.length()>2000) {
                 Alert alert = new Alert(Alert.AlertType.WARNING);
                 alert.setTitle("För många tecken!");
