@@ -10,7 +10,7 @@ import java.net.Socket;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 public class Connection {
-    private String name;
+    private String name = "";
     private String activeRoom;
     private Socket socket;
     private AtomicBoolean isActive;
@@ -31,7 +31,6 @@ public class Connection {
         try {
             objectOutputStream = new ObjectOutputStream(socket.getOutputStream());
             objectInputStream = new ObjectInputStream(socket.getInputStream());
-            socket.setTcpNoDelay(true);
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -46,7 +45,9 @@ public class Connection {
             sendToClient(serverSwitch.getOnlineUsers(roomName));
         }
 
-        DataHandler.getInstance().getLatestMessages().forEach(this::sendToClient);
+        if(getName() != "" && !name.contains("TEST")) {
+            DataHandler.getInstance().getLatestMessages().forEach(this::sendToClient);
+        }
         serverSwitch.switchDataMessage(new DataMessage(5, new Message(getActiveRoom(), null, name, getActiveRoom())));
     }
 
@@ -109,16 +110,17 @@ public class Connection {
     }
 
     private void closeConnection(String exception){
-        try {
-            setActive(false);
-            objectInputStream.close();
-            objectOutputStream.close();
-            socket.close();
-            serverSwitch.removeConnection(this);
-        } catch (IOException e) {
-            e.printStackTrace();
+        if(isActive()){
+            try {
+                setActive(false);
+                objectInputStream.close();
+                objectOutputStream.close();
+                socket.close();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            System.out.println("Connection closed by client: " + exception);
         }
-        System.out.println("Connection closed by client: " + exception);
     }
 
     public boolean isActive() {

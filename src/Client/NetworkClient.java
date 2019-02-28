@@ -32,8 +32,6 @@ public class NetworkClient {
             socket = new Socket("localhost", 3000);
             objectOutputStream = new ObjectOutputStream(socket.getOutputStream());
             objectInputStream = new ObjectInputStream(socket.getInputStream());
-            socket.setTcpNoDelay(true);
-
         } catch (IOException e) {
             e.printStackTrace();
         }

@@ -49,28 +49,28 @@ public class NetworkServer implements Runnable {
     }
 
     public synchronized void sendToAll(Object o) {
-        Iterator<Connection> connections = connectionList.iterator();
-        while(connections.hasNext()){
-            Connection c = connections.next();
+        Spliterator<Connection> connections = getConnectionList().spliterator();
+        while(connections.tryAdvance(c ->{
             if (c.isActive()) {
                 c.sendToClient(o);
-            } else {
-                connections.remove();
-                System.out.println("Connection removed: " + c.getName());
             }
-        }
+        }));
     }
 
     public void roomSwitch(String user, String newRoom){
         Iterator<Connection> connections = getConnectionList().iterator();
         while (connections.hasNext()){
             Connection c = connections.next();
-            if(c.getName().equals(user)){
-                System.out.println("ROOMSWITCH:" + c.getName() + " from " + c.getActiveRoom() + " to " + newRoom);
-                String oldRoom = c.getActiveRoom();
-                c.setActiveRoom(newRoom);
-                sendToAll(new DataMessage(5, new Message(newRoom, null, user, oldRoom)));
+            if (c.isActive()) {
+                if(c.getName().equals(user)){
+                    String oldRoom = c.getActiveRoom();
+                    c.setActiveRoom(newRoom);
+                    sendToAll(new DataMessage(5, new Message(newRoom, null, user, oldRoom)));
+                }
+            } else {
+                removeConnection(connections, c);
             }
+
         }
     }
 
@@ -84,23 +84,15 @@ public class NetworkServer implements Runnable {
         }
     }
 
-    public void removeConnection(Connection c){
-        try {
-            if (getConnectionList().contains(c)){
-                System.out.println("Connection removed: " + c.getName());
-                getConnectionList().remove(c);
-                if(c.getName() != null) sendToAll(new DataMessage(5, new Message(null, null, c.getName(), c.getActiveRoom())));
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
-
     public boolean userOnline(String name){
         Iterator<Connection> connections = getConnectionList().iterator();
         while (connections.hasNext()){
             Connection c = connections.next();
-            if(c.getName().equals(name)) return true;
+            if (c.isActive()) {
+                if(c.getName().equals(name)) return true;
+            } else {
+                removeConnection(connections, c);
+            }
         }
         return false;
     }
@@ -110,11 +102,32 @@ public class NetworkServer implements Runnable {
         Iterator<Connection> connections = getConnectionList().iterator();
         while (connections.hasNext()) {
             Connection c = connections.next();
-            if (c.getActiveRoom().equals(roomName)) usersString += c.getName() + ",";
+            if (c.isActive()) {
+                if (c.getActiveRoom().equals(roomName)) usersString += c.getName() + ",";
+            } else {
+                removeConnection(connections, c);
+            }
         }
         if (usersString.length() > 0) usersString = usersString.substring(0, usersString.length() - 1);
 
         return new DataMessage(4, new Message(usersString, LocalDateTime.now(), null, roomName));
+    }
+
+    public synchronized void removeConnection(Iterator<Connection> connections, Connection c){
+            try {
+                if (getConnectionList().contains(c)){
+                    if(!c.getName().equals("")){
+                        if(connections != null) connections.remove();
+                        else getConnectionList().remove(c);
+
+                        System.out.println("Connection removed: " + c.getName());
+                        sendToAll(new DataMessage(5, new Message(null, null, c.getName(), c.getActiveRoom())));
+                        c.setName("");
+                    }
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
     }
 
     public synchronized List<Connection> getConnectionList() {

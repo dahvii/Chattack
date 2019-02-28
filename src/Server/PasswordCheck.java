@@ -22,7 +22,10 @@ public class PasswordCheck extends BCrypt {
         if(o != null){
             users = Collections.synchronizedMap((Map<String,String>) o);
             System.out.println("Loading " + users.size() +" saved users");
-        } else users = Collections.synchronizedMap(new HashMap<>());
+        } else {
+            users = Collections.synchronizedMap(new HashMap<>());
+            System.out.println("No userfile or file corrupt");
+        }
     }
 
     public boolean checkUser(String userName, String password){
