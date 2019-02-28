@@ -104,23 +104,10 @@ public class Controller {
 
 
     public void sendBtnClick() {
-        if (!input.getText().equals("")) {
-            
-            DataMessage dataMessage = new DataMessage(0, new Message(input.getText(), LocalDateTime.now(), user.getName(), getActiveRoom()));
-            NetworkClient.getInstance().sendToServer(dataMessage);
-            input.clear();
         if (!input2.getText().equals("")) {
-            if(input2.getText().length()>2000) {
-                Alert alert = new Alert(Alert.AlertType.WARNING);
-                alert.setTitle("För många tecken!");
-                alert.setHeaderText("Max 2000 tecken i ett meddelande!");
-                alert.showAndWait();
-            } else {
-                String msg = input2.getText().trim();
-                DataMessage dataMessage = new DataMessage(0, new Message(msg, LocalDateTime.now(), user.getName(), getActiveRoom()));
-                NetworkClient.getInstance().sendToServer(dataMessage);
-                input.clear();
-            }
+            DataMessage dataMessage = new DataMessage(0, new Message(input2.getText(), LocalDateTime.now(), user.getName(), getActiveRoom()));
+            NetworkClient.getInstance().sendToServer(dataMessage);
+            input2.clear();
         }
     }
 
@@ -289,28 +276,17 @@ public class Controller {
     }
 
     private void printRoomMessages(String roomName) {
-        Platform.runLater(new Runnable() {
-            @Override
-            public void run() {
-                Iterator<Message> iter = getChatRoom(roomName).getMessages().listIterator();
-                iter.forEachRemaining(Controller.this::printMessage);
-            }
-        });
+        getChatRoom(roomName).getMessages().forEach(this::printMessage);
     }
 
     public void printMessage(Message msg) {
-        Platform.runLater(new Runnable() {
-            @Override
-            public void run() {
-                HBox chatMessageContainer = new HBox();
-                Label message = new Label(msg.getSender() + "\n" + msg.getMessageData() + "\n" + msg.getTime().format(formatter));
-                message.setMinHeight(Control.USE_PREF_SIZE);
-                message.setMinWidth(450);
-                msgBox.getChildren().add(chatMessageContainer);
-                styleMessage(message, chatMessageContainer, msg);
-                scroll();
-            }
-        });
+        HBox chatMessageContainer = new HBox();
+        Label message = new Label(msg.getSender() + "\n" + msg.getMessageData() + "\n" + msg.getTime().format(formatter));
+        message.setMinHeight(Control.USE_PREF_SIZE);
+        message.setMinWidth(450);
+        msgBox.getChildren().add(chatMessageContainer);
+        styleMessage(message, chatMessageContainer, msg);
+        scroll();
     }
 
     public void styleMessage(Label message, HBox chatMessageContainer, Message msg) {
@@ -348,19 +324,13 @@ public class Controller {
     }
 
     private void scroll() {
-        Platform.runLater(new Runnable() {
-            @Override
-            public void run() {
-                msgBox.heightProperty().addListener(observable -> allMessagesWindow.setVvalue(1.0));
-            }
-        });
+        msgBox.heightProperty().addListener(observable -> allMessagesWindow.setVvalue(1.0));
     }
 
     @FXML
     private void changeRoom(ActionEvent event) {
         String newRoom = ((Button) event.getSource()).getId();
         msgBox.getChildren().clear();
-
         printRoomMessages(newRoom);
 
         //find the exited roomButton and style it back to default

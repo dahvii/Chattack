@@ -32,7 +32,7 @@ public class DataHandler {
         }
     }
 
-    public synchronized void saveRoomMessages(String roomName){
+    public void saveRoomMessages(String roomName){
         FileHandler.getInstance().writeFile(roomName.toLowerCase()+"-messages.dat", getMessageMap().get(roomName));
     }
 
@@ -52,11 +52,8 @@ public class DataHandler {
     public ArrayList<DataMessage> getLatestMessages() {
         ArrayList<DataMessage> messageList = new ArrayList<>();
         LocalDateTime localDateTime = LocalDateTime.now();
-        Iterator<Map.Entry<String, List<Message>>> iter = DataHandler.getInstance()
-                .getMessageMap().entrySet().iterator();
-        while(iter.hasNext()){
-            Map.Entry<String, List<Message>> entry = iter.next();
-            entry.getValue().forEach(message -> {
+        for (List<Message> roomMessages : DataHandler.getInstance().getMessageMap().values()) {
+            roomMessages.forEach(message -> {
                 if (message.getTime().isAfter(localDateTime.minusHours(8))) {
                     messageList.add(new DataMessage(0, message));
                 }
