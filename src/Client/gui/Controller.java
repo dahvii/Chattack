@@ -96,7 +96,7 @@ public class Controller {
 
         //skapa element och egenskaperna för innehållet
         Label errorMessage = new Label();
-        errorMessage.setText("Felaktigt användarnamn eller lösenord");
+        errorMessage.setText("  Felaktigt användarnamn eller lösenord\n(användaren kan redan vara uppkopplad)");
         errorMessage.setStyle("visibility: hidden");
 
         TextField nameInput = new TextField();

@@ -25,12 +25,14 @@ public class PasswordCheck extends BCrypt {
     }
 
     public boolean checkUser(String userName, String password){
-        if(getUsers().containsKey(userName)) {
-            return checkpw(password, getUsers().get(userName));
+        String user = userName.toLowerCase();
+        if(getUsers().containsKey(user)) {
+            return checkpw(password, getUsers().get(user));
         } else return false;
     }
 
-    public boolean addUser(String user, String password){
+    public boolean addUser(String userName, String password){
+        String user = userName.toLowerCase();
         if(users.containsKey(user)) return false;
         else {
             users.putIfAbsent(user, hashpw(password, gensalt()));
