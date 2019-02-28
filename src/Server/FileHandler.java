@@ -21,15 +21,18 @@ public class FileHandler {
 
     public Object readFile(String path){
         try (ObjectInputStream ois = new ObjectInputStream(Files.newInputStream(Paths.get(path)))) {
-            return ois.readObject();
+            Object o = null;
+            try {
+                o = ois.readObject();
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+            return o;
         }
-        catch (NoSuchFileException e) {
+        catch (IOException e) {
+            e.printStackTrace();
             return null;
         }
-        catch (IOException | ClassNotFoundException e) {
-            e.printStackTrace();
-        }
-        return null;
     }
 
     public void writeFile(String path, Object serializableObject){

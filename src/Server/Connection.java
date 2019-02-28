@@ -31,7 +31,6 @@ public class Connection {
         try {
             objectOutputStream = new ObjectOutputStream(socket.getOutputStream());
             objectInputStream = new ObjectInputStream(socket.getInputStream());
-            socket.setTcpNoDelay(true);
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -111,10 +110,10 @@ public class Connection {
     private void closeConnection(String exception){
         try {
             setActive(false);
+            serverSwitch.removeConnection(this);
             objectInputStream.close();
             objectOutputStream.close();
             socket.close();
-            serverSwitch.removeConnection(this);
         } catch (IOException e) {
             e.printStackTrace();
         }

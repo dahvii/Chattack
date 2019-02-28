@@ -66,7 +66,6 @@ public class NetworkServer implements Runnable {
         while (connections.hasNext()){
             Connection c = connections.next();
             if(c.getName().equals(user)){
-                System.out.println("ROOMSWITCH:" + c.getName() + " from " + c.getActiveRoom() + " to " + newRoom);
                 String oldRoom = c.getActiveRoom();
                 c.setActiveRoom(newRoom);
                 sendToAll(new DataMessage(5, new Message(newRoom, null, user, oldRoom)));

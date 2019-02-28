@@ -80,9 +80,16 @@ public class Controller {
 
     public void sendBtnClick() {
         if (!input.getText().equals("")) {
-            DataMessage dataMessage = new DataMessage(0, new Message(input.getText(), LocalDateTime.now(), user.getName(), getActiveRoom()));
-            NetworkClient.getInstance().sendToServer(dataMessage);
-            input.clear();
+            if(input.getText().length()>2000) {
+                Alert alert = new Alert(Alert.AlertType.WARNING);
+                alert.setTitle("För många tecken!");
+                alert.setHeaderText("Max 2000 tecken i ett meddelande!");
+                alert.showAndWait();
+            } else {
+                DataMessage dataMessage = new DataMessage(0, new Message(input.getText(), LocalDateTime.now(), user.getName(), getActiveRoom()));
+                NetworkClient.getInstance().sendToServer(dataMessage);
+                input.clear();
+            }
         }
     }
 
