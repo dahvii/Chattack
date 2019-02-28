@@ -4,8 +4,6 @@ import Client.ClientSwitch;
 import Data.User;
 import Data.DataMessage;
 import Client.ChatRoom;
-import Server.NetworkServer;
-import Server.Server;
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.geometry.Insets;
@@ -43,10 +41,13 @@ public class Controller {
     public VBox msgBox;
     private Map<String, ChatRoom> chatRooms;
     private String activeRoom;
-    private Accordion accOnlineUsers;
+    @FXML Accordion accOnlineUsers;
+    @FXML TitledPane mainPane, ninjasPane, memesPane, gamingPane, horsesPane;
+    private TitledPane[] onlinePanes;
+    private Map<String, TitledPane> onlinePanesMap = new HashMap<>();
     @FXML VBox mainBox, ninjasBox, memesBox, gamingBox, horsesBox;
-    private VBox[] onlineBoxes;
-    private Map<String, VBox> userVboxMap = new HashMap<>();
+    private VBox[] onlineVBoxes;
+    private Map<String, VBox> onlineVBoxMap = new HashMap<>();
     @FXML Button main, ninjas, memes, gaming, horses;
     private Button [] buttons;
     private final String[] roomNames = new String[]{"main", "ninjas", "memes", "gaming", "horses"};
@@ -58,11 +59,13 @@ public class Controller {
     @FXML
     public void initialize() {
         chatRooms = Collections.synchronizedMap(new HashMap<>());
-        onlineBoxes = new VBox[]{mainBox, ninjasBox, memesBox, gamingBox, horsesBox};
+        onlineVBoxes = new VBox[]{mainBox, ninjasBox, memesBox, gamingBox, horsesBox};
+        onlinePanes = new TitledPane[]{mainPane, ninjasPane, memesPane, gamingPane, horsesPane};
 
         for (int i = 0; i<roomNames.length; i++){
             chatRooms.put(roomNames[i], new ChatRoom(roomNames[i]));
-            userVboxMap.put(roomNames[i], onlineBoxes[i]);
+            onlineVBoxMap.put(roomNames[i], onlineVBoxes[i]);
+            onlinePanesMap.put(roomNames[i], onlinePanes[i]);
         }
 
         buttons = new Button[]{main, ninjas, memes, gaming, horses};
@@ -71,7 +74,8 @@ public class Controller {
         setActiveRoom("main");
         new Thread(clientSwitch::messageListener).start();
         loginPrompt();
-        addOnlineUsersGraphic("main", user.getName());
+        addOnlineUsersGraphic(getActiveRoom(), user.getName());
+        accOnlineUsers.setExpandedPane(onlinePanesMap.get(getActiveRoom()));
     }
 
     public void sendBtnClick() {
@@ -282,7 +286,7 @@ public class Controller {
         Label label1 = new Label(name);
         label1.setId(name);
         try{
-            userVboxMap.get(roomName).getChildren().add(label1);
+            onlineVBoxMap.get(roomName).getChildren().add(label1);
         } catch (Exception e){
             e.printStackTrace();
         }
@@ -308,6 +312,9 @@ public class Controller {
         NetworkClient.getInstance().sendToServer(new DataMessage(1, new Message(newRoom, null, user.getName(), null)));
         //style the active roomButton
         styleActiveButton(true, ((Button) event.getSource()));
+
+        //open accordion for new room
+        accOnlineUsers.setExpandedPane(onlinePanesMap.get(newRoom));
     }
 
     private void styleActiveButton(Boolean isActive, Button button){
@@ -370,12 +377,12 @@ public class Controller {
             public void run() {
                 Label newLabel = new Label(msg.getSender());
                 newLabel.setId(msg.getSender());
-                Iterator<Node> onlineLabels = userVboxMap.get(msg.getReceiver()).getChildren().iterator();
+                Iterator<Node> onlineLabels = onlineVBoxMap.get(msg.getReceiver()).getChildren().iterator();
                 while(onlineLabels.hasNext()){
                     String id = onlineLabels.next().getId();
                     if(id.equals(msg.getSender())) onlineLabels.remove();
                 }
-                if(msg.getMessageData()!= null) userVboxMap.get(msg.getMessageData()).getChildren().add(newLabel);
+                if(msg.getMessageData()!= null) onlineVBoxMap.get(msg.getMessageData()).getChildren().add(newLabel);
             }
         });
     }
