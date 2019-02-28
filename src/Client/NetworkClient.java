@@ -74,7 +74,6 @@ public class NetworkClient {
                 Object o =  receiveObject();
                 if (o !=null) {
                     addMessage(o);
-                    System.out.println("From server: " + o);
                 }
                 Thread.sleep(1);
             } catch (Exception e) {

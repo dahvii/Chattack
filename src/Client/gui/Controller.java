@@ -49,11 +49,7 @@ public class Controller {
     private Map<String, VBox> userVboxMap = new HashMap<>();
     @FXML Button main, ninjas, memes, gaming, horses;
     private Button [] buttons;
-
-
-
     private final String[] roomNames = new String[]{"main", "ninjas", "memes", "gaming", "horses"};
-
 
     public Controller() {
         clientSwitch = new ClientSwitch(this);
@@ -176,10 +172,8 @@ public class Controller {
         while (isServerWaiting()) {
         }
         if (getServerResponse()) {
-            System.out.println("True");
             return true;
         } else {
-            System.out.println("false");
             errorMessage.setStyle("visibility: visible");
         }
         return false;
@@ -288,8 +282,7 @@ public class Controller {
         Label label1 = new Label(name);
         label1.setId(name);
         try{
-            System.out.println(roomName + ":" + name);
-            System.out.println(userVboxMap.get(roomName).getChildren().add(label1));
+            userVboxMap.get(roomName).getChildren().add(label1);
         } catch (Exception e){
             e.printStackTrace();
         }
@@ -370,8 +363,7 @@ public class Controller {
 
     public void moveChatRoomUser(Message msg) {
         getChatRoom(msg.getReceiver()).removeUser(msg.getSender());
-        getChatRoom(msg.getMessageData()).addUser(msg.getSender());
-        int i;
+        if(msg.getMessageData()!=null) getChatRoom(msg.getMessageData()).addUser(msg.getSender());
 
         Platform.runLater(new Runnable() {
             @Override
@@ -383,15 +375,9 @@ public class Controller {
                     String id = onlineLabels.next().getId();
                     if(id.equals(msg.getSender())) onlineLabels.remove();
                 }
-                System.out.println(newLabel + ":" + newLabel.getId());
-                userVboxMap.get(msg.getMessageData()).getChildren().add(newLabel);
+                if(msg.getMessageData()!= null) userVboxMap.get(msg.getMessageData()).getChildren().add(newLabel);
             }
         });
-
-
-
-        System.out.println(getChatRoom(msg.getReceiver()).getUsers().size());
-        System.out.println(getChatRoom(msg.getMessageData()).getUsers().size());
     }
 
     private ChatRoom getChatRoom(String roomName) {

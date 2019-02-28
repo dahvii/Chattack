@@ -34,7 +34,6 @@ public class ChatApp extends Application {
 
     @Override
     public void stop() {
-//        DataHandler.getInstance().saveMessages();
         NetworkClient.getInstance().setActive(false);
     }
 

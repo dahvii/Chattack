@@ -5,16 +5,11 @@ import java.io.Serializable;
 public class User implements Serializable {
 
     private String name = "";
-    private String password;
-    private boolean online;
     private String roomName;
 
     public User(){}
-    public User(String name, String password, boolean online){
-        this.name = name;
-        this.password = password;
-
-        this.online = false;
+    
+    public User(String name){
     }
 
     public String getName() {
@@ -23,21 +18,5 @@ public class User implements Serializable {
 
     public void setName(String name) {
         this.name = name;
-    }
-
-    public void setStatus() {
-        this.online = !this.online;
-    }
-
-    public boolean getStatus() {
-        return online;
-    }
-
-    public String getPassword() {
-        return password;
-    }
-
-    public void setPassword(String password) {
-        this.password = password;
     }
 }

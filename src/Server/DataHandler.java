@@ -5,7 +5,7 @@ import Data.Message;
 import java.util.*;
 
 public class DataHandler {
-    private Map<String, List<Message>> allMessages;  //For later use
+    private Map<String, List<Message>> allMessages;
 
     private static DataHandler instance;
 
@@ -23,7 +23,7 @@ public class DataHandler {
         addRoom(roomName);
         if (obj instanceof ArrayList) {
             ArrayList<Message> messages = (ArrayList<Message>) obj;
-            System.out.println(messages.size());
+            System.out.println("Loading " + messages.size() +" messages in room " +roomName);
             if(!messages.isEmpty()) {
                 messages.forEach(this::addMessage);
             }

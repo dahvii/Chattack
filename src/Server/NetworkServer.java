@@ -65,7 +65,7 @@ public class NetworkServer implements Runnable {
         while (connections.hasNext()){
             Connection c = connections.next();
             if(c.getName().equals(user)){
-                System.out.println("ROOMSWICH");
+                System.out.println("ROOMSWITCH:" + c.getName() + " from " + c.getActiveRoom() + " to " + newRoom);
                 String oldRoom = c.getActiveRoom();
                 c.setActiveRoom(newRoom);
                 sendToAll(new DataMessage(5, new Message(newRoom, null, user, oldRoom)));
@@ -79,7 +79,6 @@ public class NetworkServer implements Runnable {
             Connection c = new Connection(serverSwitch, s);
             if(c.isActive()) {
                 getConnectionList().add(c);
-                //roomSwitch(c.getName(), "main");
             }
         }
     }
@@ -89,6 +88,7 @@ public class NetworkServer implements Runnable {
             if (getConnectionList().contains(c)){
                 System.out.println("Connection removed: " + c.getName());
                 getConnectionList().remove(c);
+                if(c.getName() != null) sendToAll(new DataMessage(5, new Message(null, null, c.getName(), c.getActiveRoom())));
             }
         } catch (Exception e) {
             e.printStackTrace();

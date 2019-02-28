@@ -20,7 +20,8 @@ public class PasswordCheck extends BCrypt {
     private void loadUsers() {
         Object o =  FileHandler.getInstance().readFile("users.dat");
         if(o != null){
-            users = Collections.synchronizedMap((Map<String,String>) o) ;
+            users = Collections.synchronizedMap((Map<String,String>) o);
+            System.out.println("Loading " + users.size() +" saved users");
         } else users = Collections.synchronizedMap(new HashMap<>());
     }
 
