@@ -9,62 +9,78 @@
 <?import javafx.scene.control.ScrollPane?>
 <?import javafx.scene.control.TextField?>
 <?import javafx.scene.control.TitledPane?>
+<?import javafx.scene.effect.ColorAdjust?>
 <?import javafx.scene.image.Image?>
 <?import javafx.scene.image.ImageView?>
-<?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.layout.Pane?>
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
 
 <Pane fx:id="root" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="534.0" prefWidth="937.0" xmlns="http://javafx.com/javafx/8.0.172-ea" xmlns:fx="http://javafx.com/fxml/1" fx:controller="Client.gui.Controller">
    <children>
-      <TextField fx:id="input" alignment="TOP_LEFT" layoutX="184.0" layoutY="483.0" onAction="#sendBtnClick" prefHeight="44.0" prefWidth="484.0" />
-      <ImageView fitHeight="44.0" fitWidth="57.0" layoutX="866.0" layoutY="14.0" pickOnBounds="true" preserveRatio="true">
+      <Label fx:id="userName" layoutX="49.0" layoutY="7.0" prefHeight="30.0" prefWidth="118.0" text="Pelle" textFill="WHITE">
+         <font>
+            <Font size="20.0" />
+         </font>
+      </Label>
+      <ImageView fitHeight="31.0" fitWidth="31.0" layoutX="18.0" layoutY="6.0" pickOnBounds="true" preserveRatio="true">
+         <image>
+            <Image url="@icons8-customer-64.png" />
+         </image>
+      </ImageView>
+      <TextField fx:id="input" layoutX="184.0" layoutY="483.0" onAction="#sendBtnClick" prefHeight="40.0" prefWidth="433.0" promptText="Skriv meddelande">
+         <font>
+            <Font size="18.0" />
+         </font></TextField>
+      <ImageView fitHeight="40.0" fitWidth="31.0" layoutX="879.0" layoutY="22.0" pickOnBounds="true" preserveRatio="true">
          <image>
             <Image url="@media1.png" />
          </image>
       </ImageView>
-      <Label layoutX="698.0" layoutY="7.0" text="Chattack" textFill="WHITE">
+      <Label layoutX="698.0" layoutY="14.0" text="Chattack" textFill="WHITE">
          <font>
             <Font name="Yu Gothic UI Bold" size="40.0" />
          </font>
       </Label>
-      <ImageView fitHeight="53.0" fitWidth="44.0" layoutX="698.0" layoutY="452.0" onMouseClicked="#sendBtnClick" pickOnBounds="true" preserveRatio="true">
+      <ImageView fitHeight="53.0" fitWidth="44.0" layoutX="624.0" layoutY="481.0" onMouseClicked="#sendBtnClick" pickOnBounds="true" preserveRatio="true">
          <image>
             <Image url="@icons8-send-comment-50.png" />
          </image>
          <cursor>
-            <Cursor fx:constant="CLOSED_HAND" />
+            <Cursor fx:constant="HAND" />
          </cursor>
+         <effect>
+            <ColorAdjust brightness="1.0" />
+         </effect>
       </ImageView>
-      <VBox id="vBoxRooms" alignment="CENTER" layoutX="14.0" layoutY="45.0" prefHeight="318.0" prefWidth="148.0">
+      <VBox id="vBoxRooms" alignment="CENTER" layoutX="18.0" layoutY="43.0" prefHeight="247.0" prefWidth="148.0">
          <children>
-            <Button fx:id="main"  alignment="CENTER" contentDisplay="CENTER" onAction="#changeRoom" prefHeight="55.0" prefWidth="175.0" styleClass="roomLblStyle" text="Skitsnack">
+            <Button fx:id="main" alignment="CENTER" contentDisplay="CENTER" onAction="#changeRoom" prefHeight="40.0" prefWidth="175.0" styleClass="roomLblStyle" text="Skitsnack">
                <VBox.margin>
                   <Insets bottom="10.0" />
                </VBox.margin></Button>
-            <Button fx:id="ninjas" alignment="CENTER" onAction="#changeRoom" prefHeight="55.0" prefWidth="175.0" styleClass="roomLblStyle" text="Om Ninjas" textAlignment="CENTER">
+            <Button fx:id="ninjas" alignment="CENTER" onAction="#changeRoom" prefHeight="40.0" prefWidth="175.0" styleClass="roomLblStyle" text="Om Ninjas" textAlignment="CENTER">
                <VBox.margin>
                   <Insets bottom="10.0" />
                </VBox.margin></Button>
-            <Button fx:id="memes" alignment="CENTER" onAction="#changeRoom" prefHeight="55.0" prefWidth="175.0" styleClass="roomLblStyle" text="Fräsiga Memes">
+            <Button fx:id="memes" alignment="CENTER" onAction="#changeRoom" prefHeight="40.0" prefWidth="175.0" styleClass="roomLblStyle" text="Fräsiga Memes">
                <VBox.margin>
                   <Insets bottom="10.0" />
                </VBox.margin></Button>
-            <Button fx:id="gaming" alignment="CENTER" onAction="#changeRoom" prefHeight="55.0" prefWidth="175.0" styleClass="roomLblStyle" text="Spel">
+            <Button fx:id="gaming" alignment="CENTER" onAction="#changeRoom" prefHeight="40.0" prefWidth="175.0" styleClass="roomLblStyle" text="Spel">
                <VBox.margin>
                   <Insets bottom="10.0" />
                </VBox.margin></Button>
-            <Button fx:id="horses" alignment="CENTER" onAction="#changeRoom" prefHeight="55.0" prefWidth="175.0" styleClass="roomLblStyle" text="Hästklubben" />
+            <Button fx:id="horses" alignment="CENTER" onAction="#changeRoom" prefHeight="40.0" prefWidth="175.0" styleClass="roomLblStyle" text="Hästklubben" />
          </children>
       </VBox>
-      <ScrollPane fx:id="allMessagesWindow" hbarPolicy="NEVER" layoutX="184.0" layoutY="6.0" prefHeight="471.0" prefWidth="484.0">
+      <ScrollPane fx:id="allMessagesWindow" hbarPolicy="NEVER" layoutX="184.0" layoutY="6.0" prefHeight="471.0" prefWidth="484.0" styleClass="edge-to-edge">
          <content>
-            <VBox fx:id="msgBox" prefHeight="466.0" prefWidth="467.0" />
+            <VBox fx:id="msgBox" prefHeight="471.0" prefWidth="484.0" />
          </content></ScrollPane>
       <Accordion fx:id="accOnlineUsers" layoutX="698.0" layoutY="73.0" prefHeight="361.0" prefWidth="212.0">
         <panes>
-            <TitledPane fx:id="mainPane" animated="false" text="Skitsnack">
+            <TitledPane fx:id="mainPane" animated="false" styleClass="Titlepane" text="Skitsnack">
                <content>
                   <ScrollPane prefHeight="148.0" prefWidth="210.0">
                      <content>
@@ -73,7 +89,7 @@
                   </ScrollPane>
                </content>
           </TitledPane>
-            <TitledPane fx:id="ninjasPane" animated="false" layoutX="10.0" layoutY="10.0" text="Om Ninjas">
+            <TitledPane fx:id="ninjasPane" animated="false" layoutX="10.0" layoutY="10.0" styleClass="Titlepane" text="Om Ninjas">
               <content>
                  <ScrollPane prefHeight="200.0" prefWidth="200.0">
                     <content>
@@ -82,7 +98,7 @@
                  </ScrollPane>
               </content>
            </TitledPane>
-            <TitledPane fx:id="memesPane" animated="false" layoutX="10.0" layoutY="10.0" text="Fräsiga Memes">
+            <TitledPane fx:id="memesPane" animated="false" layoutX="10.0" layoutY="10.0" styleClass="Titlepane" text="Fräsiga Memes">
                <content>
                   <ScrollPane prefHeight="200.0" prefWidth="200.0">
                      <content>
@@ -91,7 +107,7 @@
                   </ScrollPane>
                </content>
             </TitledPane>
-            <TitledPane fx:id="gamingPane" animated="false" layoutX="10.0" layoutY="10.0" text="Spel">
+            <TitledPane fx:id="gamingPane" animated="false" layoutX="10.0" layoutY="10.0" styleClass="Titlepane" text="Spel">
                <content>
                   <ScrollPane prefHeight="200.0" prefWidth="200.0">
                      <content>
@@ -100,7 +116,7 @@
                   </ScrollPane>
                </content>
            </TitledPane>
-            <TitledPane fx:id="horsesPane" animated="false" layoutX="10.0" layoutY="10.0" text="Hästklubben">
+            <TitledPane fx:id="horsesPane" animated="false" layoutX="10.0" layoutY="10.0" styleClass="Titlepane" text="Hästklubben">
                <content>
                   <ScrollPane prefHeight="200.0" prefWidth="200.0">
                      <content>
