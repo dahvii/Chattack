@@ -55,19 +55,22 @@ public class NetworkServer implements Runnable {
                 c.sendToClient(o);
             } else {
                 connections.remove();
+                System.out.println("Connection removed: " + c.getName());
             }
         }
     }
 
     public void roomSwitch(String user, String newRoom){
-        connectionList.forEach(c -> {
+        Iterator<Connection> connections = getConnectionList().iterator();
+        while (connections.hasNext()){
+            Connection c = connections.next();
             if(c.getName().equals(user)){
                 System.out.println("ROOMSWICH");
                 String oldRoom = c.getActiveRoom();
                 c.setActiveRoom(newRoom);
                 sendToAll(new DataMessage(5, new Message(newRoom, null, user, oldRoom)));
             }
-        });
+        }
     }
 
     private void addConnection(){
@@ -75,10 +78,30 @@ public class NetworkServer implements Runnable {
         if(s!=null) {
             Connection c = new Connection(serverSwitch, s);
             if(c.isActive()) {
-                connectionList.add(c);
+                getConnectionList().add(c);
                 //roomSwitch(c.getName(), "main");
             }
         }
+    }
+
+    public void removeConnection(Connection c){
+        try {
+            if (getConnectionList().contains(c)){
+                System.out.println("Connection removed: " + c.getName());
+                getConnectionList().remove(c);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    public boolean userOnline(String name){
+        Iterator<Connection> connections = getConnectionList().iterator();
+        while (connections.hasNext()){
+            Connection c = connections.next();
+            if(c.getName().equals(name)) return true;
+        }
+        return false;
     }
 
     public synchronized List<Connection> getConnectionList() {

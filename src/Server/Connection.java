@@ -53,33 +53,36 @@ public class Connection {
     private void login(){
         sendToClient(new DataMessage(1, null));
         boolean loggedIn = false;
-        while (!loggedIn){
+        while (!loggedIn && isActive()){
             DataMessage response = null;
-            while (response == null){
+            while (response == null && isActive()){
                 response = (DataMessage) receiveObject();
             }
+            if(isActive()){
+                boolean passwordRegisterCheck = serverSwitch.switchLogin(response);
 
-            boolean passwordRegisterCheck = serverSwitch.switchLogin(response);
+                if(!passwordRegisterCheck) {
+                    sendToClient(new DataMessage(2, null));
 
-            if(!passwordRegisterCheck) {
-                sendToClient(new DataMessage(2, null));
+                } else if(passwordRegisterCheck && response.getCommando()==2) {
+                    sendToClient(new DataMessage(3, null));
 
-            } else if(passwordRegisterCheck && response.getCommando()==2) {
-                sendToClient(new DataMessage(3, null));
-
-            } else if(passwordRegisterCheck && response.getCommando()==3) {
-                setName(response.getMessage().getSender());
-                loggedIn = true;
-                sendToClient(new DataMessage(3, null));
+                } else if(passwordRegisterCheck && response.getCommando()==3) {
+                    setName(response.getMessage().getSender());
+                    loggedIn = true;
+                    sendToClient(new DataMessage(3, null));
+                }
             }
         }
     }
 
     private Object receiveObject(){
+        Object o;
         try {
-            return objectInputStream.readObject();
+            o = objectInputStream.readObject();
+            return o;
         } catch (IOException | ClassNotFoundException e) {
-            e.printStackTrace();
+            closeConnection(e.toString());
         }
         return null;
     }
@@ -89,7 +92,7 @@ public class Connection {
         try {
             if(isActive()) objectOutputStream.writeObject(o);
         } catch (IOException e) {
-            e.printStackTrace();
+            closeConnection(e.toString());
         }
     }
 
@@ -97,26 +100,25 @@ public class Connection {
         while (isActive()){
             try {
                 Object o =  receiveObject();
-                if(o != null){
-                    serverSwitch.addMessage(o);
-                    Thread.sleep(1);
-                } else closeConnection();
+                if(o != null) serverSwitch.addMessage(o);
+                Thread.sleep(1);
             } catch (Exception e) {
-                e.printStackTrace();
+                closeConnection(e.toString());
             }
         }
     }
 
-    private void closeConnection(){
+    private void closeConnection(String exception){
         try {
             setActive(false);
             objectInputStream.close();
             objectOutputStream.close();
             socket.close();
+            serverSwitch.removeConnection(this);
         } catch (IOException e) {
             e.printStackTrace();
         }
-        System.out.println("Connection closed by client");
+        System.out.println("Connection closed by client: " + exception);
     }
 
     public boolean isActive() {

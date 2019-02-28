@@ -10,7 +10,6 @@ import java.util.List;
 public class ServerSwitch {
     NetworkServer networkServer;
 
-
     public ServerSwitch(NetworkServer networkServer) {
         this.networkServer = networkServer;
     }
@@ -42,7 +41,8 @@ public class ServerSwitch {
                     .addUser(data.getMessage().getSender(), data.getMessage().getMessageData());
             // LOGIN
         } else if (data.getCommando() == 3) {
-            return PasswordCheck.getInstance()
+            if (networkServer.userOnline(data.getMessage().getSender())) return false;
+            else return PasswordCheck.getInstance()
                     .checkUser(data.getMessage().getSender(), data.getMessage().getMessageData());
         } else return false;
     }
@@ -67,5 +67,9 @@ public class ServerSwitch {
             });
         }
         return messageList;
+    }
+
+    public void removeConnection(Connection c){
+        networkServer.removeConnection(c);
     }
 }
