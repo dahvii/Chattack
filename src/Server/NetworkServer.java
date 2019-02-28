@@ -7,6 +7,7 @@ import java.io.IOException;
 import java.io.Serializable;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.time.LocalDateTime;
 import java.util.*;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -102,6 +103,18 @@ public class NetworkServer implements Runnable {
             if(c.getName().equals(name)) return true;
         }
         return false;
+    }
+
+    public DataMessage getOnlineUsers(String roomName) {
+        String usersString = "";
+        Iterator<Connection> connections = getConnectionList().iterator();
+        while (connections.hasNext()) {
+            Connection c = connections.next();
+            if (c.getActiveRoom().equals(roomName)) usersString += c.getName() + ",";
+        }
+        if (usersString.length() > 0) usersString = usersString.substring(0, usersString.length() - 1);
+
+        return new DataMessage(4, new Message(usersString, LocalDateTime.now(), null, roomName));
     }
 
     public synchronized List<Connection> getConnectionList() {

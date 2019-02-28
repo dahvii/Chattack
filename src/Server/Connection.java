@@ -46,7 +46,7 @@ public class Connection {
             sendToClient(serverSwitch.getOnlineUsers(roomName));
         }
 
-        serverSwitch.getLatestMessages().forEach(this::sendToClient);
+        DataHandler.getInstance().getLatestMessages().forEach(this::sendToClient);
         serverSwitch.switchDataMessage(new DataMessage(5, new Message(getActiveRoom(), null, name, getActiveRoom())));
     }
 

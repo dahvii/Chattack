@@ -30,8 +30,6 @@ public class ServerSwitch {
 
     public void addMessage(Object o) {
         networkServer.addMessage(o);
-        {
-        }
     }
 
     public boolean switchLogin(DataMessage data) {
@@ -48,25 +46,7 @@ public class ServerSwitch {
     }
 
     public DataMessage getOnlineUsers(String roomName) {
-        String usersString = "";
-        for (Connection c : networkServer.getConnectionList()) {
-            if (c.getActiveRoom().equals(roomName)) usersString += c.getName() + ",";
-        }
-        if (usersString.length() > 0) usersString = usersString.substring(0, usersString.length() - 1);
-        return new DataMessage(4, new Message(usersString, LocalDateTime.now(), null, roomName));
-    }
-
-    public ArrayList<DataMessage> getLatestMessages() {
-        ArrayList<DataMessage> messageList = new ArrayList<>();
-        LocalDateTime localDateTime = LocalDateTime.now();
-        for (List<Message> roomMessages : DataHandler.getInstance().getMessageMap().values()) {
-            roomMessages.forEach(message -> {
-                if (message.getTime().isAfter(localDateTime.minusHours(24))) {
-                    messageList.add(new DataMessage(0, message));
-                }
-            });
-        }
-        return messageList;
+        return networkServer.getOnlineUsers(roomName);
     }
 
     public void removeConnection(Connection c){

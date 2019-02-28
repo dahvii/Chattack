@@ -1,7 +1,9 @@
 package Server;
 
+import Data.DataMessage;
 import Data.Message;
 
+import java.time.LocalDateTime;
 import java.util.*;
 
 public class DataHandler {
@@ -45,6 +47,19 @@ public class DataHandler {
 
     public List<Message> getRoomMessages(String roomName){
         return getMessageMap().get(roomName);
+    }
+
+    public ArrayList<DataMessage> getLatestMessages() {
+        ArrayList<DataMessage> messageList = new ArrayList<>();
+        LocalDateTime localDateTime = LocalDateTime.now();
+        for (List<Message> roomMessages : DataHandler.getInstance().getMessageMap().values()) {
+            roomMessages.forEach(message -> {
+                if (message.getTime().isAfter(localDateTime.minusHours(8))) {
+                    messageList.add(new DataMessage(0, message));
+                }
+            });
+        }
+        return messageList;
     }
 
     public synchronized Map<String, List<Message>> getMessageMap() {
