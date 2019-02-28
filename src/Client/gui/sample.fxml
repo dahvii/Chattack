@@ -7,7 +7,7 @@
 <?import javafx.scene.control.Button?>
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.ScrollPane?>
-<?import javafx.scene.control.TextField?>
+<?import javafx.scene.control.TextArea?>
 <?import javafx.scene.control.TitledPane?>
 <?import javafx.scene.effect.ColorAdjust?>
 <?import javafx.scene.image.Image?>
@@ -28,10 +28,7 @@
             <Image url="@icons8-customer-64.png" />
          </image>
       </ImageView>
-      <TextField fx:id="input" layoutX="184.0" layoutY="483.0" onAction="#sendBtnClick" prefHeight="40.0" prefWidth="433.0" promptText="Skriv meddelande">
-         <font>
-            <Font size="18.0" />
-         </font></TextField>
+      <TextArea fx:id="input2" layoutX="184.0" layoutY="477.0" prefHeight="50.0" prefWidth="435.0" promptText="Meddelande" wrapText="true" />
       <ImageView fitHeight="40.0" fitWidth="31.0" layoutX="879.0" layoutY="22.0" pickOnBounds="true" preserveRatio="true">
          <image>
             <Image url="@media1.png" />
@@ -42,7 +39,7 @@
             <Font name="Yu Gothic UI Bold" size="40.0" />
          </font>
       </Label>
-      <ImageView fitHeight="53.0" fitWidth="44.0" layoutX="624.0" layoutY="481.0" onMouseClicked="#sendBtnClick" pickOnBounds="true" preserveRatio="true">
+      <ImageView fitHeight="48.0" fitWidth="49.0" layoutX="624.0" layoutY="481.0" onMouseClicked="#sendBtnClick" pickOnBounds="true" preserveRatio="true">
          <image>
             <Image url="@icons8-send-comment-50.png" />
          </image>
@@ -74,9 +71,9 @@
             <Button fx:id="horses" alignment="CENTER" onAction="#changeRoom" prefHeight="40.0" prefWidth="175.0" styleClass="roomLblStyle" text="Hästklubben" />
          </children>
       </VBox>
-      <ScrollPane fx:id="allMessagesWindow" hbarPolicy="NEVER" layoutX="184.0" layoutY="6.0" prefHeight="471.0" prefWidth="484.0" styleClass="edge-to-edge">
+      <ScrollPane fx:id="allMessagesWindow" hbarPolicy="NEVER" layoutX="184.0" layoutY="6.0" prefHeight="463.0" prefWidth="484.0" styleClass="edge-to-edge">
          <content>
-            <VBox fx:id="msgBox" prefHeight="471.0" prefWidth="484.0" />
+            <VBox fx:id="msgBox" prefHeight="463.0" prefWidth="463.0" />
          </content></ScrollPane>
       <Accordion fx:id="accOnlineUsers" layoutX="698.0" layoutY="73.0" prefHeight="361.0" prefWidth="212.0">
         <panes>
