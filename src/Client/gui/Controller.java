@@ -105,13 +105,14 @@ public class Controller {
 
     public void sendBtnClick() {
         if (!input2.getText().equals("")) {
-            if(input2.getText().length()>2000) {
+            String msg = input2.getText().trim();
+            if(msg.length()>2000) {
                 Alert alert = new Alert(Alert.AlertType.WARNING);
                 alert.setTitle("För många tecken!");
                 alert.setHeaderText("Max 2000 tecken i ett meddelande!");
                 alert.showAndWait();
             } else {
-                DataMessage dataMessage = new DataMessage(0, new Message(input2.getText(), LocalDateTime.now(), user.getName(), getActiveRoom()));
+                DataMessage dataMessage = new DataMessage(0, new Message(msg, LocalDateTime.now(), user.getName(), getActiveRoom()));
                 NetworkClient.getInstance().sendToServer(dataMessage);
                 input2.clear();
             }
