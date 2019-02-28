@@ -17,10 +17,12 @@ import javafx.scene.control.*;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.ScrollPane;
+import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
 import javafx.scene.effect.DropShadow;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import javafx.scene.input.KeyCode;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
@@ -43,6 +45,7 @@ public class Controller {
     private AtomicBoolean serverResponse = new AtomicBoolean(false);
     private AtomicBoolean serverWaiting = new AtomicBoolean(true);
     public TextField input;
+    public TextArea input2;
     public ScrollPane allMessagesWindow;
     private User user = new User();
     private DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
@@ -86,13 +89,25 @@ public class Controller {
         addOnlineUsersGraphic(getActiveRoom(), user.getName());
         accOnlineUsers.setExpandedPane(onlinePanesMap.get(getActiveRoom()));
         userName.setText(user.getName());
+
+        input2.setOnKeyPressed(event -> {
+            if(event.getCode() == KeyCode.ENTER){
+                event.consume();
+                if(event.isShiftDown()){
+                    input2.appendText(System.getProperty("line.separator"));
+                }   else {
+                    sendBtnClick();
+                }
+            }
+        });
     }
 
+
     public void sendBtnClick() {
-        if (!input.getText().equals("")) {
-            DataMessage dataMessage = new DataMessage(0, new Message(input.getText(), LocalDateTime.now(), user.getName(), getActiveRoom()));
+        if (!input2.getText().equals("")) {
+            DataMessage dataMessage = new DataMessage(0, new Message(input2.getText(), LocalDateTime.now(), user.getName(), getActiveRoom()));
             NetworkClient.getInstance().sendToServer(dataMessage);
-            input.clear();
+            input2.clear();
         }
     }
 
