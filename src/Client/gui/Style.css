@@ -1,20 +1,37 @@
 .roomLblStyle {
     -fx-background-color:
-            #c3c4c4,
-            linear-gradient(#d6d6d6 50%, white 100%),
-            radial-gradient(center 50% -40%, radius 200%, #e6e6e6 45%, rgba(230,230,230,0) 50%);
-    -fx-background-radius: 30;
+    #c3c4c4,
+    linear-gradient(#d6d6d6 50%, white 100%),
+    radial-gradient(center 50% -40%, radius 200%, #e6e6e6 45%, rgba(230,230,230,0) 50%);
+    -fx-background-radius: 5,4,3,5;
     -fx-background-insets: 0,1,1;
     -fx-text-fill: black;
     -fx-effect: dropshadow( three-pass-box , rgba(0,0,0,0.6) , 3, 0.0 , 0 , 1 );
 }
 
 .roomLblStyle:pressed {
-    -fx-background-color: linear-gradient(#bbbbbb 50%, white 100%);
+    -fx-background-color: linear-gradient(#bbbbbb 50%, #ffffff 100%);
 }
 
 .root{
-    -fx-background-color: #525F73;
+    -fx-background-color: #37466f;
     -fx-faint-focus-color: transparent;
     -fx-focus-color: transparent;
+}
+
+.scroll-pane {
+    -fx-background-color: transparent;
+}
+
+.Titlepane .title{
+    -fx-background-color:
+            #c3c4c4,
+            linear-gradient(#d6d6d6 50%, white 100%),
+            radial-gradient(center 50% -40%, radius 200%, #e6e6e6 45%, rgba(230,230,230,0) 50%);
+    -fx-background-insets: 0,1,1;
+    -fx-text-fill: black;
+}
+
+#ninjasPane .title{
+
 }

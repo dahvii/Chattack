@@ -14,13 +14,21 @@ import javafx.geometry.Pos;
 import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
+import javafx.scene.control.Button;
+import javafx.scene.control.Label;
+import javafx.scene.control.ScrollPane;
+import javafx.scene.control.TextField;
 import javafx.scene.effect.DropShadow;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 
+import java.awt.*;
+import java.io.File;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Collections;
@@ -51,6 +59,7 @@ public class Controller {
     @FXML Button main, ninjas, memes, gaming, horses;
     private Button [] buttons;
     private final String[] roomNames = new String[]{"main", "ninjas", "memes", "gaming", "horses"};
+    public Label userName;
 
     public Controller() {
         clientSwitch = new ClientSwitch(this);
@@ -76,6 +85,7 @@ public class Controller {
         loginPrompt();
         addOnlineUsersGraphic(getActiveRoom(), user.getName());
         accOnlineUsers.setExpandedPane(onlinePanesMap.get(getActiveRoom()));
+        userName.setText(user.getName());
     }
 
     public void sendBtnClick() {
@@ -279,9 +289,9 @@ public class Controller {
         dropShadow.setColor(Color.color(0.4, 0.5, 0.5));
         message.setWrapText(true);
         message.setPadding(new Insets(5, 5, 5, 5));
-        message.setStyle("-fx-background-color: linear-gradient(from 25% 25% to 100% 100%, #3ead3a, #93d379); -fx-background-radius: 5");
+        message.setStyle("-fx-background-color: linear-gradient(from 25% 25% to 100% 100%, #67b75d, #6fc165); -fx-background-radius: 5");
         if(msg.getSender().equals(user.getName())){
-            message.setStyle("-fx-background-color: linear-gradient(from 25% 25% to 100% 100%, #525F73, #7a96aa); -fx-background-radius: 5");
+            message.setStyle("-fx-background-color: linear-gradient(from 25% 25% to 100% 100%, #5d7799, #6986a9); -fx-background-radius: 5");
             message.setTextFill(Color.WHITE);
         }
         chatMessageContainer.getChildren().add(message);
@@ -291,9 +301,15 @@ public class Controller {
 
     public void addOnlineUsersGraphic(String roomName, String name){
         Label label1 = new Label(name);
-        label1.setId(name);
+        HBox userBox = new HBox();
+        userBox.setPadding(new Insets(3,0,0,3));
+        userBox.setId(name);
+        ImageView image = new ImageView("Client/gui/icons8-sphere-48.png");
+        image.setFitHeight(15);
+        image.setFitWidth(15);
+        userBox.getChildren().addAll(image, label1);
         try{
-            onlineVBoxMap.get(roomName).getChildren().add(label1);
+            onlineVBoxMap.get(roomName).getChildren().add(userBox);
         } catch (Exception e){
             e.printStackTrace();
         }
@@ -326,7 +342,7 @@ public class Controller {
 
     private void styleActiveButton(Boolean isActive, Button button){
         if(isActive){
-            button.setStyle("-fx-background-color:  #c3c4c4, linear-gradient(from 25% 25% to 100% 100%, #3ead3a, #93d379), radial-gradient(center 50% -40%, radius 200%, #e6e6e6 45%, rgba(230,230,230,0) 50%);");
+            button.setStyle("-fx-background-color:  #5274b4, linear-gradient(from 25% 25% to 100% 100%, #37517a, #4e74af), radial-gradient(center 50% -40%, radius 200%, #4e74af 45%, rgba(230,230,230,0) 50%); -fx-text-fill: white;");
         }else{
             button.setStyle(" -fx-background-color:  #c3c4c4, linear-gradient(#d6d6d6 50%, white 100%), radial-gradient(center 50% -40%, radius 200%, #e6e6e6 45%, rgba(230,230,230,0) 50%);");
         }
@@ -382,14 +398,20 @@ public class Controller {
         Platform.runLater(new Runnable() {
             @Override
             public void run() {
+                ImageView image = new ImageView("Client/gui/icons8-sphere-48.png");
+                HBox userBox = new HBox();
+                userBox.setPadding(new Insets(3,0,0,3));
+                image.setFitHeight(15);
+                image.setFitWidth(15);
                 Label newLabel = new Label(msg.getSender());
-                newLabel.setId(msg.getSender());
+                userBox.setId(msg.getSender());
+                userBox.getChildren().addAll(image, newLabel);
                 Iterator<Node> onlineLabels = onlineVBoxMap.get(msg.getReceiver()).getChildren().iterator();
                 while(onlineLabels.hasNext()){
                     String id = onlineLabels.next().getId();
                     if(id.equals(msg.getSender())) onlineLabels.remove();
                 }
-                if(msg.getMessageData()!= null) onlineVBoxMap.get(msg.getMessageData()).getChildren().add(newLabel);
+                if(msg.getMessageData()!= null) onlineVBoxMap.get(msg.getMessageData()).getChildren().add(userBox);
             }
         });
     }
