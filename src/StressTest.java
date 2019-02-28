@@ -72,7 +72,7 @@ public class StressTest {
         while (nbrOfTestClients-- > 0 && totalMessageLimit.get() > 0){
             new Thread(new StressClient(totalMessageLimit, sleepTime)).start();
             try {
-                Thread.sleep(3000);
+                Thread.sleep(100);
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
@@ -94,7 +94,7 @@ public class StressTest {
             this.sleepTime = sleepTime;
             rnd = new Random();
             active = new AtomicBoolean(false);
-            tempName = "TEST" + rnd.nextInt(10000000);
+            tempName = "TEST" + rnd.nextInt(100000000);
 
             try {
                 socket = new Socket("localhost", 3000);
@@ -125,12 +125,12 @@ public class StressTest {
             while (active.get()) {
                 if (getMessageLimit() > 0) {
                     try {
-                        if (rnd.nextInt(3) == 1) {
+                        if (rnd.nextInt(5) == 0) {
                             String newRoom = roomNames[rnd.nextInt(5)];
                             DataMessage roomSwitch = new DataMessage(1, new Message(newRoom, null, tempName, room));
                             objectOutputStream.writeObject(roomSwitch);
                             room = newRoom;
-                            Thread.sleep(1000);
+                            Thread.sleep(2000);
                         }
 
                         DataMessage msg = new DataMessage(0, new Message(
@@ -144,7 +144,7 @@ public class StressTest {
                             System.out.println("Message sent to " + room + " from " + tempName);
                         } else closeConnection();
 
-                        Thread.sleep(sleepTime);
+                        Thread.sleep((sleepTime + rnd.nextInt(sleepTime)));
                     } catch (IOException | InterruptedException e) {
                         e.printStackTrace();
                         closeConnection();

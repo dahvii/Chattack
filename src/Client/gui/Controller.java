@@ -268,17 +268,28 @@ public class Controller {
     }
 
     private void printRoomMessages(String roomName) {
-        getChatRoom(roomName).getMessages().forEach(this::printMessage);
+        Platform.runLater(new Runnable() {
+            @Override
+            public void run() {
+                Iterator<Message> iter = getChatRoom(roomName).getMessages().listIterator();
+                iter.forEachRemaining(Controller.this::printMessage);
+            }
+        });
     }
 
     public void printMessage(Message msg) {
-        HBox chatMessageContainer = new HBox();
-        Label message = new Label(msg.getSender() + "\n" + msg.getMessageData() + "\n" + msg.getTime().format(formatter));
-        message.setMinHeight(Control.USE_PREF_SIZE);
-        message.setMinWidth(450);
-        msgBox.getChildren().add(chatMessageContainer);
-        styleMessage(message, chatMessageContainer, msg);
-        scroll();
+        Platform.runLater(new Runnable() {
+            @Override
+            public void run() {
+                HBox chatMessageContainer = new HBox();
+                Label message = new Label(msg.getSender() + "\n" + msg.getMessageData() + "\n" + msg.getTime().format(formatter));
+                message.setMinHeight(Control.USE_PREF_SIZE);
+                message.setMinWidth(450);
+                msgBox.getChildren().add(chatMessageContainer);
+                styleMessage(message, chatMessageContainer, msg);
+                scroll();
+            }
+        });
     }
 
     public void styleMessage(Label message, HBox chatMessageContainer, Message msg) {
@@ -316,13 +327,19 @@ public class Controller {
     }
 
     private void scroll() {
-        msgBox.heightProperty().addListener(observable -> allMessagesWindow.setVvalue(1.0));
+        Platform.runLater(new Runnable() {
+            @Override
+            public void run() {
+                msgBox.heightProperty().addListener(observable -> allMessagesWindow.setVvalue(1.0));
+            }
+        });
     }
 
     @FXML
     private void changeRoom(ActionEvent event) {
         String newRoom = ((Button) event.getSource()).getId();
         msgBox.getChildren().clear();
+
         printRoomMessages(newRoom);
 
         //find the exited roomButton and style it back to default

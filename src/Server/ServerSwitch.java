@@ -48,8 +48,4 @@ public class ServerSwitch {
     public DataMessage getOnlineUsers(String roomName) {
         return networkServer.getOnlineUsers(roomName);
     }
-
-    public void removeConnection(Connection c){
-        networkServer.removeConnection(c);
-    }
 }
