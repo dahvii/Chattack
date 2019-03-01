@@ -306,9 +306,6 @@ public class Controller {
                 Label messageTime = new Label(msg.getTime().format(formatter));
                 VBox messageTextContainer = new VBox();
                 messageTextContainer.getChildren().add(messageData);
-//                messageSender.setMinHeight(Control.USE_PREF_SIZE);
-//                messageSender.setMinWidth(450);
-//                chatMessageContainer.getChildren().addAll(messageSender, messageData, messageTime);
                 styleMessage(messageSender, messageTextContainer, messageTime, chatMessageContainer, msg);
                 msgBox.getChildren().add(chatMessageContainer);
 
@@ -322,7 +319,6 @@ public class Controller {
         dropShadow.setOffsetX(3.0);
         dropShadow.setOffsetY(3.0);
         dropShadow.setColor(Color.color(0.4, 0.5, 0.5));
-//        messageData.setMaxWidth(msgBox.getWidth()-20);
         messageData.setMinHeight(Control.USE_PREF_SIZE);
         chatMessageContainer.setPadding(new Insets(5, 5, 5, 5));
         chatMessageContainer.setStyle("-fx-background-color: linear-gradient(from 25% 25% to 100% 100%, #67b75d, #6fc165); -fx-background-radius: 5");
@@ -345,7 +341,6 @@ public class Controller {
         ImageView image = new ImageView("Client/gui/icons8-sphere-48.png");
         if(name.equals(user.getName())){
             label1.setStyle("-fx-font-weight: bold");
-//            image.setEffect();
         }
         image.setFitHeight(15);
         image.setFitWidth(15);
