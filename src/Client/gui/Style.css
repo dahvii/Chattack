@@ -19,10 +19,6 @@
     -fx-focus-color: transparent;
 }
 
-.scroll-pane {
-    -fx-background-color: transparent;
-}
-
 .Titlepane .title{
     -fx-background-color:
             #c3c4c4,
@@ -32,6 +28,6 @@
     -fx-text-fill: black;
 }
 
-#ninjasPane .title{
-
+#mainPane .title{
+    -fx-background-radius: 5 5 0 0, 5 5 0 0;
 }

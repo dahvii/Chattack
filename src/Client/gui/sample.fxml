@@ -39,7 +39,7 @@
             <Font name="Yu Gothic UI Bold" size="40.0" />
          </font>
       </Label>
-      <ImageView fitHeight="48.0" fitWidth="49.0" layoutX="624.0" layoutY="481.0" onMouseClicked="#sendBtnClick" pickOnBounds="true" preserveRatio="true">
+      <ImageView fitHeight="48.0" fitWidth="49.0" layoutX="621.0" layoutY="478.0" onMouseClicked="#sendBtnClick" pickOnBounds="true" preserveRatio="true">
          <image>
             <Image url="@icons8-send-comment-50.png" />
          </image>
@@ -50,9 +50,9 @@
             <ColorAdjust brightness="1.0" />
          </effect>
       </ImageView>
-      <VBox id="vBoxRooms" alignment="CENTER" layoutX="18.0" layoutY="43.0" prefHeight="247.0" prefWidth="148.0">
+      <VBox id="vBoxRooms" alignment="CENTER" layoutX="18.0" layoutY="116.0" prefHeight="243.0" prefWidth="148.0">
          <children>
-            <Button fx:id="main" alignment="CENTER" contentDisplay="CENTER" onAction="#changeRoom" prefHeight="40.0" prefWidth="175.0" styleClass="roomLblStyle" text="Skitsnack">
+            <Button fx:id="main" alignment="CENTER" contentDisplay="CENTER" onAction="#changeRoom" prefHeight="40.0" prefWidth="148.0" styleClass="roomLblStyle" text="Skitsnack">
                <VBox.margin>
                   <Insets bottom="10.0" />
                </VBox.margin></Button>
@@ -75,7 +75,7 @@
          <content>
             <VBox fx:id="msgBox" prefHeight="463.0" prefWidth="463.0" />
          </content></ScrollPane>
-      <Accordion fx:id="accOnlineUsers" layoutX="698.0" layoutY="73.0" prefHeight="361.0" prefWidth="212.0">
+      <Accordion fx:id="accOnlineUsers" layoutX="698.0" layoutY="116.0" prefHeight="361.0" prefWidth="212.0">
         <panes>
             <TitledPane fx:id="mainPane" animated="false" styleClass="Titlepane" text="Skitsnack">
                <content>
@@ -124,6 +124,8 @@
             </TitledPane>
         </panes>
       </Accordion>
+      <Label layoutX="77.0" layoutY="95.0" text="Rum" textFill="WHITE" />
+      <Label layoutX="745.0" layoutY="95.0" text="Användare Online" textFill="WHITE" />
    </children>
   <stylesheets>
       <URL value="@Style.css" />
