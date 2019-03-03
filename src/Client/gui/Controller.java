@@ -57,8 +57,7 @@ public class Controller {
         TitledPane[] onlinePanes = new TitledPane[]{mainPane, ninjasPane, memesPane, gamingPane, horsesPane};
         Button[] buttons = new Button[]{mainButton, ninjasButton, memesButton, gamingButton, horsesButton};
 
-        Stream.of(roomNames).parallel().forEach(name ->
-                chatRoomMap.put(name, new ChatRoom(name)));
+        Stream.of(roomNames).parallel().forEach(name -> chatRoomMap.put(name, new ChatRoom(name)));
         Stream.of(onlineVBoxes).parallel().forEach(vBox ->
                 onlineVBoxMap.put(vBox.getId().replaceFirst("Box", ""), vBox));
         Stream.of(onlinePanes).parallel().forEach(titledPane ->
@@ -119,62 +118,6 @@ public class Controller {
             msgBox.getChildren().add(generateGFX.generateMessageBox(msg));
             scroll();
         });
-        Platform.runLater(()  -> {
-
-                VBox chatMessageContainer = new VBox();
-                Label messageSender = new Label(msg.getSender());
-                Label messageData = new Label(msg.getMessageData());
-                if(msg.getSender().equals(user.getName())){
-                    messageData.setTextFill(Color.WHITE);
-                }
-                messageData.setWrapText(true);
-                Label messageTime = new Label(msg.getTime().format(formatter));
-                VBox messageTextContainer = new VBox();
-                messageTextContainer.getChildren().add(messageData);
-                styleMessage(messageSender, messageTextContainer, messageTime, chatMessageContainer, msg);
-                msgBox.getChildren().add(chatMessageContainer);
-
-                scroll();
-            });
-    }
-
-    public void styleMessage(Label messageSender, VBox messageData, Label messageTime, VBox chatMessageContainer, Message msg) {
-        DropShadow dropShadow = new DropShadow();
-        dropShadow.setRadius(5.0);
-        dropShadow.setOffsetX(3.0);
-        dropShadow.setOffsetY(3.0);
-        dropShadow.setColor(Color.color(0.4, 0.5, 0.5));
-        messageData.setMinHeight(Control.USE_PREF_SIZE);
-        chatMessageContainer.setPadding(new Insets(5, 5, 5, 5));
-        chatMessageContainer.setStyle("-fx-background-color: linear-gradient(from 25% 25% to 100% 100%, #67b75d, #6fc165); -fx-background-radius: 5");
-        if(msg.getSender().equals(user.getName())){
-            chatMessageContainer.setStyle("-fx-background-color: linear-gradient(from 25% 25% to 100% 100%, #5d7799, #6986a9); -fx-background-radius: 5");
-            messageSender.setTextFill(Color.WHITE);
-            messageTime.setTextFill(Color.WHITE);
-        }
-        messageSender.setStyle("-fx-font-weight: bold");
-        chatMessageContainer.getChildren().addAll(messageSender, messageData, messageTime);
-        VBox.setMargin(chatMessageContainer,new Insets(5,5,5,5));
-        chatMessageContainer.setEffect(dropShadow);
-    }
-
-    public void addOnlineUsersGraphic(String roomName, String name){
-        Label label1 = new Label(name);
-        HBox userBox = new HBox();
-        userBox.setPadding(new Insets(3,0,0,3));
-        userBox.setId(name);
-        ImageView image = new ImageView("Client/gui/icons8-sphere-48.png");
-        if(name.equals(user.getName())){
-            label1.setStyle("-fx-font-weight: bold");
-        }
-        image.setFitHeight(15);
-        image.setFitWidth(15);
-        userBox.getChildren().addAll(image, label1);
-        try{
-            onlineVBoxMap.get(roomName).getChildren().add(userBox);
-        } catch (Exception e){
-            e.printStackTrace();
-        }
     }
 
     private void scroll() {
