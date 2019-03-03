@@ -61,14 +61,6 @@ public class NetworkClient {
         }
     }
 
-    private synchronized void addMessage(Object o){
-        messageQueue.add(o);
-    }
-
-    public synchronized Queue<Object> getMessageQueue(){
-        return messageQueue;
-    }
-
     public void run() {
         while (isActive()){
             try {
@@ -99,11 +91,23 @@ public class NetworkClient {
         }
     }
 
+    private void addMessage(Object o){
+        getMessageQueue().add(o);
+    }
+
+    public synchronized Queue<Object> getMessageQueue(){
+        return messageQueue;
+    }
+
+    private synchronized AtomicBoolean getAtomicActive(){
+        return isActive;
+    }
+
     public boolean isActive() {
-        return isActive.get();
+        return getAtomicActive().get();
     }
 
     public void setActive(boolean isActive) {
-        this.isActive.set(isActive);
+        getAtomicActive().set(isActive);
     }
 }

@@ -32,9 +32,7 @@ public class NetworkServer implements Runnable {
         socketQueue = new ConcurrentLinkedQueue<>();
         serverSwitch = new ServerSwitch(this);
 
-        for(String room:roomNames){
-            DataHandler.getInstance().loadRoomMessages(room);
-        }
+        Arrays.stream(roomNames).parallel().forEach(DataHandler.getInstance()::loadRoomMessages);
 
         try {
             serverSocket = new ServerSocket(3000);
@@ -56,12 +54,8 @@ public class NetworkServer implements Runnable {
     }
 
     public synchronized void sendToAll(Object o) {
-            new Thread(()-> getConnectionStream().forEach(connection -> {
-                if (connection.isActive()) {
-                    if(!connection.getName().contains("TEST")) connection.addToSendQueue(o);
-                } else {
-                    addToRemoveQueue(connection);
-                }
+            new Thread(()-> getConnectionStream().parallel().forEach(connection -> {
+                if (connectionActiveCheck(connection)) connection.addToSendQueue(o);
             })).start();
     }
 
@@ -78,23 +72,20 @@ public class NetworkServer implements Runnable {
 
     public void roomSwitch(String user, String newRoom){
         getConnectionStream().parallel().forEach(connection -> {
-            if (connection.isActive()) {
+            if (connectionActiveCheck(connection))
                 if(connection.getName().equals(user)){
                     String oldRoom = connection.getActiveRoom();
                     connection.setActiveRoom(newRoom);
                     sendToAll(new DataMessage(5, new Message(newRoom, null, user, oldRoom)));
                 }
-            } else addToRemoveQueue(connection);
         });
     }
 
     public boolean userOnline(String name){
         AtomicBoolean found = new AtomicBoolean(false);
         getConnectionStream().parallel().forEach(connection -> {
-            if (connection.isActive()) {
+            if (connectionActiveCheck(connection)) {
                 if(connection.getName().equals(name)) found.set(true);
-            } else {
-                addToRemoveQueue(connection);
             }
         });
         return found.get();
@@ -103,11 +94,9 @@ public class NetworkServer implements Runnable {
     public DataMessage getOnlineUsers(String roomName) {
         AtomicReference<String> userString = new AtomicReference<>("");;
         getConnectionStream().parallel().forEach(connection -> {
-            if (connection.isActive()) {
+            if (connectionActiveCheck(connection)) {
                 if (connection.getActiveRoom().equals(roomName))
                     userString.set(userString.get() + connection.getName() + ",");
-            } else {
-                addToRemoveQueue(connection);
             }
         });
         if (userString.get().length() > 0)
@@ -129,11 +118,9 @@ public class NetworkServer implements Runnable {
         while(isActive()){
             try {
                 Connection c = removeQueue.poll();
-                if(c != null){
-                    if(getConnectionList().remove(c)){
+                if(c != null) if(getConnectionList().remove(c)){
                         System.out.println("Connection destroyed - NEW SIZE:"+ getConnectionList().size());
                     }
-                }
                 Thread.sleep(10);
             } catch (InterruptedException e) {
                 e.printStackTrace();
@@ -143,7 +130,16 @@ public class NetworkServer implements Runnable {
         }
     }
 
-    private void consumeSockets(){
+    private boolean connectionActiveCheck(Connection connection) {
+        if (connection.isActive()) return true;
+        else {
+            addToRemoveQueue(connection);
+            return false;
+        }
+    }
+
+
+        private void consumeSockets(){
         while (isActive()){
             if(!socketQueue.isEmpty()) new Thread(this::addConnection).start();
             try {

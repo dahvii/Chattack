@@ -15,7 +15,7 @@ import java.util.concurrent.atomic.AtomicReference;
 
 public class Connection {
     private AtomicReference<String> name = new AtomicReference<>("");
-    private AtomicReference<String> activeRoom = new AtomicReference<>("main");
+    private AtomicReference<String> activeRoom = new AtomicReference<>("");
     private AtomicBoolean isActive = new AtomicBoolean(false);
     private AtomicBoolean loggedIn = new AtomicBoolean(false);
     private Queue<Object> sendQueue = new ConcurrentLinkedQueue<>();
@@ -47,10 +47,14 @@ public class Connection {
             Thread sendThread = new Thread(this::outputThread);
             sendThread.setDaemon(true);
             sendThread.start();
-            if(getName() != "" && !getName().contains("TEST")) {
-                Arrays.stream(NetworkServer.roomNames).forEach(name -> addToSendQueue(serverSwitch.getOnlineUsers(name)));
-                DataHandler.getInstance().getLatestMessages().forEach(this::addToSendQueue);
-            }
+
+            Arrays.stream(NetworkServer.roomNames).parallel().forEach(roomName -> {
+                addToSendQueue(serverSwitch.getOnlineUsers(roomName));
+                DataHandler.getInstance()
+                        .getLatestMessages(roomName)
+                        .map(message -> new DataMessage(0, message))
+                        .forEach(this::addToSendQueue);
+            });
 
             serverSwitch.switchDataMessage(
                     new DataMessage(5, new Message(getActiveRoom(), null, getName(), getActiveRoom())));
@@ -74,7 +78,8 @@ public class Connection {
                     sendObject(new DataMessage(3, null));
 
                 } else if(passwordRegisterCheck && response.getCommando()==3) {
-                    name.set(response.getMessage().getSender());
+                    setName(response.getMessage().getSender());
+                    setActiveRoom("main");
                     sendObject(new DataMessage(3, null));
                     setLoggedIn(true);
                 }

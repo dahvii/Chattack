@@ -1,8 +1,8 @@
 package Server;
 
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 public class PasswordCheck extends BCrypt {
     private static PasswordCheck instance;
@@ -20,12 +20,18 @@ public class PasswordCheck extends BCrypt {
     private void loadUsers() {
         Object o =  FileHandler.getInstance().readFile("users.dat");
         if(o != null){
-            users = Collections.synchronizedMap((Map<String,String>) o);
-            System.out.println("Loading " + users.size() +" saved users");
-        } else {
-            users = Collections.synchronizedMap(new HashMap<>());
-            System.out.println("No userfile or file corrupt");
-        }
+            try {
+                users = Collections.synchronizedMap((Map<String,String>) o);
+                System.out.println("Loading " + users.size() +" saved users");
+            } catch (Exception e) {
+                createMap();
+            }
+        } else createMap();
+    }
+
+    private void createMap(){
+        users = Collections.synchronizedMap(new ConcurrentHashMap<>());
+        System.out.println("No userfile or file corrupt");
     }
 
     public boolean checkUser(String userName, String password){
@@ -37,9 +43,9 @@ public class PasswordCheck extends BCrypt {
 
     public boolean addUser(String userName, String password){
         String user = userName.toLowerCase();
-        if(users.containsKey(user)) return false;
+        if(getUsers().containsKey(user)) return false;
         else {
-            users.putIfAbsent(user, hashpw(password, gensalt()));
+            getUsers().putIfAbsent(user, hashpw(password, gensalt()));
             saveUsers();
             return true;
         }

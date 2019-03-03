@@ -1,10 +1,9 @@
 package Server;
 
-import Data.DataMessage;
 import Data.Message;
-
 import java.time.LocalDateTime;
 import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Stream;
 
 public class DataHandler {
@@ -18,27 +17,27 @@ public class DataHandler {
     }
 
     private DataHandler() {
-        allMessages = Collections.synchronizedMap(new HashMap<>());
+        allMessages = Collections.synchronizedMap(new ConcurrentHashMap<>());
     }
 
     public void loadRoomMessages(String roomName){
         Object obj = FileHandler.getInstance().readFile(roomName.toLowerCase()+"-messages.dat");
-        addRoom(roomName);
         if (obj instanceof ArrayList) {
-            ArrayList<Message> messages = (ArrayList<Message>) obj;
-            System.out.println("Loading " + messages.size() +" messages in room " +roomName);
-            if(!messages.isEmpty()) {
-                messages.forEach(this::addMessage);
-            }
+            addRoom(roomName, (ArrayList<Message>) obj);
+            System.out.println("Loading " + getMessageMap().get(roomName).size() +" messages in room " +roomName);
+        } else {
+            addRoom(roomName, null);
+            System.out.println("Creating empty messageList in room " +roomName);
         }
     }
 
-    public synchronized void saveRoomMessages(String roomName){
+    public void saveRoomMessages(String roomName){
         FileHandler.getInstance().writeFile(roomName.toLowerCase()+"-messages.dat", getMessageMap().get(roomName));
     }
 
-    public void addRoom(String roomName){
-        getMessageMap().putIfAbsent(roomName, new ArrayList<>());
+    public void addRoom(String roomName, List<Message> messageList){
+        if(messageList != null) getMessageMap().putIfAbsent(roomName, messageList);
+        else  getMessageMap().putIfAbsent(roomName, Collections.synchronizedList(new ArrayList<>()));
     }
 
     public void addMessage(Message msg){
@@ -46,15 +45,12 @@ public class DataHandler {
         saveRoomMessages(msg.getReceiver());
     }
 
-    public Stream<DataMessage> getLatestMessages(){
-        return getMessageMap()
-                .values()
+    public Stream<Message> getLatestMessages(String roomName){
+        ArrayList<Message> tempMessageList = new ArrayList<>(getMessageMap().get(roomName));
+        return tempMessageList
                 .stream()
-                .flatMap(Collection::stream)
                 .filter(message -> message.getTime().isAfter(LocalDateTime.now().minusHours(8)))
-                .sorted(Comparator.comparing(Message::getTime))
-                .map(message -> new DataMessage(0, message))
-                ;
+                .sorted(Comparator.comparing(Message::getTime));
     }
 
     private synchronized Map<String, List<Message>> getMessageMap() {

@@ -57,18 +57,14 @@ public class Controller {
         TitledPane[] onlinePanes = new TitledPane[]{mainPane, ninjasPane, memesPane, gamingPane, horsesPane};
         Button[] buttons = new Button[]{mainButton, ninjasButton, memesButton, gamingButton, horsesButton};
 
-        Stream.of(roomNames).parallel().forEach(name -> {
-            chatRoomMap.put(name, new ChatRoom(name));
-        });
-        Stream.of(onlineVBoxes).parallel().forEach(vBox -> {
-            onlineVBoxMap.put(vBox.getId().replaceFirst("Box", ""), vBox);
-        });
-        Stream.of(onlinePanes).parallel().forEach(titledPane -> {
-            onlinePanesMap.put(titledPane.getId().replaceFirst("Pane", ""), titledPane);
-        });
-        Stream.of(buttons).parallel().forEach(button -> {
-            buttonMap.put(button.getId().replaceFirst("Button", ""), button);
-        });
+        Stream.of(roomNames).parallel().forEach(name ->
+                chatRoomMap.put(name, new ChatRoom(name)));
+        Stream.of(onlineVBoxes).parallel().forEach(vBox ->
+                onlineVBoxMap.put(vBox.getId().replaceFirst("Box", ""), vBox));
+        Stream.of(onlinePanes).parallel().forEach(titledPane ->
+                onlinePanesMap.put(titledPane.getId().replaceFirst("Pane", ""), titledPane));
+        Stream.of(buttons).parallel().forEach(button ->
+                buttonMap.put(button.getId().replaceFirst("Button", ""), button));
 
         inputTextArea.setOnKeyPressed(event -> {
             if(event.getCode() == KeyCode.ENTER){
@@ -143,7 +139,7 @@ public class Controller {
 
     public void loadChatRoomUsers(Message msg) {
         if (msg.getMessageData().length() >= 2) {
-            Arrays.stream(msg.getMessageData().split(",")).forEach(user -> {
+            Arrays.stream(msg.getMessageData().split(",")).parallel().forEach(user -> {
                 getChatRoom(msg.getReceiver()).addUser(user);
                 addOnlineUser(msg.getReceiver(), user);
             });
