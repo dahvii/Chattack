@@ -13,6 +13,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 public class StressTest {
     private AtomicInteger totalMessageLimit;
+    public AtomicBoolean crash = new AtomicBoolean(false);
     private int nbrOfTestClients;
     private int sleepTime;
     private final String[] roomNames = new String[]{"main", "ninjas", "memes", "gaming", "horses"};
@@ -69,10 +70,13 @@ public class StressTest {
             }
         }
         System.out.println(nbrOfTestClients + ":" + totalMessageLimit + ":" + sleepTime);
-        while (nbrOfTestClients-- > 0 && totalMessageLimit.get() > 0){
-            new Thread(new StressClient(totalMessageLimit, sleepTime)).start();
+        int count = 0;
+        while (nbrOfTestClients > count && totalMessageLimit.get() != 1 && !crash.get() ){
+            int clientMessageLimit = totalMessageLimit.get()/(nbrOfTestClients-count);
+            Thread clientThread = new Thread(new StressClient(count++, clientMessageLimit, sleepTime));
+            clientThread.start();
             try {
-                Thread.sleep(100);
+                Thread.sleep(1500);
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
@@ -81,7 +85,7 @@ public class StressTest {
 
     class StressClient implements Runnable {
         AtomicBoolean active;
-        AtomicInteger totalMessageLimit;
+        int clientMessageLimit;
         int sleepTime;
         Socket socket = null;
         ObjectOutputStream objectOutputStream = null;
@@ -89,12 +93,12 @@ public class StressTest {
         Random rnd;
         String tempName;
 
-        public StressClient(AtomicInteger totalMessageLimit, int sleepTime) {
-            this.totalMessageLimit = totalMessageLimit;
+        public StressClient(int nr, int clientMessageLimit, int sleepTime) {
+            this.clientMessageLimit = clientMessageLimit;
             this.sleepTime = sleepTime;
             rnd = new Random();
             active = new AtomicBoolean(false);
-            tempName = "TEST" + rnd.nextInt(100000000);
+            tempName = "TEST-" + nr + ":" + rnd.nextInt(10000000);
 
             try {
                 socket = new Socket("localhost", 3000);
@@ -104,7 +108,6 @@ public class StressTest {
             } catch (IOException e) {
                 e.printStackTrace();
             }
-            new Thread(this::receive).start();
         }
 
         @Override
@@ -116,21 +119,24 @@ public class StressTest {
                 objectOutputStream.writeObject(register);
                 Thread.sleep(500);
                 objectOutputStream.writeObject(login);
-                Thread.sleep(50);
-            } catch (InterruptedException | IOException e) {
+                Thread.sleep(500);
+                Thread listenerThread = new Thread(this::receive);
+                listenerThread.setDaemon(true);
+                listenerThread.start();
+            } catch (Exception e) {
                 e.printStackTrace();
                 closeConnection();
             }
 
-            while (active.get()) {
-                if (getMessageLimit() > 0) {
+            while (isActive() && !crash.get()) {
+                if (getMessageLimit() > 0 && clientMessageLimit>0) {
                     try {
                         if (rnd.nextInt(5) == 0) {
                             String newRoom = roomNames[rnd.nextInt(5)];
                             DataMessage roomSwitch = new DataMessage(1, new Message(newRoom, null, tempName, room));
                             objectOutputStream.writeObject(roomSwitch);
                             room = newRoom;
-                            Thread.sleep(2000);
+                            Thread.sleep(1000 + rnd.nextInt(sleepTime));
                         }
 
                         DataMessage msg = new DataMessage(0, new Message(
@@ -139,31 +145,52 @@ public class StressTest {
                                 tempName,
                                 room));
 
-                        if (getAndDecrementMessageLimit() > 0) {
+                        int messageLimit = getAndDecrementMessageLimit();
+                        if (clientMessageLimit-- > 0 && messageLimit>0) {
                             objectOutputStream.writeObject(msg);
-                            System.out.println("Message sent to " + room + " from " + tempName);
-                        } else closeConnection();
+                            System.out.println("Message " + messageLimit + ":" + clientMessageLimit + " sent to " + room + " from " + tempName);
+                        } else {
+                            closeConnection();
+                        }
 
                         Thread.sleep((sleepTime + rnd.nextInt(sleepTime)));
-                    } catch (IOException | InterruptedException e) {
+                    } catch (Exception e) {
                         e.printStackTrace();
                         closeConnection();
                     }
-                }
+                } else closeConnection();
             }
-            closeConnection();
         }
 
         private void receive() {
-            while (isActive() && getMessageLimit() > 0) {
+            while (isActive() && !crash.get()) {
                 try {
                     Object o = objectInputStream.readObject();
                     Thread.sleep(1);
-                } catch (IOException | ClassNotFoundException | InterruptedException e) {
+                } catch (Exception e) {
                     closeConnection();
                 }
             }
-            closeConnection();
+        }
+        private void crashTest(){
+            if (clientMessageLimit > 1) {
+                System.out.println("CRASH");
+                crash.set(true);
+            }
+        }
+        private void closeConnection(){
+            if(isActive()){
+                try {
+                    setActive(false);
+                    crashTest();
+                    objectOutputStream.close();
+                    objectOutputStream.close();
+                    socket.close();
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+                System.out.println("CLIENT " + tempName + " FINISHED");
+            }
         }
 
         private synchronized boolean isActive() {
@@ -172,19 +199,6 @@ public class StressTest {
 
         private synchronized void setActive(boolean active) {
             this.active.set(active);
-        }
-
-        private void closeConnection(){
-            if(isActive()){
-                try {
-                    setActive(false);
-                    objectOutputStream.close();
-                    objectOutputStream.close();
-                    socket.close();
-                } catch (IOException e) {
-                }
-                System.out.println("STRESSTEST FINISHED");
-            }
         }
     }
 
@@ -199,8 +213,6 @@ public class StressTest {
     public synchronized AtomicInteger getTotalMessageLimit(){
         return totalMessageLimit;
     }
-
-
 
     public static void main(String[] args) {
         StressTest st = new StressTest();

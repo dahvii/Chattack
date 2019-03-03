@@ -28,7 +28,7 @@
             <Image url="@icons8-customer-64.png" />
          </image>
       </ImageView>
-      <TextArea fx:id="input2" layoutX="184.0" layoutY="477.0" prefHeight="50.0" prefWidth="435.0" promptText="Meddelande" wrapText="true" />
+      <TextArea fx:id="inputTextArea" layoutX="184.0" layoutY="477.0" prefHeight="50.0" prefWidth="435.0" promptText="Meddelande" wrapText="true" />
       <ImageView fitHeight="40.0" fitWidth="31.0" layoutX="879.0" layoutY="22.0" pickOnBounds="true" preserveRatio="true">
          <image>
             <Image url="@media1.png" />
@@ -52,23 +52,23 @@
       </ImageView>
       <VBox id="vBoxRooms" alignment="CENTER" layoutX="18.0" layoutY="116.0" prefHeight="243.0" prefWidth="148.0">
          <children>
-            <Button fx:id="main" alignment="CENTER" contentDisplay="CENTER" onAction="#changeRoom" prefHeight="40.0" prefWidth="148.0" styleClass="roomLblStyle" text="Skitsnack">
+            <Button fx:id="mainButton" alignment="CENTER" contentDisplay="CENTER" onAction="#changeRoom" prefHeight="40.0" prefWidth="175.0" styleClass="roomLblStyle" text="Skitsnack" textAlignment="CENTER">
                <VBox.margin>
                   <Insets bottom="10.0" />
                </VBox.margin></Button>
-            <Button fx:id="ninjas" alignment="CENTER" onAction="#changeRoom" prefHeight="40.0" prefWidth="175.0" styleClass="roomLblStyle" text="Om Ninjas" textAlignment="CENTER">
+            <Button fx:id="ninjasButton" alignment="CENTER" onAction="#changeRoom" prefHeight="40.0" prefWidth="175.0" styleClass="roomLblStyle" text="Om Ninjas" textAlignment="CENTER">
                <VBox.margin>
                   <Insets bottom="10.0" />
                </VBox.margin></Button>
-            <Button fx:id="memes" alignment="CENTER" onAction="#changeRoom" prefHeight="40.0" prefWidth="175.0" styleClass="roomLblStyle" text="Fräsiga Memes">
+            <Button fx:id="memesButton" alignment="CENTER" onAction="#changeRoom" prefHeight="40.0" prefWidth="175.0" styleClass="roomLblStyle" text="Fräsiga Memes">
                <VBox.margin>
                   <Insets bottom="10.0" />
                </VBox.margin></Button>
-            <Button fx:id="gaming" alignment="CENTER" onAction="#changeRoom" prefHeight="40.0" prefWidth="175.0" styleClass="roomLblStyle" text="Spel">
+            <Button fx:id="gamingButton" alignment="CENTER" onAction="#changeRoom" prefHeight="40.0" prefWidth="175.0" styleClass="roomLblStyle" text="Spel">
                <VBox.margin>
                   <Insets bottom="10.0" />
                </VBox.margin></Button>
-            <Button fx:id="horses" alignment="CENTER" onAction="#changeRoom" prefHeight="40.0" prefWidth="175.0" styleClass="roomLblStyle" text="Hästklubben" />
+            <Button fx:id="horsesButton" alignment="CENTER" onAction="#changeRoom" prefHeight="40.0" prefWidth="175.0" styleClass="roomLblStyle" text="Hästklubben" />
          </children>
       </VBox>
       <ScrollPane fx:id="allMessagesWindow" hbarPolicy="NEVER" layoutX="184.0" layoutY="6.0" prefHeight="463.0" prefWidth="484.0" styleClass="edge-to-edge">

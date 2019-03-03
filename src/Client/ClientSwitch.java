@@ -18,7 +18,7 @@ public class ClientSwitch {
             case (0):
                 controller.addMessageToRoom(data.getMessage());
                 if(data.getMessage().getReceiver().equals(controller.getActiveRoom())){
-                    Platform.runLater(() -> controller.printMessage(data.getMessage()));
+                    controller.printMessage(data.getMessage());
                 }
                 break;
 //          Server asks for username and password
@@ -43,7 +43,6 @@ public class ClientSwitch {
             case(5):
                 controller.moveChatRoomUser(data.getMessage());
                 break;
-
         }
     }
 
@@ -54,7 +53,7 @@ public class ClientSwitch {
                 if (o instanceof DataMessage) {
                     switchDataMessage((DataMessage) o);
                 }
-                Thread.sleep(20);
+                Thread.sleep(1);
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }

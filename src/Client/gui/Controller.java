@@ -4,97 +4,73 @@ import Client.ClientSwitch;
 import Data.User;
 import Data.DataMessage;
 import Client.ChatRoom;
-import javafx.application.Platform;
-import javafx.event.ActionEvent;
-import javafx.geometry.Insets;
 import Data.Message;
 import Client.NetworkClient;
 import javafx.fxml.FXML;
-import javafx.geometry.Pos;
-import javafx.scene.Node;
-import javafx.scene.Scene;
 import javafx.scene.control.*;
-import javafx.scene.control.Button;
-import javafx.scene.control.Label;
-import javafx.scene.control.ScrollPane;
-import javafx.scene.control.TextArea;
-import javafx.scene.control.TextField;
-import javafx.scene.effect.DropShadow;
-import javafx.scene.image.Image;
-import javafx.scene.image.ImageView;
 import javafx.scene.input.KeyCode;
-import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
-import javafx.scene.paint.Color;
-import javafx.stage.Modality;
-import javafx.stage.Stage;
-
-import java.awt.*;
-import java.io.File;
+import javafx.application.Platform;
+import javafx.event.ActionEvent;
 import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.stream.Stream;
 
 public class Controller {
-
     private ClientSwitch clientSwitch;
+    private Login login;
+    private GenerateGraphics generateGFX;
     private AtomicBoolean serverResponse = new AtomicBoolean(false);
     private AtomicBoolean serverWaiting = new AtomicBoolean(true);
-    public TextField input;
-    public TextArea input2;
-    public ScrollPane allMessagesWindow;
+    private AtomicBoolean loggedIn = new AtomicBoolean(false);
+
     private User user = new User();
-    private DateTimeFormatter formatter = DateTimeFormatter.ofPattern("HH:mm");
-    public VBox msgBox;
-    private Map<String, ChatRoom> chatRooms;
+    private final String[] roomNames = new String[]{"main", "ninjas", "memes", "gaming", "horses"};
+    private Map<String, ChatRoom> chatRoomMap = Collections.synchronizedMap(new HashMap<>());
     private String activeRoom;
+
+    public TextArea inputTextArea;
+    public ScrollPane allMessagesWindow;
+    @FXML VBox msgBox;
     @FXML Accordion accOnlineUsers;
     @FXML TitledPane mainPane, ninjasPane, memesPane, gamingPane, horsesPane;
-    private TitledPane[] onlinePanes;
     private Map<String, TitledPane> onlinePanesMap = new HashMap<>();
     @FXML VBox mainBox, ninjasBox, memesBox, gamingBox, horsesBox;
-    private VBox[] onlineVBoxes;
     private Map<String, VBox> onlineVBoxMap = new HashMap<>();
-    @FXML Button main, ninjas, memes, gaming, horses;
-    private Button [] buttons;
-    private final String[] roomNames = new String[]{"main", "ninjas", "memes", "gaming", "horses"};
+    @FXML Button mainButton, ninjasButton, memesButton, gamingButton, horsesButton;
+    private Map<String, Button> buttonMap = new HashMap<>();
     public Label userName;
 
     public Controller() {
         clientSwitch = new ClientSwitch(this);
+        generateGFX = new GenerateGraphics(this);
+        login = new Login(this);
     }
 
     @FXML
     public void initialize() {
-        chatRooms = Collections.synchronizedMap(new HashMap<>());
-        onlineVBoxes = new VBox[]{mainBox, ninjasBox, memesBox, gamingBox, horsesBox};
-        onlinePanes = new TitledPane[]{mainPane, ninjasPane, memesPane, gamingPane, horsesPane};
+        VBox[] onlineVBoxes = new VBox[]{mainBox, ninjasBox, memesBox, gamingBox, horsesBox};
+        TitledPane[] onlinePanes = new TitledPane[]{mainPane, ninjasPane, memesPane, gamingPane, horsesPane};
+        Button[] buttons = new Button[]{mainButton, ninjasButton, memesButton, gamingButton, horsesButton};
 
-        for (int i = 0; i<roomNames.length; i++){
-            chatRooms.put(roomNames[i], new ChatRoom(roomNames[i]));
-            onlineVBoxMap.put(roomNames[i], onlineVBoxes[i]);
-            onlinePanesMap.put(roomNames[i], onlinePanes[i]);
-        }
+        Stream.of(roomNames).parallel().forEach(name ->
+                chatRoomMap.put(name, new ChatRoom(name)));
+        Stream.of(onlineVBoxes).parallel().forEach(vBox ->
+                onlineVBoxMap.put(vBox.getId().replaceFirst("Box", ""), vBox));
+        Stream.of(onlinePanes).parallel().forEach(titledPane ->
+                onlinePanesMap.put(titledPane.getId().replaceFirst("Pane", ""), titledPane));
+        Stream.of(buttons).parallel().forEach(button ->
+                buttonMap.put(button.getId().replaceFirst("Button", ""), button));
 
-        buttons = new Button[]{main, ninjas, memes, gaming, horses};
-        styleActiveButton(true, main);
-
-        setActiveRoom("main");
-        new Thread(clientSwitch::messageListener).start();
-        loginPrompt();
-        addOnlineUsersGraphic(getActiveRoom(), user.getName());
-        accOnlineUsers.setExpandedPane(onlinePanesMap.get(getActiveRoom()));
-        userName.setText(user.getName());
-
-        input2.setOnKeyPressed(event -> {
+        inputTextArea.setOnKeyPressed(event -> {
             if(event.getCode() == KeyCode.ENTER){
                 event.consume();
                 if(event.isShiftDown()){
-                    input2.appendText(System.getProperty("line.separator"));
+                    inputTextArea.appendText(System.getProperty("line.separator"));
                 }   else {
                     sendBtnClick();
                 }
@@ -102,198 +78,47 @@ public class Controller {
         });
     }
 
+    public void startLogin() {
+        new Thread(clientSwitch::messageListener).start();
+        login.getLoginStage().showAndWait();
+    }
+
+    public void activateMainProgram(String name){
+        getUser().setName(name);
+        setActiveRoom("main");
+        generateGFX.styleButton(true, buttonMap.get(getActiveRoom()));
+        addOnlineUser(getActiveRoom(), user.getName());
+        accOnlineUsers.setExpandedPane(onlinePanesMap.get(getActiveRoom()));
+        userName.setText(user.getName());
+        setLoggedIn(true);
+    }
 
     public void sendBtnClick() {
-        if (!input2.getText().equals("")) {
-            String msg = input2.getText().trim();
+        String msg = inputTextArea.getText().trim();
+        if (!msg.equals("")) {
             if(msg.length()>2000) {
                 Alert alert = new Alert(Alert.AlertType.WARNING);
                 alert.setTitle("För många tecken!");
                 alert.setHeaderText("Max 2000 tecken i ett meddelande!");
                 alert.showAndWait();
             } else {
-                DataMessage dataMessage = new DataMessage(0, new Message(msg, LocalDateTime.now(), user.getName(), getActiveRoom()));
+                DataMessage dataMessage =
+                        new DataMessage(0, new Message(msg, LocalDateTime.now(), user.getName(), getActiveRoom()));
                 NetworkClient.getInstance().sendToServer(dataMessage);
-                input2.clear();
+                inputTextArea.clear();
             }
         }
-    }
-
-    private void loginPrompt() {
-        //skapa ny stage och sätt lite egenskaper
-        Stage window = new Stage();
-        window.initModality(Modality.APPLICATION_MODAL);
-        window.setTitle("Välj användarnamn");
-        window.setMinWidth(300);
-        window.setMinHeight(400);
-
-        //skapa element och egenskaperna för innehållet
-        Label errorMessage = new Label();
-        errorMessage.setText("  Felaktigt användarnamn eller lösenord\n(användaren kan redan vara uppkopplad)");
-        errorMessage.setStyle("visibility: hidden");
-
-        TextField nameInput = new TextField();
-        nameInput.setMaxWidth(200);
-        PasswordField passwordInput = new PasswordField();
-        passwordInput.setMaxWidth(200);
-
-        Button okButton = new Button("Ok");
-        Button newUser = new Button("Inte medlem? \n Tryck här!");
-        newUser.setOnAction(event -> registerForm());
-
-        Label userLabel = new Label("Användarnamn");
-        Label passwordLabel = new Label("Lösenord");
-        Label welcomeLabel = new Label("Chattack!");
-
-        //lägg till elementen till layouten
-        VBox layout = new VBox(10);
-        layout.getChildren().addAll(
-                welcomeLabel,
-                userLabel,
-                nameInput,
-                passwordLabel,
-                passwordInput,
-                okButton,
-                errorMessage,
-                newUser);
-        layout.setAlignment(Pos.CENTER);
-        window.setResizable(false);
-
-        //skapa funktionalitet och eventhantering
-        window.setOnCloseRequest(e -> {
-            //TODO: nedan kommando gör vad vi vill användarmässigt men skapar massa exceptions - dvs inte vackert
-            Platform.exit();
-        });
-
-        okButton.setDefaultButton(true);
-        okButton.setOnAction(e -> {
-            errorMessage.setStyle("visibility: hidden;");
-            //om användaren inte har fyllt i ett namn
-            //remove whitespaces
-            String password = passwordInput.getText();
-            String name = nameInput.getText().replaceAll("\\s+", "");
-
-            if (name.equals("")) {
-                errorMessage.setStyle("visibility: visible;");
-            } else if (!passwordCheck(name, password, errorMessage)) {
-            } else { // om användaren  fyllt i ett namn och lösen korrekt
-                user.setName(name);
-//                user.setPassword(password);
-                window.close();
-            }
-        });
-
-        //skapa en ny scen med innehållet och lägg upp och visa den
-        Scene scene = new Scene(layout, 300, 400);
-        window.setScene(scene);
-        window.showAndWait();
-//        inlogg.setText("Inloggad användare: " + user.getName());
-    }
-
-    public boolean passwordCheck(String userName, String password, Label errorMessage) {
-        DataMessage dataMessage = new DataMessage(3, new Message(password, LocalDateTime.now(), userName, null));
-        return loginOrRegister(dataMessage, errorMessage);
-    }
-
-
-    private boolean registerCheck(String userName, String password, Label errorMessage) {
-        DataMessage dataMessage = new DataMessage(2, new Message(password, LocalDateTime.now(), userName, null));
-        return loginOrRegister(dataMessage, errorMessage);
-    }
-
-    private boolean loginOrRegister(DataMessage msg, Label errorMessage){
-        while (isServerWaiting()){}
-        NetworkClient.getInstance().sendToServer(msg);
-        setServerWaiting(true);
-
-        while (isServerWaiting()) {
-        }
-        if (getServerResponse()) {
-            return true;
-        } else {
-            errorMessage.setStyle("visibility: visible");
-        }
-        return false;
-    }
-
-    public void registerForm() {
-        Label errorMessageName = new Label("Du måste fylla i ett användarnamn");
-        errorMessageName.setStyle("visibility: hidden");
-        Label nameLabel = new Label("Användarnamn");
-        Label passwordLabel = new Label("Lösenord");
-
-        Label errorMessagePassword = new Label("Lösenordet måste bestå av: \n Minst en liten bokstav \n Minst en stor bokstav \n Minst en siffra \n Inga blanka tecken \n Minst 5 tecken");
-        errorMessagePassword.setStyle("visibility: hidden");
-
-        Label errorMessageRegister = new Label("Användarnamnet är upptaget");
-        errorMessageRegister.setStyle("visibility: hidden");
-
-        Stage registerWindow = new Stage();
-        registerWindow.initModality(Modality.APPLICATION_MODAL);
-        registerWindow.setTitle("Ny användare");
-        registerWindow.setResizable(false);
-        TextField nameInputRegistration = new TextField();
-        nameInputRegistration.setPromptText("Namn");
-        nameInputRegistration.setMaxWidth(200);
-        TextField passwordInputRegistration = new TextField();
-        passwordInputRegistration.setPromptText("Lösenord");
-        passwordInputRegistration.setMaxWidth(200);
-        Button registerButton = new Button("Registrera");
-        VBox layout = new VBox(10);
-
-        layout.getChildren().addAll(
-                nameLabel,
-                nameInputRegistration,
-                errorMessageName,
-                passwordLabel,
-                passwordInputRegistration,
-                errorMessagePassword,
-                errorMessageRegister,
-                registerButton);
-        Scene scene1 = new Scene(layout, 300, 300);
-        layout.setAlignment(Pos.CENTER);
-
-        registerWindow.setScene(scene1);
-        registerWindow.show();
-
-        registerButton.setDefaultButton(true);
-        registerButton.setOnAction(e -> {
-            errorMessageName.setStyle("visibility: hidden;");
-            errorMessagePassword.setStyle("visibility: hidden;");
-            errorMessageRegister.setStyle("visibility: hidden;");
-
-
-            //getpasswordinput
-            String password = passwordInputRegistration.getText();
-            //get nameinput and remove whitespaces
-            String name = nameInputRegistration.getText().replaceAll("\\s+", "");
-
-            if (name.equals("")) {
-                errorMessageName.setStyle("visibility: visible;");
-            } else if(!password.matches("^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=\\S+$).{5,}$")){
-                errorMessagePassword.setStyle("visibility: visible;");
-            } else if (!registerCheck(name, password, errorMessageRegister)) { //Metod som kollar att lösen är korrekt
-            } else { // om användaren  fyllt i ett namn och lösen korrekt
-                registerWindow.close();
-            }
-        });
     }
 
     public void addMessageToRoom(Message msg) {
         getChatRoom(msg.getReceiver()).addMessage(msg);
     }
 
-    private void printRoomMessages(String roomName) {
-        Platform.runLater(new Runnable() {
-            @Override
-            public void run() {
-                Iterator<Message> iter = getChatRoom(roomName).getMessages().listIterator();
-                iter.forEachRemaining(Controller.this::printMessage);
-            }
-        });
-    }
-
     public void printMessage(Message msg) {
+        Platform.runLater(() -> {
+            msgBox.getChildren().add(generateGFX.generateMessageBox(msg));
+            scroll();
+        });
         Platform.runLater(()  -> {
 
                 VBox chatMessageContainer = new VBox();
@@ -353,46 +178,46 @@ public class Controller {
     }
 
     private void scroll() {
-        Platform.runLater(new Runnable() {
-            @Override
-            public void run() {
-                msgBox.heightProperty().addListener(observable -> allMessagesWindow.setVvalue(1.0));
-            }
-        });
+        msgBox.heightProperty().addListener(observable -> allMessagesWindow.setVvalue(1.0));
     }
 
     @FXML
     private void changeRoom(ActionEvent event) {
-        String newRoom = ((Button) event.getSource()).getId();
+        generateGFX.styleButton(false, buttonMap.get(getActiveRoom()));
+        setActiveRoom(((Button) event.getSource()).getId().replaceFirst("Button",""));
+        NetworkClient.getInstance().sendToServer(
+                new DataMessage(1, new Message(getActiveRoom(), null, user.getName(), null)));
+        generateGFX.styleButton(true, buttonMap.get(getActiveRoom()));
         msgBox.getChildren().clear();
+        getChatRoom(getActiveRoom()).getMessages().forEach(Controller.this::printMessage);
+        accOnlineUsers.setExpandedPane(onlinePanesMap.get(getActiveRoom()));
+    }
 
-        printRoomMessages(newRoom);
+    public void loadChatRoomUsers(Message msg) {
+        if (msg.getMessageData().length() >= 2) {
+            Arrays.stream(msg.getMessageData().split(",")).parallel().forEach(user -> {
+                getChatRoom(msg.getReceiver()).addUser(user);
+                addOnlineUser(msg.getReceiver(), user);
+            });
+        }
+    }
 
-        //find the exited roomButton and style it back to default
-        for(Button button : buttons){
-            if (button.getId().equals(activeRoom)){
-                styleActiveButton(false, button);
+    private void addOnlineUser(String roomName, String name){
+        Platform.runLater(() ->
+            onlineVBoxMap.get(roomName).getChildren().add(generateGFX.generateOnlineUserBox(name)));
+    }
+
+    public void moveChatRoomUser(Message msg) {
+        Platform.runLater(() -> {
+            getChatRoom(msg.getReceiver()).removeUser(msg.getSender());
+            onlineVBoxMap.get(msg.getReceiver()).getChildren()
+                    .removeIf(vBox -> vBox.getId().equals(msg.getSender()));
+            if(msg.getMessageData()!= null) {
+                getChatRoom(msg.getMessageData()).addUser(msg.getSender());
+                onlineVBoxMap.get(msg.getMessageData()).getChildren().add(
+                        generateGFX.generateOnlineUserBox(msg.getSender()));
             }
-        }
-        setActiveRoom(newRoom);
-        NetworkClient.getInstance().sendToServer(new DataMessage(1, new Message(newRoom, null, user.getName(), null)));
-        //style the active roomButton
-        styleActiveButton(true, ((Button) event.getSource()));
-
-        //open accordion for new room
-        accOnlineUsers.setExpandedPane(onlinePanesMap.get(newRoom));
-    }
-
-    private void styleActiveButton(Boolean isActive, Button button){
-        if(isActive){
-            button.setStyle("-fx-background-color:  #5274b4, linear-gradient(from 25% 25% to 100% 100%, #37517a, #4e74af), radial-gradient(center 50% -40%, radius 200%, #4e74af 45%, rgba(230,230,230,0) 50%); -fx-text-fill: white;");
-        }else{
-            button.setStyle(" -fx-background-color:  #c3c4c4, linear-gradient(#d6d6d6 50%, white 100%), radial-gradient(center 50% -40%, radius 200%, #e6e6e6 45%, rgba(230,230,230,0) 50%);");
-        }
-    }
-
-    public User getUser() {
-        return user;
+        });
     }
 
     public synchronized String getActiveRoom() {
@@ -401,7 +226,14 @@ public class Controller {
 
     public synchronized void setActiveRoom(String activeRoom) {
         this.activeRoom = activeRoom;
+    }
 
+    public boolean isLoggedIn() {
+        return loggedIn.get();
+    }
+
+    public void setLoggedIn(boolean loggedIn) {
+        this.loggedIn.set(loggedIn);
     }
 
     public boolean getServerResponse() {
@@ -420,46 +252,11 @@ public class Controller {
         this.serverWaiting.set(serverWaiting);
     }
 
-    public void loadChatRoomUsers(Message msg) {
-        String[] users = null;
-        if (msg.getMessageData().length() >= 2) {
-            users = msg.getMessageData().split(",");
-        }
-        if (users != null) {
-            for (String user : users) {
-                getChatRoom(msg.getReceiver()).addUser(user);
-                addOnlineUsersGraphic(msg.getReceiver(), user);
-            }
-
-        }
-    }
-
-    public void moveChatRoomUser(Message msg) {
-        getChatRoom(msg.getReceiver()).removeUser(msg.getSender());
-        if(msg.getMessageData()!=null) getChatRoom(msg.getMessageData()).addUser(msg.getSender());
-
-        Platform.runLater(new Runnable() {
-            @Override
-            public void run() {
-                ImageView image = new ImageView("Client/gui/icons8-sphere-48.png");
-                HBox userBox = new HBox();
-                userBox.setPadding(new Insets(3,0,0,3));
-                image.setFitHeight(15);
-                image.setFitWidth(15);
-                Label newLabel = new Label(msg.getSender());
-                userBox.setId(msg.getSender());
-                userBox.getChildren().addAll(image, newLabel);
-                Iterator<Node> onlineLabels = onlineVBoxMap.get(msg.getReceiver()).getChildren().iterator();
-                while(onlineLabels.hasNext()){
-                    String id = onlineLabels.next().getId();
-                    if(id.equals(msg.getSender())) onlineLabels.remove();
-                }
-                if(msg.getMessageData()!= null) onlineVBoxMap.get(msg.getMessageData()).getChildren().add(userBox);
-            }
-        });
-    }
-
     private ChatRoom getChatRoom(String roomName) {
-        return chatRooms.get(roomName);
+        return chatRoomMap.get(roomName);
+    }
+
+    public User getUser(){
+        return user;
     }
 }

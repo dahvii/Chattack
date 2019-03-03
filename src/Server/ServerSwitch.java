@@ -33,7 +33,7 @@ public class ServerSwitch {
     }
 
     public boolean switchLogin(DataMessage data) {
-        //REGISTER
+            //REGISTER
         if (data.getCommando() == 2) {
             return PasswordCheck.getInstance()
                     .addUser(data.getMessage().getSender(), data.getMessage().getMessageData());
