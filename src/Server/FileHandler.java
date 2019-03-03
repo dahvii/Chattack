@@ -18,19 +18,17 @@ public class FileHandler {
     private FileHandler() {
     }
 
-
     public Object readFile(String path){
         try (ObjectInputStream ois = new ObjectInputStream(Files.newInputStream(Paths.get(path)))) {
-            Object o = null;
             try {
-                o = ois.readObject();
-            } catch (Exception e) {
-                e.printStackTrace();
+                return ois.readObject();
+            } catch (NoSuchFileException e) {
+                System.out.println(e.getReason());
+                return null;
             }
-            return o;
         }
-        catch (IOException e) {
-            e.printStackTrace();
+        catch (IOException | ClassNotFoundException e) {
+            System.out.println(e.toString());
             return null;
         }
     }
@@ -39,8 +37,7 @@ public class FileHandler {
         try (ObjectOutputStream oos = new ObjectOutputStream(Files.newOutputStream(Paths.get(path)))) {
             oos.writeObject(serializableObject);
         } catch (IOException e) {
-            e.printStackTrace();
+            System.out.println(e.toString());
         }
     }
-
 }

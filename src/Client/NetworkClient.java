@@ -43,9 +43,11 @@ public class NetworkClient {
 
     public Object receiveObject(){
         try {
-            return objectInputStream.readObject();
-        } catch (IOException | ClassNotFoundException e) {
+            Object o = objectInputStream.readObject();
+            if(o != null) return o;
+        } catch (Exception e) {
             e.printStackTrace();
+            closeConnection(e.getMessage());
         }
         return null;
     }
@@ -53,8 +55,9 @@ public class NetworkClient {
     public void sendToServer(Object o){
         try {
             objectOutputStream.writeObject(o);
-        } catch (IOException e) {
+        } catch (Exception e) {
             e.printStackTrace();
+            closeConnection(e.getMessage());
         }
     }
 
@@ -76,14 +79,23 @@ public class NetworkClient {
                 Thread.sleep(1);
             } catch (Exception e) {
                 e.printStackTrace();
-                setActive(false);
+                closeConnection(e.getMessage());
             }
         }
+        closeConnection(null);
+    }
 
-        try {
-            socket.close();
-        } catch (IOException e) {
-            e.printStackTrace();
+    private void closeConnection(String exception){
+        if(isActive()){
+            try {
+                setActive(false);
+                objectInputStream.close();
+                objectOutputStream.close();
+                socket.close();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            System.out.println("Connection closed " + exception);
         }
     }
 

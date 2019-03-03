@@ -12,7 +12,7 @@ public class ChatApp extends Application {
 
     private Controller controller;
 
-    public ChatApp(){
+    public ChatApp() {
 
     }
 
@@ -23,13 +23,16 @@ public class ChatApp extends Application {
     @Override
     public void start(Stage primaryStage) throws Exception {
         FXMLLoader loader = new FXMLLoader(getClass().getResource("gui/sample.fxml"));
-
         Parent root = loader.load();
         controller = loader.getController();
-        primaryStage.setScene(new Scene(root));
-        primaryStage.show();
-        primaryStage.setResizable(false);
-        primaryStage.setTitle("Chattack");
+        controller.initialize();
+        controller.startLogin();
+        if(controller.isLoggedIn()) {
+            primaryStage.setScene(new Scene(root));
+            primaryStage.setResizable(false);
+            primaryStage.setTitle("Chattack");
+            primaryStage.show();
+        }
     }
 
     @Override

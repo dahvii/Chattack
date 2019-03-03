@@ -5,6 +5,7 @@ import Data.Message;
 
 import java.time.LocalDateTime;
 import java.util.*;
+import java.util.stream.Stream;
 
 public class DataHandler {
     private Map<String, List<Message>> allMessages;
@@ -45,29 +46,18 @@ public class DataHandler {
         saveRoomMessages(msg.getReceiver());
     }
 
-    public List<Message> getRoomMessages(String roomName){
-        return getMessageMap().get(roomName);
+    public Stream<DataMessage> getLatestMessages(){
+        return getMessageMap()
+                .values()
+                .stream()
+                .flatMap(Collection::stream)
+                .filter(message -> message.getTime().isAfter(LocalDateTime.now().minusHours(8)))
+                .sorted(Comparator.comparing(Message::getTime))
+                .map(message -> new DataMessage(0, message))
+                ;
     }
 
-    public ArrayList<DataMessage> getLatestMessages() {
-        ArrayList<DataMessage> messageList = new ArrayList<>();
-        LocalDateTime localDateTime = LocalDateTime.now();
-        Iterator<Map.Entry<String, List<Message>>> iter = DataHandler.getInstance()
-                .getMessageMap().entrySet().iterator();
-        while(iter.hasNext()){
-            Map.Entry<String, List<Message>> entry = iter.next();
-            entry.getValue().forEach(message -> {
-                if (message.getTime().isAfter(localDateTime.minusHours(8))) {
-                    messageList.add(new DataMessage(0, message));
-                }
-            });
-        }
-        return messageList;
-    }
-
-    public synchronized Map<String, List<Message>> getMessageMap() {
+    private synchronized Map<String, List<Message>> getMessageMap() {
         return allMessages;
     }
-
-    //:TODO Refactor and add methods for handling multiple rooms
 }

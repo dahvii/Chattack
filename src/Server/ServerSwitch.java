@@ -18,20 +18,10 @@ public class ServerSwitch {
         switch (data.getCommando()) {
             case (0):
                 DataHandler.getInstance().addMessage(data.getMessage());
-                new Thread(new Runnable() {
-                    @Override
-                    public void run() {
-                        networkServer.sendToAll(data);
-                    }
-                }).start();
+                networkServer.sendToAll(data);
                 break;
             case (1):
-                new Thread(new Runnable() {
-                    @Override
-                    public void run() {
-                        networkServer.roomSwitch(data.getMessage().getSender(), data.getMessage().getMessageData());
-                    }
-                }).start();
+                networkServer.roomSwitch(data.getMessage().getSender(), data.getMessage().getMessageData());
                 break;
             case (5):
                 networkServer.sendToAll(data);
@@ -43,7 +33,7 @@ public class ServerSwitch {
     }
 
     public boolean switchLogin(DataMessage data) {
-        //REGISTER
+            //REGISTER
         if (data.getCommando() == 2) {
             return PasswordCheck.getInstance()
                     .addUser(data.getMessage().getSender(), data.getMessage().getMessageData());

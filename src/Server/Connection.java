@@ -7,23 +7,26 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.Socket;
+import java.util.Arrays;
+import java.util.Queue;
+import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicReference;
 
 public class Connection {
-    private String name = "";
-    private String activeRoom;
-    private Socket socket;
-    private AtomicBoolean isActive;
+    private AtomicReference<String> name = new AtomicReference<>("");
+    private AtomicReference<String> activeRoom = new AtomicReference<>("main");
+    private AtomicBoolean isActive = new AtomicBoolean(false);
+    private AtomicBoolean loggedIn = new AtomicBoolean(false);
+    private Queue<Object> sendQueue = new ConcurrentLinkedQueue<>();
     private ObjectOutputStream objectOutputStream;
     private ObjectInputStream objectInputStream;
+    private Socket socket;
     private ServerSwitch serverSwitch;
-
 
     public Connection(ServerSwitch serverSwitch, Socket socket){
         this.serverSwitch =  serverSwitch;
         this.socket = socket;
-        isActive = new AtomicBoolean();
-        activeRoom = "main";
         init();
     }
 
@@ -31,30 +34,32 @@ public class Connection {
         try {
             objectOutputStream = new ObjectOutputStream(socket.getOutputStream());
             objectInputStream = new ObjectInputStream(socket.getInputStream());
+            setActive(true);
         } catch (IOException e) {
             e.printStackTrace();
         }
-        setActive(true);
-        login();
 
-        Thread listenerThread = new Thread(this::run);
-        listenerThread.setDaemon(true);
-        listenerThread.start();
+        if(loginCheck()){
+            Thread listenerThread = new Thread(this::inputThread);
+            listenerThread.setDaemon(true);
+            listenerThread.start();
 
-        for(String roomName: NetworkServer.roomNames){
-            sendToClient(serverSwitch.getOnlineUsers(roomName));
+            Thread sendThread = new Thread(this::outputThread);
+            sendThread.setDaemon(true);
+            sendThread.start();
+            if(getName() != "" && !getName().contains("TEST")) {
+                Arrays.stream(NetworkServer.roomNames).forEach(name -> addToSendQueue(serverSwitch.getOnlineUsers(name)));
+                DataHandler.getInstance().getLatestMessages().forEach(this::addToSendQueue);
+            }
+
+            serverSwitch.switchDataMessage(
+                    new DataMessage(5, new Message(getActiveRoom(), null, getName(), getActiveRoom())));
         }
-
-        if(getName() != "" && !name.contains("TEST")) {
-            DataHandler.getInstance().getLatestMessages().forEach(this::sendToClient);
-        }
-        serverSwitch.switchDataMessage(new DataMessage(5, new Message(getActiveRoom(), null, name, getActiveRoom())));
     }
 
-    private void login(){
-        sendToClient(new DataMessage(1, null));
-        boolean loggedIn = false;
-        while (!loggedIn && isActive()){
+    private boolean loginCheck(){
+        sendObject(new DataMessage(1, null));
+        while (!isLoggedIn() && isActive()){
             DataMessage response = null;
             while (response == null && isActive()){
                 response = (DataMessage) receiveObject();
@@ -63,25 +68,24 @@ public class Connection {
                 boolean passwordRegisterCheck = serverSwitch.switchLogin(response);
 
                 if(!passwordRegisterCheck) {
-                    sendToClient(new DataMessage(2, null));
+                    sendObject(new DataMessage(2, null));
 
                 } else if(passwordRegisterCheck && response.getCommando()==2) {
-                    sendToClient(new DataMessage(3, null));
+                    sendObject(new DataMessage(3, null));
 
                 } else if(passwordRegisterCheck && response.getCommando()==3) {
-                    setName(response.getMessage().getSender());
-                    loggedIn = true;
-                    sendToClient(new DataMessage(3, null));
+                    name.set(response.getMessage().getSender());
+                    sendObject(new DataMessage(3, null));
+                    setLoggedIn(true);
                 }
             }
         }
+        return isLoggedIn();
     }
 
     private Object receiveObject(){
-        Object o;
         try {
-            o = objectInputStream.readObject();
-            return o;
+            return objectInputStream.readObject();
         } catch (IOException | ClassNotFoundException e) {
             closeConnection(e.toString());
         }
@@ -89,18 +93,30 @@ public class Connection {
     }
 
 
-    public void sendToClient(Object o){
+    public void sendObject(Object o){
         try {
-            if(isActive()) objectOutputStream.writeObject(o);
+           objectOutputStream.writeObject(o);
         } catch (IOException e) {
             closeConnection(e.toString());
         }
     }
 
-    private void run() {
+    private void outputThread() {
         while (isActive()){
             try {
-                Object o =  receiveObject();
+                Object o = getSendQueue().poll();
+                if(o != null) sendObject(o);
+                Thread.sleep(1);
+            } catch (Exception e) {
+                closeConnection(e.toString());
+            }
+        }
+    }
+
+    private void inputThread() {
+        while (isActive()){
+            try {
+                Object o = receiveObject();
                 if(o != null) serverSwitch.addMessage(o);
                 Thread.sleep(1);
             } catch (Exception e) {
@@ -122,28 +138,63 @@ public class Connection {
             System.out.println("Connection closed by client: " + exception);
         }
     }
+    private synchronized AtomicBoolean getAtomicLoggedIn(){
+        return loggedIn;
+    }
+
+    public boolean isLoggedIn(){
+        return getAtomicLoggedIn().get();
+    }
+
+    private void setLoggedIn(boolean loggedIn) {
+        getAtomicLoggedIn().set(loggedIn);
+    }
+
+    private synchronized AtomicBoolean getAtomicActive() {
+        return isActive;
+    }
 
     public boolean isActive() {
-        return isActive.get();
+        return getAtomicActive().get();
     }
 
     public void setActive(boolean isActive) {
-        this.isActive.set(isActive);
+        getAtomicActive().set(isActive);
     }
 
-    public String getName() {
+    private synchronized AtomicReference<String> getAtomicName() {
         return name;
     }
 
-    public void setName(String name) {
-        this.name = name;
+    public String getName() {
+        return getAtomicName().get();
     }
 
-    public synchronized String getActiveRoom() {
+    public String getAndSetName(String name){
+        return getAtomicName().getAndSet(name);
+    }
+
+    public void setName(String name) {
+        getAtomicName().set(name);
+    }
+
+    private synchronized AtomicReference<String> getAtomicRoom() {
         return activeRoom;
     }
 
-    public synchronized void setActiveRoom(String activeRoom) {
-        this.activeRoom = activeRoom;
+    public String getActiveRoom(){
+        return getAtomicRoom().get();
+    }
+
+    public void setActiveRoom(String activeRoom) {
+        getAtomicRoom().set(activeRoom);
+    }
+
+    private synchronized Queue<Object> getSendQueue() {
+        return sendQueue;
+    }
+
+    public void addToSendQueue(Object o){
+        getSendQueue().add(o);
     }
 }
