@@ -101,9 +101,8 @@ public class Controller {
                 alert.setHeaderText("Max 2000 tecken i ett meddelande!");
                 alert.showAndWait();
             } else {
-                DataMessage dataMessage =
-                        new DataMessage(0, new Message(msg, LocalDateTime.now(), user.getName(), getActiveRoom()));
-                NetworkClient.getInstance().sendToServer(dataMessage);
+                NetworkClient.getInstance().sendToServer(
+                        new DataMessage(0, new Message(msg, LocalDateTime.now(), user.getName(), getActiveRoom())));
                 inputTextArea.clear();
             }
         }

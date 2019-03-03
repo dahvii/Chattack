@@ -10,11 +10,12 @@ import javafx.scene.image.ImageView;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
+import javafx.scene.text.Font;
 
 import java.time.format.DateTimeFormatter;
 
 public class GenerateGraphics {
-    private DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+    private DateTimeFormatter formatter = DateTimeFormatter.ofPattern("HH:mm:ss");
 
     Controller controller;
 
@@ -25,12 +26,15 @@ public class GenerateGraphics {
     public VBox generateMessageBox(Message msg){
         VBox chatMessageContainer = new VBox();
         Label messageSender = new Label(msg.getSender());
+        messageSender.setFont(Font.font("Arial"));
         Label messageData = new Label(msg.getMessageData());
+        messageData.setFont(Font.font("Arial"));
         if(msg.getSender().equals(controller.getUser().getName())){
             messageData.setTextFill(Color.WHITE);
         }
         messageData.setWrapText(true);
         Label messageTime = new Label(msg.getTime().format(formatter));
+        messageTime.setFont(Font.font("Arial"));
         VBox messageTextContainer = new VBox();
         messageTextContainer.getChildren().add(messageData);
         styleMessage(messageSender, messageTextContainer, messageTime, chatMessageContainer, msg);
@@ -73,6 +77,7 @@ public class GenerateGraphics {
 
     public HBox generateOnlineUserBox(String name){
         Label label1 = new Label(name);
+        label1.setFont(Font.font("Arial"));
         HBox userBox = new HBox();
         userBox.setPadding(new Insets(3,0,0,3));
         userBox.setId(name);
